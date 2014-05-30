@@ -1,7 +1,9 @@
 {
+    "env": "dev",
     "port": 9091,
     "workers": [
         {"username": "amit.020585","password": "Rewq!234"}
     ],
-    "proxies" : ["198.49.73.52:44777","107.161.179.111:44777"]
+    "proxyapikey": "729fb2b0ef57fc06cdac1b5525c9b0",
+    "proxyrefreshtime" : 14400000
 }

@@ -282,7 +282,7 @@ var countrycodes = [
     {name: "Zambia", code: "ZM"},
     {name: "Zimbabwe", code: "ZW"},
     {name: "Unlisted", code: "ZZ"}
-]
+];
 
 var getDbcPage =function(){
     return "<html><body>" +
@@ -292,7 +292,7 @@ var getDbcPage =function(){
         "<input id='captchafile' type='file'     name='captchafile' >"+
         "</form>" +
     "</body></html>"
-}
+};
 
 var decodeCatpcha = function(captchafile,callback){
     var page = pg.create(),urlchanges=0;
@@ -313,7 +313,7 @@ var decodeCatpcha = function(captchafile,callback){
                 var poll = function(){
                     tries++;
                     console.log("captcha_decode_step:poll try - "+tries);
-                    for(i=0,j=0;i<400000000;i++)
+                    for(var i=0,j=0;i<400000000;i++)
                         j++;
                     $.ajax({
                         url: captchaurl,
@@ -335,7 +335,7 @@ var decodeCatpcha = function(captchafile,callback){
                             }
                         }
                     })
-                }
+                };
                 poll();
                 return c;
             },url);
@@ -345,11 +345,11 @@ var decodeCatpcha = function(captchafile,callback){
                 callback(new Error("dbc_api_error:"+JSON.stringify(captcha)),null);
         }else if(urlchanges==2)
             callback(new Error("dbc_api_redirect_failed:"+url),null);
-    }
+    };
     page.evaluate(function(){
         $("form").submit();
     });
-}
+};
 
 var handler = function(req,res,server){
     if(env=='dev')
@@ -366,7 +366,7 @@ var handler = function(req,res,server){
     var handleDmca = function(){
         var data = {};
         try{
-            var data = JSON.parse(req.post);
+            data = JSON.parse(req.post);
             var formdata = [].concat(inputs);
             for(var i=0;i<formdata.length;i++){
                 if(formdata[i].required && !data[formdata[i].id])
@@ -668,10 +668,10 @@ server.prototype.start = function(port){
     });
 }
 
-server.prototype.refreshProxies = function(refreshtime,callback){
+server.prototype.refreshProxies = function(apikey,refreshtime,callback){
     var o = this;
     var page = pg.create();
-    var url="http://kingproxies.com/api/v1/proxies.json?key=729fb2b0ef57fc06cdac1b5525c9b0&limit=5&country_code=US&protocols=http&response_time=fast&supports=google";
+    var url="http://kingproxies.com/api/v1/proxies.json?key="+apikey+"&limit=5&country_code=US&protocols=http&response_time=fast&supports=google";
     var proxyhome = "http://kingproxies.com";
     if(env=='dev')  console.log("changing proxies.");
     page.open(proxyhome,function(status){
@@ -700,16 +700,14 @@ server.prototype.refreshProxies = function(refreshtime,callback){
             o.exit();
         }
     });
-    setTimeout(o.refreshProxies,refreshtime || 15000);
+    setTimeout(o.refreshProxies,refreshtime || 14400000);
 }
 
 server.prototype.init = function(){
     var o = this;
     var conf = JSON.parse(fs.read("conf.json"));
-    if(conf.proxies)
-        o.proxies = conf.proxies;
     env = conf.env?conf.env:"dev";
-    o.refreshProxies(conf.refreshtime || 4*3600*1000,function(){
+    o.refreshProxies(conf.proxyapikey,conf.refreshtime || 4*3600*1000,function(){
         for(var i=0;i<conf.workers.length;i++){
             o.addWorker(conf.workers[i]);
         }
