@@ -15,6 +15,7 @@ var fs = require("fs");
 
 var dbc = {username: "hugs",password: "ugosara"};
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
+var env="dev";
 
 var inputs = [
     {id: "firstname", type: "input", selector: "input#first-name", required: true},
@@ -281,7 +282,7 @@ var countrycodes = [
     {name: "Zambia", code: "ZM"},
     {name: "Zimbabwe", code: "ZW"},
     {name: "Unlisted", code: "ZZ"}
-]
+];
 
 var getDbcPage =function(){
     return "<html><body>" +
@@ -291,26 +292,28 @@ var getDbcPage =function(){
         "<input id='captchafile' type='file'     name='captchafile' >"+
         "</form>" +
     "</body></html>"
-}
+};
 
 var decodeCatpcha = function(captchafile,callback){
     var page = pg.create(),urlchanges=0;
     page.content = getDbcPage(captchafile);
     page.injectJs(jq);
     page.uploadFile("input#captchafile",captchafile);
-    page.onConsoleMessage = function(x){console.log(x)};
+    page.onConsoleMessage = function(x){ if(env=='dev')  console.log(x)};
     page.onUrlChanged = function(url){
         urlchanges++;
-        console.log("captcha_decode_step:url="+url);
+        if(env=='dev')
+            console.log("captcha_decode_step:url="+url);
         if(url.match(/api\/captcha\/\d+/)){
             page.injectJs(jq);
-            console.log("captcha_decode_step:captcha uploaded");
+            if(env=='dev')
+                console.log("captcha_decode_step:captcha uploaded");
             var captcha = page.evaluate(function(captchaurl){
                 var c = "",tries=0;
                 var poll = function(){
                     tries++;
                     console.log("captcha_decode_step:poll try - "+tries);
-                    for(i=0,j=0;i<400000000;i++)
+                    for(var i=0,j=0;i<400000000;i++)
                         j++;
                     $.ajax({
                         url: captchaurl,
@@ -332,7 +335,7 @@ var decodeCatpcha = function(captchafile,callback){
                             }
                         }
                     })
-                }
+                };
                 poll();
                 return c;
             },url);
@@ -342,14 +345,15 @@ var decodeCatpcha = function(captchafile,callback){
                 callback(new Error("dbc_api_error:"+JSON.stringify(captcha)),null);
         }else if(urlchanges==2)
             callback(new Error("dbc_api_redirect_failed:"+url),null);
-    }
+    };
     page.evaluate(function(){
         $("form").submit();
     });
-}
+};
 
 var handler = function(req,res,server){
-    console.log(req.method+": "+req.url);
+    if(env=='dev')
+        console.log(req.method+": "+req.url);
     server.requests++;
     if(server.requests>30)
         server.changeProxy();
@@ -362,7 +366,7 @@ var handler = function(req,res,server){
     var handleDmca = function(){
         var data = {};
         try{
-            var data = JSON.parse(req.post);
+            data = JSON.parse(req.post);
             var formdata = [].concat(inputs);
             for(var i=0;i<formdata.length;i++){
                 if(formdata[i].required && !data[formdata[i].id])
@@ -387,7 +391,8 @@ var handler = function(req,res,server){
             server.getWorker(function(err,worker){
                 if(err) sendError(err.message);
                 else{
-                    console.log("Got worker from server");
+                    if(env=='dev')
+                        console.log("Got worker from server");
                     worker.fillform(formdata,function(errfilling,response){
                         if(errfilling)
                             sendError(errfilling.message);
@@ -450,7 +455,8 @@ var worker = function(conf){
     var page = pg.create(); this.relogin = false;
     var that = this;
     var filldmca = function(dmcaformdata,callback){
-        console.log("About to fill form as "+username);
+        if(env=='dev')
+            console.log("About to fill form as "+username);
         page.onCallback = function(imgdata){
             page.onCallback = null;
             if(!imgdata){
@@ -459,11 +465,11 @@ var worker = function(conf){
             }
             var filename = "./captcha/captcha_"+new Date().getTime()+".txt"
             fs.write(filename,imgdata,"w");
-            console.log("retrieved captcha and wrote to file "+filename);
+            if(env=='dev')   console.log("retrieved captcha and wrote to file "+filename);
             decodeCatpcha(filename,function(err,decodedcaptcha){
                 fs.remove(filename);
                 var dmcaurlchanges = 0,dmcapageloads = 0;
-                console.log("captcha decoded to be "+decodedcaptcha);
+                if(env=='dev')  console.log("captcha decoded to be "+decodedcaptcha);
                 if(err) return callback(err,null);
                 page.onLoadFinished = function(){
                     var url = page.url;
@@ -496,7 +502,7 @@ var worker = function(conf){
                 }
                 page.onUrlChanged = function(url){
                     dmcaurlchanges++;
-                    console.log("dmca url after submit - "+url);
+                    if(env=='dev')  console.log("dmca url after submit - "+url);
                 };
                 page.evaluate(function(captcha,formdatajson){
                     var formdata = JSON.parse(formdatajson);
@@ -521,7 +527,7 @@ var worker = function(conf){
         page.open("https://www.google.com/webmasters/tools/dmca-notice?hl=en&pid=0",function(opened){
             if(opened == "success"){
                 page.injectJs(jq);
-                console.log("dmca page loaded by "+username);
+                if(env=='dev')  console.log("dmca page loaded by "+username);
                 page.onConsoleMessage = function(x){console.log(x)};
                 page.evaluate(function(){
                     setTimeout(function(){
@@ -552,7 +558,7 @@ var worker = function(conf){
         this.loggedin = false;
         var that = this;
         page.clearCookies();
-        console.log("Login request for "+username);
+        if(env=='dev')   console.log("Login request for "+username);
         page.onLoadFinished = function(){
             var url = page.url;
             page.injectJs(jq);
@@ -560,7 +566,7 @@ var worker = function(conf){
             if(/dmca-notice/i.test(url) && changes < 4){
                 page.onLoadFinished = null;
                 that.loggedin = true;
-                console.log("Logged in using "+that.username);
+                if(env=='dev')  console.log("Logged in using "+that.username);
                 callback(true);
             }
             if(url.match(/ServiceLogin/)){
@@ -581,7 +587,7 @@ var worker = function(conf){
                     $("input#signIn").click();
                 },username,password);
             }else{
-                console.log("Worker : "+username+" Failed to login, page did not open");
+                if(env=='dev')  console.log("Worker : "+username+" Failed to login, page did not open");
             }
         });
     }
@@ -615,7 +621,8 @@ server.prototype.setProxies = function(p){
 }
 
 server.prototype.changeProxy = function(){
-    phantom.setProxy(this.proxies[Math.ceil(Math.random()*this.proxies.length)]);
+    var p = this.proxies[Math.ceil(Math.random()*this.proxies.length)];
+    phantom.setProxy(p.ip, p.port);
     for(var i=0;i<this.workers.length;i++)
         this.workers.relogin = true;
     this.requests = 0;
@@ -632,7 +639,7 @@ server.prototype.addWorker = function(conf){
         if(res===true){
             o.workers.push(wrk);
         }else{
-            console.log("Failed to add worker for conf - "+JSON.stringify(conf));
+            console.error("Failed to add worker for conf - "+JSON.stringify(conf));
         }
     });
 }
@@ -661,35 +668,72 @@ server.prototype.start = function(port){
     });
 }
 
+server.prototype.refreshProxies = function(apikey,refreshtime,callback){
+    var o = this;
+    var page = pg.create();
+    var url="http://kingproxies.com/api/v1/proxies.json?key="+apikey+"&limit=5&country_code=US&protocols=http&response_time=fast&supports=google";
+    var proxyhome = "http://kingproxies.com";
+    if(env=='dev')  console.log("changing proxies.");
+    page.open(proxyhome,function(status){
+        page.injectJs(jq);
+        var p = page.evaluate(function(url){
+            var d = {};
+            $.ajax({
+                url: url,
+                async: false,
+                success: function(data){
+                    d = data;
+                },
+                error: function(x,t,r){
+                    d = new Error(JSON.stringify(x));
+                }
+            })
+            return d;
+        },url);
+        if(p.data && p.data.proxies){
+            o.setProxies(p);
+            callback();
+        }
+        else{
+            console.error("Could not refresh Proxies, please troubleshoot and restart server.");
+            console.error("Response from proxy api - "+JSON.stringify(p));
+            o.exit();
+        }
+    });
+    setTimeout(o.refreshProxies,refreshtime || 14400000);
+}
+
 server.prototype.init = function(){
     var o = this;
     var conf = JSON.parse(fs.read("conf.json"));
-    if(conf.proxies)
-        o.proxies = conf.proxies;
-    for(var i=0;i<conf.workers.length;i++){
-        o.addWorker(conf.workers[i]);
-    }
-    var timeout = 10000,retries=0;
-    var checkWorkersAndStart = function(){
-        if(!o.workers.length){
-            if(retries<6){
-                retries++;
-                console.log("Waiting for workers to log in, attempt "+retries);
-                setTimeout(checkWorkersAndStart,timeout);
+    env = conf.env?conf.env:"dev";
+    o.refreshProxies(conf.proxyapikey,conf.refreshtime || 4*3600*1000,function(){
+        for(var i=0;i<conf.workers.length;i++){
+            o.addWorker(conf.workers[i]);
+        }
+        var timeout = 10000,retries=0;
+        var checkWorkersAndStart = function(){
+            if(!o.workers.length){
+                if(retries<6){
+                    retries++;
+                    console.log("Waiting for workers to log in, attempt "+retries);
+                    setTimeout(checkWorkersAndStart,timeout);
+                }else{
+                    console.log("Workers failed to login in "+(retries*timeout)+" seconds, quitting.");
+                    o.exit();
+                }
             }else{
-                console.log("Workers failed to login in "+(retries*timeout)+" seconds, quitting.");
-                o.exit();
-            }
-        }else{
-            if(!o.start(conf.port)){
-                console.log('Workers logged in but failed to start web server, exiting.');
-                o.exit();
-            }else{
-                console.log("Web server started at http://localhost:"+conf.port);
+                if(!o.start(conf.port)){
+                    console.log('Workers logged in but failed to start web server, exiting.');
+                    o.exit();
+                }else{
+                    console.log("Web server started at http://localhost:"+conf.port);
+                }
             }
         }
-    }
-    checkWorkersAndStart();
+        checkWorkersAndStart();
+    })
+
 }
 
 server.prototype.exit = function(){
