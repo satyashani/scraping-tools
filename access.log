@@ -1,0 +1,14 @@
+Login request for twantipiracy@gmail.com
+Waiting for workers to log in, attempt 1
+Logged in using twantipiracy@gmail.com
+Web server started at http://localhost:9091
+POST: /submitdmca
+Got worker from server
+About to fill form as twantipiracy@gmail.com
+page loaded by twantipiracy@gmail.com
+TypeError: 'null' is not an object (evaluating 'img.width')
+
+  phantomjs://webpage.evaluate():5
+  phantomjs://webpage.evaluate():10
+  phantomjs://webpage.evaluate():10
+retrieved captcha and wrote to file /tmp/captcha_1401280973546.txt
