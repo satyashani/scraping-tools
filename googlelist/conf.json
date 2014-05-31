@@ -1,0 +1,7 @@
+{
+    "env": "dev",
+    "port": 9092,
+    "proxyapikey": "729fb2b0ef57fc06cdac1b5525c9b0",
+    "proxyrefreshtime" : 14400000,
+    "changeproxyreqlimit" : 2
+}
