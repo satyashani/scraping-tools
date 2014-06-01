@@ -40,7 +40,7 @@ var handler = function(req,res,server){
                     var res = [];
                     $("div#ires li.g").each(function(){
                         var u = $(this).find("h3.r a").attr("href");
-                        var match = u.match(/http:[^&]*/);
+                        var match = u.match(/http[s]*:[^&]*/);
                         res.push(match?match[0]:u);
                     })
                     return res;
@@ -54,7 +54,8 @@ var handler = function(req,res,server){
                     for(var i=0;i<whitelist.length;i++){
                         if(r.match(new RegExp(whitelist[i],"i"))) return;
                     }
-                    filtered.push(r);
+                    var dom = r.match(/http[s]*:\/\/([^\/\?]*)/);
+                    filtered.push({url: r,domain: dom?dom[1]:false});
                 })
                 sendJson(filtered);
                 if(page.url.match(/google.com\/sorry/i)){
