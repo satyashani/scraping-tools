@@ -10,7 +10,11 @@ specifically for this script using ./phantomjs gsearch.js
 ROUTES:
 GET /           ->  Server check
 GET /proxies    ->  List of current proxies
+GET /whitelist  ->  List of current white list domains
 POST /search    ->  Search google
 	POST BODY
-	{ "track" : "trackname","artist" :"artistname"}
+	{ "q" : "trackname","id" :"artistname"}
+POST /whitelist ->  Update white list from json file
+	POST BODY
+	{ "path " : "absolute/path/to/json/list"}
 

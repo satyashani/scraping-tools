@@ -14,11 +14,18 @@ var jq = "jquery-1.10.1.min.js";
 var fs = require("fs");
 
 var conf = {
-    env : "dev", changeproxyreqlimit: 30,
-    proxyapikey: "729fb2b0ef57fc06cdac1b5525c9b0"
+    env : "dev", changeproxyreqlimit: 50,
+    proxyapikey: "729fb2b0ef57fc06cdac1b5525c9b0",
+    resultsperpage : 100
 }
 
-var whitelist = JSON.parse(fs.read("whitelist.json"));
+var wl = JSON.parse(fs.read("whitelist.json"));
+if(!wl.length)
+    console.log("white list file whitelist.json is empty?");
+for(var i=0;i<wl.length;i++){
+    wl[i] = wl[i].replace(/http[s]*:\/\/|\/$|www\./g,"");
+}
+var whitelist = wl;
 
 var handler = function(req,res,server){
     if(conf.env=='dev')
@@ -27,9 +34,11 @@ var handler = function(req,res,server){
     var handleSearch = function(){
         try{
             var tracinfo = JSON.parse(req.post);
-            if(!tracinfo.track || !tracinfo.artist)
-                return sendError("missing_track_or_artist");
-            var q = (tracinfo.track+" "+tracinfo.artist).replace(/ +/g,"+");
+            if(!tracinfo.q)
+                return sendError("missing_query_parameter:q");
+            if(!tracinfo.id)
+                return sendError("missing_track_parameter:id");
+            var q = tracinfo.q.replace(/ +/g,"+");
             var url = "https://www.google.com/search?hl=en&as_q="+q+"&num="+conf.resultsperpage;
             var page = pg.create();
             page.open(url,function(status){
@@ -54,10 +63,13 @@ var handler = function(req,res,server){
                     for(var i=0;i<whitelist.length;i++){
                         if(r.match(new RegExp(whitelist[i],"i"))) return;
                     }
+                    for(var f=0;f<filtered.length;f++){
+                        if(filtered[f].url == r) return;
+                    }
                     var dom = r.match(/http[s]*:\/\/([^\/\?]*)/);
                     filtered.push({url: r,domain: dom?dom[1]:false});
                 })
-                sendJson(filtered);
+                sendJson({q: tracinfo.q, id: tracinfo.id, results: filtered});
                 if(page.url.match(/google.com\/sorry/i)){
                     phantom.clearCookies();
                     server.nextProxy();
@@ -66,6 +78,31 @@ var handler = function(req,res,server){
         }catch(e){
             sendError("bad_json_request");
         }
+    }
+
+    var handleSetWhiteList = function(){
+        try{
+            var post = JSON.parse(req.post);
+            if(!post.path){
+                return sendError("missing_parameter:path")
+            }
+            if(!fs.isReadable(post.path))
+                return sendError("path_not_readable:"+post.path);
+            var wl = JSON.parse(fs.read(post.path));
+            if(!wl.length)
+                return sendError("white_list_empty?");
+            for(var i=0;i<wl.length;i++){
+                wl[i] = wl[i].replace(/http[s]*:\/\/|\/$|www\./g,"");
+            }
+            whitelist = wl;
+            sendOk();
+        }catch(e){
+            sendError("bad_json_request");
+        }
+    }
+
+    var handleGetWhiteList = function(){
+        send(200,whitelist,true);
     }
 
     var handleGetProxies = function(){
@@ -97,11 +134,13 @@ var handler = function(req,res,server){
     if(req.method == "POST"){
         switch(req.url){
             case "/search" : handleSearch(); break;
+            case "/whitelist" : handleSetWhiteList(); break;
             default : sendOk(); break;
         }
     }else{
         switch(req.url){
             case "/proxies" : handleGetProxies(); break;
+            case "/whitelist" : handleGetWhiteList(); break;
             default : sendOk(); break;
         }
     }
@@ -164,7 +203,7 @@ server.prototype.start = function(port){
 server.prototype.refreshProxies = function(callback){
     var o = this;
     var page = pg.create();
-    var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=5&country_code=US&protocols=http&supports=google";
+    var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=100&country_code=US&protocols=http&supports=google";
     var proxyhome = "http://kingproxies.com";
     if(conf.env=='dev')  console.log("changing proxies.");
     page.open(proxyhome,function(status){
