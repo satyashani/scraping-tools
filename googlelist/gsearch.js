@@ -13,9 +13,15 @@ var pg = require("webpage");
 var jq = "jquery-1.10.1.min.js";
 var fs = require("fs");
 
-var env="dev", changeproxyreqlimit = 30;
+var conf = {
+    env : "dev", changeproxyreqlimit: 30,
+    proxyapikey: "729fb2b0ef57fc06cdac1b5525c9b0"
+}
+
+var whitelist = JSON.parse(fs.read("whitelist.json"));
+
 var handler = function(req,res,server){
-    if(env=='dev')
+    if(conf.env=='dev')
         console.log(req.method+": "+req.url);
 
     var handleSearch = function(){
@@ -24,7 +30,7 @@ var handler = function(req,res,server){
             if(!tracinfo.track || !tracinfo.artist)
                 return sendError("missing_track_or_artist");
             var q = (tracinfo.track+" "+tracinfo.artist).replace(/ +/g,"+");
-            var url = "https://www.google.com/search?hl=en&as_q="+q;
+            var url = "https://www.google.com/search?hl=en&as_q="+q+"&num="+conf.resultsperpage;
             var page = pg.create();
             page.open(url,function(status){
                 if(!status=="success")
@@ -39,9 +45,22 @@ var handler = function(req,res,server){
                     })
                     return res;
                 })
-                if(!res || !res.length)
-                    page.render("googlesearch.png");
-                sendJson(res);
+                if(!res || !res.length){
+                    page.render("lastgooglesearch.png");
+                    console.log("No results: page url = "+page.url);
+                }
+                var filtered = [];
+                res.forEach(function(r){
+                    for(var i=0;i<whitelist.length;i++){
+                        if(r.match(new RegExp(whitelist[i],"i"))) return;
+                    }
+                    filtered.push(r);
+                })
+                sendJson(filtered);
+                if(page.url.match(/google.com\/sorry/i)){
+                    phantom.clearCookies();
+                    server.nextProxy();
+                }
             })
         }catch(e){
             sendError("bad_json_request");
@@ -87,27 +106,51 @@ var handler = function(req,res,server){
     }
 
     server.requests++;
-    if(server.requests>changeproxyreqlimit){
-        if(env=='dev') console.log("request limit for proxy reached");
-        server.changeProxy();
+    if(server.requests>conf.changeproxyreqlimit){
+        if(conf.env=='dev') console.log("request limit for proxy reached");
+        server.nextProxy();
     }
 }
 
 var server = function(){
     this.proxies  = [];
+    this.currentproxy = 0;
     this.requests = 0;
     this.conf = {};
 }
 
 server.prototype.setProxies = function(p){
-    this.proxies = p; return this;
+    this.proxies = p;
+    this.currentproxy = 0;
+    return this.setProxy();
 }
 
-server.prototype.changeProxy = function(){
-    var p = this.proxies[Math.ceil(Math.random()*(this.proxies.length-1))];
-    if(env=='dev') console.log("Changing proxy after "+this.requests+" requests, new proxy = "+ p.ip);
-    phantom.setProxy(p.ip, p.port);
-    this.requests = 0;
+server.prototype.nextProxy = function(){
+    if(this.currentproxy==this.proxies.length-1){
+        this.refreshProxies(function(){
+            if(conf.env=='dev') console.log("Proxies refreshed.");
+        });
+    }else{
+        this.currentproxy = (this.currentproxy+1)%this.proxies.length;
+        return this.setProxy();
+    }
+}
+
+server.prototype.setProxy = function(){
+    if(this.proxies.length){
+        if(this.currentproxy>=this.proxies.length){
+            console.error("Current proxy index greater than proxy length, this shouldn't happen, it is a bug, contact script author.");
+            return false;
+        }
+        var p = this.proxies[this.currentproxy];
+        if(conf.env=='dev') console.log("Changing proxy after "+this.requests+" requests, new proxy = "+ p.ip);
+        phantom.setProxy(p.ip, p.port);
+        this.requests = 0;
+        return true;
+    }else{
+        console.error("Failed to change proxy, proxy list is empty or not enough proxies, check proxy setup.");
+        return false;
+    }
 }
 
 server.prototype.start = function(port){
@@ -117,12 +160,12 @@ server.prototype.start = function(port){
     });
 }
 
-server.prototype.refreshProxies = function(apikey,refreshtime,callback){
+server.prototype.refreshProxies = function(callback){
     var o = this;
     var page = pg.create();
-    var url="http://kingproxies.com/api/v1/proxies.json?key="+apikey+"&limit=5&country_code=US&protocols=http&supports=google";
+    var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=5&country_code=US&protocols=http&supports=google";
     var proxyhome = "http://kingproxies.com";
-    if(env=='dev')  console.log("changing proxies.");
+    if(conf.env=='dev')  console.log("changing proxies.");
     page.open(proxyhome,function(status){
         page.injectJs(jq);
         var p = page.evaluate(function(url){
@@ -140,8 +183,18 @@ server.prototype.refreshProxies = function(apikey,refreshtime,callback){
             return d;
         },url);
         if(p.data && p.data.proxies){
-            o.setProxies(p.data.proxies);
-            callback();
+            var proxies = [];
+            p.data.proxies.forEach(function(px){
+                if(px.ip!="0.0.0.0" && px.port)
+                proxies.push(px);
+            });
+            if(proxies.length){
+                o.setProxies(proxies);
+                callback();
+            }else{
+                console.error("All the proxies received had bad ip address."+JSON.stringify(p.data.proxies));
+                o.exit();
+            }
         }
         else{
             console.error("Could not refresh Proxies, please troubleshoot and restart server.");
@@ -149,15 +202,15 @@ server.prototype.refreshProxies = function(apikey,refreshtime,callback){
             o.exit();
         }
     });
-    setTimeout(o.refreshProxies,refreshtime || 14400000);
 }
 
 server.prototype.init = function(){
     var o = this;
-    var conf = JSON.parse(fs.read("conf.json"));
-    env = conf.env?conf.env:"dev";
-    changeproxyreqlimit = conf.changeproxyreqlimit && !isNaN(conf.changeproxyreqlimit)?conf.changeproxyreqlimit:30;
-    o.refreshProxies(conf.proxyapikey,conf.refreshtime || 4*3600*1000,function(){
+    conf = JSON.parse(fs.read("conf.json"));
+    conf.env = conf.env? conf.env:"dev";
+    conf.changeproxyreqlimit = conf.changeproxyreqlimit && !isNaN(conf.changeproxyreqlimit)?conf.changeproxyreqlimit:30;
+    conf.resultsperpage = conf.resultsperpage?conf.resultsperpage:20;
+    o.refreshProxies(function(){
         if(!o.start(conf.port)){
             console.log('Failed to start web server on port "+conf.port+", exiting.');
             o.exit();
