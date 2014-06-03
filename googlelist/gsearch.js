@@ -30,6 +30,7 @@ var whitelist = wl;
 var handler = function(req,res,server){
     if(conf.env=='dev')
         console.log(req.method+": "+req.url);
+    phantom.clearCookies();
 
     var handleSearch = function(){
         try{
@@ -71,7 +72,6 @@ var handler = function(req,res,server){
                 })
                 sendJson({q: tracinfo.q, id: tracinfo.id, results: filtered});
                 if(page.url.match(/google.com\/sorry/i)){
-                    phantom.clearCookies();
                     server.nextProxy();
                 }
             })
@@ -99,6 +99,19 @@ var handler = function(req,res,server){
         }catch(e){
             sendError("bad_json_request");
         }
+    }
+
+    var handleCurrentProxy = function(){
+        sendJson(server.proxies[server.currentproxy]);
+    }
+
+    var handleSetNextProxy = function(){
+        var  resp =  {};
+        resp.oldproxy = server.proxies[server.currentproxy];
+        server.nextProxy();
+        resp.newproxy = server.proxies[server.currentproxy];
+        sendJson(resp);
+
     }
 
     var handleGetWhiteList = function(){
@@ -140,6 +153,8 @@ var handler = function(req,res,server){
     }else{
         switch(req.url){
             case "/proxies" : handleGetProxies(); break;
+            case "/currentproxy" : handleCurrentProxy(); break;
+            case "/setnextproxy" : handleSetNextProxy(); break;
             case "/whitelist" : handleGetWhiteList(); break;
             default : sendOk(); break;
         }
@@ -203,7 +218,7 @@ server.prototype.start = function(port){
 server.prototype.refreshProxies = function(callback){
     var o = this;
     var page = pg.create();
-    var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=100&country_code=US&protocols=http&supports=google";
+    var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=100&country_code=US&protocols=http&supports=google&type=anonymous";
     var proxyhome = "http://kingproxies.com";
     if(conf.env=='dev')  console.log("changing proxies.");
     page.open(proxyhome,function(status){
