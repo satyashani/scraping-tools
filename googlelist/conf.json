@@ -1,7 +1,8 @@
 {
     "env": "dev",
     "port": 9092,
-    "proxyapikey": "729fb2b0ef57fc06cdac1b5525c9b0",
+    "proxyapikey": "2100799401279a1067b2a4304c6149",
     "changeproxyreqlimit" : 50,
-    "resultsperpage" : 100
+    "resultsperpage" : 100,
+    "useproxies" : false
 }

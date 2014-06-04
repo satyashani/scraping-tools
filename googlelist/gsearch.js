@@ -16,7 +16,13 @@ var fs = require("fs");
 var conf = {
     env : "dev", changeproxyreqlimit: 50,
     proxyapikey: "729fb2b0ef57fc06cdac1b5525c9b0",
-    resultsperpage : 100
+    resultsperpage : 100,
+    useproxies: true
+}
+
+var useragents = fs.read("useragents.json");
+var getUserAgent = function(){
+    return useragents[Math.floor(Math.random()*useragents.length)];
 }
 
 var wl = JSON.parse(fs.read("whitelist.json"));
@@ -42,6 +48,7 @@ var handler = function(req,res,server){
             var q = tracinfo.q.replace(/ +/g,"+");
             var url = "https://www.google.com/search?hl=en&as_q="+q+"&num="+conf.resultsperpage;
             var page = pg.create();
+            page.settings.userAgent = getUserAgent();
             page.open(url,function(status){
                 if(!status=="success")
                     return sendError("google_not_loaded");
@@ -70,10 +77,13 @@ var handler = function(req,res,server){
                     var dom = r.match(/http[s]*:\/\/([^\/\?]*)/);
                     filtered.push({url: r,domain: dom?dom[1]:false});
                 })
-                sendJson({q: tracinfo.q, id: tracinfo.id, results: filtered});
+                sendJson({ok: true, q: tracinfo.q, id: tracinfo.id, results: filtered});
                 if(page.url.match(/google.com\/sorry/i)){
-                    server.nextProxy();
+                    console.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
+                    page.render("page_id_"+tracinfo.id+".png");
                 }
+                server.requests++;
+                server.nextProxy();
             })
         }catch(e){
             sendError("bad_json_request");
@@ -102,10 +112,14 @@ var handler = function(req,res,server){
     }
 
     var handleCurrentProxy = function(){
+        if(!server.proxies.length)
+            return sendError("proxy_list_empty");
         sendJson(server.proxies[server.currentproxy]);
     }
 
     var handleSetNextProxy = function(){
+        if(!server.proxies.length)
+            return sendError("proxy_list_empty");
         var  resp =  {};
         resp.oldproxy = server.proxies[server.currentproxy];
         server.nextProxy();
@@ -146,7 +160,9 @@ var handler = function(req,res,server){
 
     if(req.method == "POST"){
         switch(req.url){
-            case "/search" : handleSearch(); break;
+            case "/search" :
+                setTimeout(handleSearch,Math.random()*10000);
+                break;
             case "/whitelist" : handleSetWhiteList(); break;
             default : sendOk(); break;
         }
@@ -158,12 +174,6 @@ var handler = function(req,res,server){
             case "/whitelist" : handleGetWhiteList(); break;
             default : sendOk(); break;
         }
-    }
-
-    server.requests++;
-    if(server.requests>conf.changeproxyreqlimit){
-        if(conf.env=='dev') console.log("request limit for proxy reached");
-        server.nextProxy();
     }
 }
 
@@ -181,9 +191,12 @@ server.prototype.setProxies = function(p){
 }
 
 server.prototype.nextProxy = function(){
-    if(this.currentproxy==this.proxies.length-1){
+    var o = this;
+    if(!conf.useproxies) return true;
+    if(this.requests>conf.changeproxyreqlimit*server.proxies.length){
         this.refreshProxies(function(){
             if(conf.env=='dev') console.log("Proxies refreshed.");
+            o.requests = 0;
         });
     }else{
         this.currentproxy = (this.currentproxy+1)%this.proxies.length;
@@ -200,7 +213,6 @@ server.prototype.setProxy = function(){
         var p = this.proxies[this.currentproxy];
         if(conf.env=='dev') console.log("Changing proxy after "+this.requests+" requests, new proxy = "+ p.ip);
         phantom.setProxy(p.ip, p.port);
-        this.requests = 0;
         return true;
     }else{
         console.error("Failed to change proxy, proxy list is empty or not enough proxies, check proxy setup.");
@@ -218,7 +230,7 @@ server.prototype.start = function(port){
 server.prototype.refreshProxies = function(callback){
     var o = this;
     var page = pg.create();
-    var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=100&country_code=US&protocols=http&supports=google&type=anonymous";
+    var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=100&protocols=http&supports=google&type=anonymous";
     var proxyhome = "http://kingproxies.com";
     if(conf.env=='dev')  console.log("changing proxies.");
     page.open(proxyhome,function(status){
@@ -259,20 +271,27 @@ server.prototype.refreshProxies = function(callback){
     });
 }
 
+server.prototype.startServer = function(){
+    if(!this.start(conf.port)){
+        console.log('Failed to start web server on port "+conf.port+", exiting.');
+        this.exit();
+    }else{
+        console.log("Web server started at http://localhost:"+conf.port);
+    }
+}
+
 server.prototype.init = function(){
     var o = this;
     conf = JSON.parse(fs.read("conf.json"));
     conf.env = conf.env? conf.env:"dev";
     conf.changeproxyreqlimit = conf.changeproxyreqlimit && !isNaN(conf.changeproxyreqlimit)?conf.changeproxyreqlimit:30;
     conf.resultsperpage = conf.resultsperpage?conf.resultsperpage:20;
-    o.refreshProxies(function(){
-        if(!o.start(conf.port)){
-            console.log('Failed to start web server on port "+conf.port+", exiting.');
-            o.exit();
-        }else{
-            console.log("Web server started at http://localhost:"+conf.port);
-        }
-    })
+    conf.port = conf.port?conf.port:9092;
+    if(conf.useproxies)
+        o.refreshProxies(function(){
+            o.startServer();
+        });
+    else o.startServer();
 
 }
 
