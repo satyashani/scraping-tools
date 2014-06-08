@@ -33,6 +33,54 @@ for(var i=0;i<wl.length;i++){
 }
 var whitelist = wl;
 
+var proxyApi = {
+    kingProxy: function(callback){
+        var page = pg.create();
+        var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=100&protocols=http&supports=google&type=anonymous";
+        var proxyhome = "http://kingproxies.com";
+        if(conf.env=='dev')  console.log("changing proxies.");
+        page.open(proxyhome,function(status){
+            page.injectJs(jq);
+            var p = page.evaluate(function(url){
+                var d = {};
+                $.ajax({
+                    url: url,
+                    async: false,
+                    success: function(data){
+                        d = data;
+                    },
+                    error: function(x,t,r){
+                        d = new Error(JSON.stringify(x));
+                    }
+                })
+                return d;
+            },url);
+            if(p.data && p.data.proxies){
+                var proxies = [];
+                p.data.proxies.forEach(function(px){
+                    if(px.ip!="0.0.0.0" && px.port)
+                        proxies.push(px);
+                });
+                if(proxies.length){
+                    callback(null,proxies);
+                }else{
+                    callback(new Error("Bad_proxies:"+JSON.stringify(p.data.proxies)),null);
+                }
+            }
+            else{
+                callback(new Error("Failed:"+JSON.stringify(p)),null);
+            }
+        });
+    },
+    file: function(callback){
+        if(!fs.isReadable("proxies.json"))
+            return callback(new Error("file proxies.json not readable"),null);
+        var data = JSON.parse(fs.read("proxies.json"));
+        if(!data.length) callback(new Error("Proxy list empty",null))
+        else callback(null,data);
+    }
+}
+
 var handler = function(req,res,server){
     if(conf.env=='dev')
         console.log(req.method+": "+req.url);
@@ -233,46 +281,22 @@ server.prototype.start = function(port){
 
 server.prototype.refreshProxies = function(callback){
     var o = this;
-    var page = pg.create();
-    var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=100&protocols=http&supports=google&type=anonymous";
-    var proxyhome = "http://kingproxies.com";
     if(conf.env=='dev')  console.log("changing proxies.");
-    page.open(proxyhome,function(status){
-        page.injectJs(jq);
-        var p = page.evaluate(function(url){
-            var d = {};
-            $.ajax({
-                url: url,
-                async: false,
-                success: function(data){
-                    d = data;
-                },
-                error: function(x,t,r){
-                    d = new Error(JSON.stringify(x));
-                }
-            })
-            return d;
-        },url);
-        if(p.data && p.data.proxies){
-            var proxies = [];
-            p.data.proxies.forEach(function(px){
-                if(px.ip!="0.0.0.0" && px.port)
-                proxies.push(px);
-            });
-            if(proxies.length){
-                o.setProxies(proxies);
-                callback();
-            }else{
-                console.error("All the proxies received had bad ip address."+JSON.stringify(p.data.proxies));
-                o.exit();
-            }
+    var onchange = function(err,data){
+        if(!err){
+            o.setProxies(data)
+            callback();
         }
         else{
-            console.error("Could not refresh Proxies, please troubleshoot and restart server.");
-            console.error("Response from proxy api - "+JSON.stringify(p));
+            console.error(err.message);
             o.exit();
         }
-    });
+    }
+    if(conf.proxysource =='file'){
+        proxyApi.file(onchange);
+    }else{
+        proxyApi.kingProxy(onchange);
+    }
 }
 
 server.prototype.startServer = function(){
