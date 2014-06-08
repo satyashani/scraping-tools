@@ -193,7 +193,11 @@ server.prototype.setProxies = function(p){
 server.prototype.nextProxy = function(){
     var o = this;
     if(!conf.useproxies) return true;
-    if(this.requests>conf.changeproxyreqlimit*server.proxies.length){
+    if(!this.proxies.length){
+        console.error("Proxies are enabled but no proxy found.");
+        return false;
+    }
+    if(this.requests>conf.changeproxyreqlimit*this.proxies.length){
         this.refreshProxies(function(){
             if(conf.env=='dev') console.log("Proxies refreshed.");
             o.requests = 0;
