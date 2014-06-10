@@ -17,6 +17,7 @@ var conf = {
     env : "dev", changeproxyreqlimit: 50,
     proxyapikey: "729fb2b0ef57fc06cdac1b5525c9b0",
     resultsperpage : 100,
+    proxysource : "kingproxy",
     useproxies: true
 }
 
@@ -36,9 +37,9 @@ var whitelist = wl;
 var proxyApi = {
     kingProxy: function(callback){
         var page = pg.create();
-        var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=100&protocols=http&supports=google&type=anonymous";
+        var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=5&protocols=http&supports=google&type=anonymous";
         var proxyhome = "http://kingproxies.com";
-        if(conf.env=='dev')  console.log("changing proxies.");
+        if(conf.env=='dev')  console.log("Loading proxies from kingproxies.com");
         page.open(proxyhome,function(status){
             page.injectJs(jq);
             var p = page.evaluate(function(url){
@@ -73,6 +74,7 @@ var proxyApi = {
         });
     },
     file: function(callback){
+        if(conf.env=='dev')  console.log("Loading proxies from file proxies.json");
         if(!fs.isReadable("proxies.json"))
             return callback(new Error("file proxies.json not readable"),null);
         var data = JSON.parse(fs.read("proxies.json"));
@@ -87,6 +89,8 @@ var handler = function(req,res,server){
     phantom.clearCookies();
 
     var handleSearch = function(){
+        if(!server.proxies.length && conf.proxysource=="manual")
+            return sendError("proxy_list_empty");
         try{
             var tracinfo = JSON.parse(req.post);
             if(!tracinfo.q)
@@ -124,14 +128,15 @@ var handler = function(req,res,server){
                     }
                     var dom = r.match(/http[s]*:\/\/([^\/\?]*)/);
                     filtered.push({url: r,domain: dom?dom[1]:false});
-                })
-                sendJson({ok: true, q: tracinfo.q, id: tracinfo.id, results: filtered});
+                });
+                if(!res.length)  server.nextProxy();
                 if(page.url.match(/google.com\/sorry/i)){
                     console.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
                     page.render("page_id_"+tracinfo.id+".png");
+                    sendError("proxy_failed");
+                }else{
+                    sendJson({ok: true, q: tracinfo.q, id: tracinfo.id, results: filtered});
                 }
-                server.requests++;
-                server.nextProxy();
             })
         }catch(e){
             sendError("bad_json_request");
@@ -184,6 +189,22 @@ var handler = function(req,res,server){
         send(200,server.proxies,true);
     }
 
+    var handleSetProxies = function(){
+        try{
+            var proxies = JSON.parse(req.post);
+            if(!proxies.length)
+                return sendError("invalid_proxy_array_format");
+            for(var i=0;i<proxies.length;i++){
+                if(!proxies[i].ip || !proxies[i].port)
+                    return sendError("invalid_proxy_format:"+JSON.stringify(proxies[i]));
+            }
+            server.setProxies(proxies);
+            sendOk();
+        }catch(e){
+            sendError("bad_json");
+        }
+    }
+
     var sendJson = function(json){
         send(200,json,true);
     }
@@ -208,6 +229,7 @@ var handler = function(req,res,server){
 
     if(req.method == "POST"){
         switch(req.url){
+            case "/proxies" : handleSetProxies(); break;
             case "/search" :
                 setTimeout(handleSearch,Math.random()*10000);
                 break;
@@ -238,20 +260,24 @@ server.prototype.setProxies = function(p){
     return this.setProxy();
 }
 
+server.prototype.removeCurrentProxy = function(){
+    if(this.proxies.length && this.currentproxy<this.proxies.length){
+        this.proxies.splice(this.currentproxy,1);
+        if(this.proxies.length)
+            this.currentproxy = this.currentproxy%this.proxies.length;
+        else this.currentproxy=0;
+    };
+}
+
 server.prototype.nextProxy = function(){
     var o = this;
     if(!conf.useproxies) return true;
     if(!this.proxies.length){
-        console.error("Proxies are enabled but no proxy found.");
-        return false;
-    }
-    if(this.requests>conf.changeproxyreqlimit*this.proxies.length){
         this.refreshProxies(function(){
-            if(conf.env=='dev') console.log("Proxies refreshed.");
-            o.requests = 0;
+            if(conf.env=='dev' && this.proxies.length) console.log("Proxies refreshed.");
         });
     }else{
-        this.currentproxy = (this.currentproxy+1)%this.proxies.length;
+        this.removeCurrentProxy();
         return this.setProxy();
     }
 }
@@ -281,9 +307,9 @@ server.prototype.start = function(port){
 
 server.prototype.refreshProxies = function(callback){
     var o = this;
-    if(conf.env=='dev')  console.log("changing proxies.");
     var onchange = function(err,data){
         if(!err){
+            if(conf.env=='dev')  console.log("Proxies loaded.");
             o.setProxies(data)
             callback();
         }
@@ -294,8 +320,10 @@ server.prototype.refreshProxies = function(callback){
     }
     if(conf.proxysource =='file'){
         proxyApi.file(onchange);
-    }else{
+    }else if(conf.proxysource=="kingproxy"){
         proxyApi.kingProxy(onchange);
+    }else{
+        callback();
     }
 }
 

@@ -2,8 +2,7 @@
     "env": "dev",
     "port": 9092,
     "proxyapikey": "2100799401279a1067b2a4304c6149",
-    "changeproxyreqlimit" : 50,
     "resultsperpage" : 100,
     "useproxies" : true,
-    "proxysource" : "file"
+    "proxysource" : "manual"
 }
