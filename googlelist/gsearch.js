@@ -97,7 +97,7 @@ var handler = function(req,res,server){
                 return sendError("missing_query_parameter:q");
             if(!tracinfo.id)
                 return sendError("missing_track_parameter:id");
-            var q = tracinfo.q.replace(/ +/g,"+");
+            var q = tracinfo.q;
             var url = "https://www.google.com/search?hl=en&as_q="+q+"&num="+conf.resultsperpage;
             var page = pg.create();
             page.settings.userAgent = getUserAgent();
