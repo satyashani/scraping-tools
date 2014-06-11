@@ -98,9 +98,18 @@ var handler = function(req,res,server){
             if(!tracinfo.id)
                 return sendError("missing_track_parameter:id");
             var q = tracinfo.q;
-            var url = "https://www.google.com/search?hl=en&as_q="+q+"&num="+conf.resultsperpage;
+            var num = parseInt(tracinfo.num)?parseInt(tracinfo.num):conf.resultsperpage;
+            var url = "https://www.google.com/search?hl=en&as_q="+q+"&num="+num;
             var page = pg.create();
             page.settings.userAgent = getUserAgent();
+            var timeout = false,completed = false;
+            setTimeout(function(){
+                if(!completed){
+                    timeout = true;
+                    sendError("proxy_timeout");
+                    server.nextProxy();
+                }
+            },server.timeout?server.timeout:60000);
             page.open(url,function(status){
                 if(!status=="success")
                     return sendError("google_not_loaded");
@@ -129,15 +138,23 @@ var handler = function(req,res,server){
                     var dom = r.match(/http[s]*:\/\/([^\/\?]*)/);
                     filtered.push({url: r,domain: dom?dom[1]:false});
                 });
-                if(!res.length)  server.nextProxy();
                 if(page.url.match(/google.com\/sorry/i)){
                     console.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
                     page.render("page_id_"+tracinfo.id+".png");
-                    sendError("proxy_failed");
+                    if(!timeout)
+                        sendError("proxy_failed");
                 }else{
-                    sendJson({ok: true, q: tracinfo.q, id: tracinfo.id, results: filtered});
+                    if(!timeout)
+                        sendJson({ok: true, q: tracinfo.q, id: tracinfo.id, results: filtered});
                 }
-            })
+                if(!timeout){
+                    completed = true;
+                    if(!res.length)  server.nextProxy();
+                }
+                else {
+                    if(conf.env=='dev') console.log("request completed after timeout for id = "+tracinfo.id);
+                }
+            });
         }catch(e){
             sendError("bad_json_request");
         }
@@ -205,6 +222,19 @@ var handler = function(req,res,server){
         }
     }
 
+    var handleGetTimeout = function(){
+        send(200,server.timeout,true);
+    }
+
+    var handleSetTimeout = function(){
+        var t = parseInt(req.post);
+        if(isNaN(t)) sendError("bad_milliseconds_value");
+        else{
+            server.timeout = t;
+            sendOk();
+        }
+    }
+
     var sendJson = function(json){
         send(200,json,true);
     }
@@ -230,8 +260,9 @@ var handler = function(req,res,server){
     if(req.method == "POST"){
         switch(req.url){
             case "/proxies" : handleSetProxies(); break;
+            case "/timeout" : handleSetTimeout(); break;
             case "/search" :
-                setTimeout(handleSearch,Math.random()*10000);
+                setTimeout(handleSearch,Math.random()*7000);
                 break;
             case "/whitelist" : handleSetWhiteList(); break;
             default : sendOk(); break;
@@ -239,6 +270,7 @@ var handler = function(req,res,server){
     }else{
         switch(req.url){
             case "/proxies" : handleGetProxies(); break;
+            case "/timeout" : handleGetTimeout(); break;
             case "/currentproxy" : handleCurrentProxy(); break;
             case "/setnextproxy" : handleSetNextProxy(); break;
             case "/whitelist" : handleGetWhiteList(); break;
@@ -250,7 +282,7 @@ var handler = function(req,res,server){
 var server = function(){
     this.proxies  = [];
     this.currentproxy = 0;
-    this.requests = 0;
+    this.timeout = 60000;
     this.conf = {};
 }
 
@@ -289,7 +321,7 @@ server.prototype.setProxy = function(){
             return false;
         }
         var p = this.proxies[this.currentproxy];
-        if(conf.env=='dev') console.log("Changing proxy after "+this.requests+" requests, new proxy = "+ p.ip);
+        if(conf.env=='dev') console.log("Changing proxy, new proxy = "+ p.ip);
         phantom.setProxy(p.ip, p.port);
         return true;
     }else{

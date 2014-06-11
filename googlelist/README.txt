@@ -18,3 +18,10 @@ POST /whitelist ->  Update white list from json file
 	POST BODY
 	{ "path " : "absolute/path/to/json/list"}
 
+POST /proxies    ->  List of new proxies
+	POST BODY
+[
+    {"ip": "...."	,"port" : 80 },
+    {"ip": "...."	,"port" : 8080 },
+    ...
+]
