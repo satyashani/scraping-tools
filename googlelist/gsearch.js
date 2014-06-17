@@ -16,7 +16,7 @@ var fs = require("fs");
 var conf = {
     env : "dev", changeproxyreqlimit: 50,
     proxyapikey: "729fb2b0ef57fc06cdac1b5525c9b0",
-    resultsperpage : 100,
+    resultsperquery : 100,
     proxysource : "kingproxy",
     useproxies: true
 }
@@ -88,8 +88,31 @@ var handler = function(req,res,server){
         console.log(req.method+": "+req.url);
     phantom.clearCookies();
 
+    var getPageResults = function(){
+        var res = [];
+        $("div#ires li.g").each(function(){
+            var u = $(this).find("h3.r a").attr("href");
+            var match = u.match(/http[s]*:[^&]*/);
+            res.push(match?match[0]:u);
+        });
+        var tds = $("div#foot td"),hasMore = true;
+        tds.each(function(i){
+            if(!$(this).find("a.fl").size() && !$(this).hasClass("b") && tds.eq(i+1).hasClass('b'))
+                hasMore = false;
+        });
+        return { result: res, hasmore : hasMore};
+    };
+
+    var clickNext = function(){
+        var tds = $("div#foot td:not(.b)");
+        tds.each(function(i){
+            if(!$(this).find("a.fl").size())
+                window.location.href = tds.eq(i+1).find("a.fl").attr("href");
+        });
+    };
+
     var handleSearch = function(){
-        if(!server.proxies.length && conf.proxysource=="manual")
+        if(conf.useproxies && !server.proxies.length && conf.proxysource=="manual")
             return sendError("proxy_list_empty");
         try{
             var tracinfo = JSON.parse(req.post);
@@ -98,62 +121,68 @@ var handler = function(req,res,server){
             if(!tracinfo.id)
                 return sendError("missing_track_parameter:id");
             var q = tracinfo.q;
-            var num = parseInt(tracinfo.num)?parseInt(tracinfo.num):conf.resultsperpage;
-            var url = "https://www.google.com/search?hl=en&as_q="+q+"&num="+num;
+            var num = parseInt(tracinfo.num)?parseInt(tracinfo.num):conf.resultsperquery;
+            var url = "https://www.google.com/search?hl=en&as_q="+q;
             var page = pg.create();
             page.settings.userAgent = getUserAgent();
-            var timeout = false,completed = false;
-            setTimeout(function(){
-                if(!completed){
-                    timeout = true;
-                    sendError("proxy_timeout");
+            var timeout = server.timeout?server.timeout:60000,pagesloaded = 0,responded = false,timeoutretry=0;
+            var totalres = [];
+            var respond = function(err,result){
+                if(!responded){
+                    responded = true;
+                    if(err) sendError(err.message);
+                    else sendJson({ok: true, q: q, id: tracinfo.id, result: result});
                     server.nextProxy();
                 }
-            },server.timeout?server.timeout:60000);
+            };
+            var ontimeout = function(){
+                if(totalres.length && timeoutretry < 10){
+                    setTimeout(ontimeout,timeout)
+                    timeoutretry++;
+                }else{
+                    if(!responded){
+                        respond(new Error("proxy_timeout"),null);
+                    }
+                }
+            };
+            setTimeout(ontimeout,timeout);
+            page.onConsoleMessage = function(x){ console.log(x);};
+            page.onLoadFinished = function(){
+                console.log("page loaded = "+page.url);
+                page.injectJs(jq);
+                var eval = page.evaluate(getPageResults);
+                totalres  = totalres.concat(eval.result);
+                console.log("total results = "+totalres.length);
+                if(eval.hasmore && eval.result.length && totalres.length < num){
+                    page.evaluate(clickNext);
+                }else{
+                    if(!totalres || !totalres.length){
+                        page.render("lastgooglesearch.png");
+                        console.log("No results: page url = "+page.url);
+                    }
+                    var filtered = [];
+                    totalres.forEach(function(r){
+                        for(var i=0;i<whitelist.length;i++){
+                            if(r.match(new RegExp(whitelist[i],"i"))) return;
+                        }
+                        for(var f=0;f<filtered.length;f++){
+                            if(filtered[f].url == r) return;
+                        }
+                        var dom = r.match(/http[s]*:\/\/([^\/\?]*)/);
+                        filtered.push({url: r,domain: dom?dom[1]:false});
+                    });
+                    if(page.url.match(/google.com\/sorry/i)){
+                        console.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
+                        page.render("page_id_"+tracinfo.id+".png");
+                        respond(new Error("proxy_failed"),null);
+                    }else{
+                        respond(null,filtered)
+                    }
+                }
+            }
             page.open(url,function(status){
                 if(!status=="success")
-                    return sendError("google_not_loaded");
-                page.injectJs(jq);
-                var res = page.evaluate(function(){
-                    var res = [];
-                    $("div#ires li.g").each(function(){
-                        var u = $(this).find("h3.r a").attr("href");
-                        var match = u.match(/http[s]*:[^&]*/);
-                        res.push(match?match[0]:u);
-                    })
-                    return res;
-                })
-                if(!res || !res.length){
-                    page.render("lastgooglesearch.png");
-                    console.log("No results: page url = "+page.url);
-                }
-                var filtered = [];
-                res.forEach(function(r){
-                    for(var i=0;i<whitelist.length;i++){
-                        if(r.match(new RegExp(whitelist[i],"i"))) return;
-                    }
-                    for(var f=0;f<filtered.length;f++){
-                        if(filtered[f].url == r) return;
-                    }
-                    var dom = r.match(/http[s]*:\/\/([^\/\?]*)/);
-                    filtered.push({url: r,domain: dom?dom[1]:false});
-                });
-                if(page.url.match(/google.com\/sorry/i)){
-                    console.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
-                    page.render("page_id_"+tracinfo.id+".png");
-                    if(!timeout)
-                        sendError("proxy_failed");
-                }else{
-                    if(!timeout)
-                        sendJson({ok: true, q: tracinfo.q, id: tracinfo.id, results: filtered});
-                }
-                if(!timeout){
-                    completed = true;
-                    if(!res.length)  server.nextProxy();
-                }
-                else {
-                    if(conf.env=='dev') console.log("request completed after timeout for id = "+tracinfo.id);
-                }
+                    return respond(new Error("page_load_failed"));
             });
         }catch(e){
             sendError("bad_json_request");
@@ -373,7 +402,7 @@ server.prototype.init = function(){
     conf = JSON.parse(fs.read("conf.json"));
     conf.env = conf.env? conf.env:"dev";
     conf.changeproxyreqlimit = conf.changeproxyreqlimit && !isNaN(conf.changeproxyreqlimit)?conf.changeproxyreqlimit:30;
-    conf.resultsperpage = conf.resultsperpage?conf.resultsperpage:20;
+    conf.resultsperquery = conf.resultsperquery?conf.resultsperquery:100;
     conf.port = conf.port?conf.port:9092;
     if(conf.useproxies)
         o.refreshProxies(function(){
