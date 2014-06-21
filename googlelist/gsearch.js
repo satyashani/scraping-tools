@@ -84,6 +84,7 @@ var proxyApi = {
 }
 
 var handler = function(req,res,server){
+    var emptyresultcount = 0;
     if(conf.env=='dev')
         console.log(req.method+": "+req.url);
     phantom.clearCookies();
@@ -130,9 +131,23 @@ var handler = function(req,res,server){
             var respond = function(err,result){
                 if(!responded){
                     responded = true;
-                    if(err) sendError(err.message);
-                    else sendJson({ok: true, q: q, id: tracinfo.id, result: result});
-                    server.nextProxy();
+                    if(err){
+                        if(err.message.match(/proxy/))
+                            server.nextProxy();
+                        sendError(err.message);
+                    }
+                    else{
+                        if(!result.length){
+                            emptyresultcount++;
+                            if(emptyresultcount>3)
+                                server.nextProxy();
+                            sendJson({ok: false, q: q, id: tracinfo.id, result: result, error: "empty_result"});
+                        }
+                        else{
+                            emptyresultcount = 0;
+                            sendJson({ok: true, q: q, id: tracinfo.id, result: result});
+                        }
+                    }
                 }
             };
             var ontimeout = function(){
