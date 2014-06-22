@@ -53,7 +53,7 @@ var proxyApi = {
                     error: function(x,t,r){
                         d = new Error(JSON.stringify(x));
                     }
-                })
+                });
                 return d;
             },url);
             if(p.data && p.data.proxies){
@@ -96,7 +96,7 @@ var handler = function(req,res,server){
             var match = u.match(/http[s]*:[^&]*/);
             res.push(match?match[0]:u);
         });
-        var tds = $("div#foot td"),hasMore = true;
+        var tds = $("div#foot td"),hasMore = !!tds.size();
         tds.each(function(i){
             if(!$(this).find("a.fl").size() && !$(this).hasClass("b") && tds.eq(i+1).hasClass('b'))
                 hasMore = false;
@@ -167,7 +167,9 @@ var handler = function(req,res,server){
                 page.injectJs(jq);
                 var eval = page.evaluate(getPageResults);
                 totalres  = totalres.concat(eval.result);
-                console.log("total results = "+totalres.length);
+                if(conf.env=='dev') console.log("total results = "+totalres.length+", has more result = "+eval.hasmore);
+//                fs.write("page_"+totalres.length+".html",page.content);
+//                page.render("page_"+totalres.length+".png");
                 if(eval.hasmore && eval.result.length && totalres.length < num){
                     page.evaluate(clickNext);
                 }else{
@@ -191,7 +193,7 @@ var handler = function(req,res,server){
                         page.render("page_id_"+tracinfo.id+".png");
                         respond(new Error("proxy_failed"),null);
                     }else{
-                        respond(null,filtered)
+                        respond(null,filtered);
                     }
                 }
             }
