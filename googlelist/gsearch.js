@@ -83,8 +83,8 @@ var proxyApi = {
     }
 }
 
+var emptyresultcount = 0;
 var handler = function(req,res,server){
-    var emptyresultcount = 0;
     if(conf.env=='dev')
         console.log(req.method+": "+req.url);
     phantom.clearCookies();
@@ -130,6 +130,10 @@ var handler = function(req,res,server){
             var totalres = [];
             var respond = function(err,result){
                 if(!responded){
+                    if(conf.env == "dev"){
+                        var erprint = (err?err.message:"none"), resprint = (result && result.length?result.length:0);
+                        console.log("responding for err: "+erprint+", results: "+resprint+", emptyresultcount = "+emptyresultcount);
+                    }
                     responded = true;
                     if(err){
                         if(err.message.match(/proxy/))
@@ -139,8 +143,10 @@ var handler = function(req,res,server){
                     else{
                         if(!result.length){
                             emptyresultcount++;
-                            if(emptyresultcount>3)
+                            if(emptyresultcount>2){
                                 server.nextProxy();
+                                emptyresultcount=0;
+                            }
                             sendJson({ok: false, q: q, id: tracinfo.id, result: result, error: "empty_result"});
                         }
                         else{
@@ -162,7 +168,7 @@ var handler = function(req,res,server){
             };
             setTimeout(ontimeout,timeout);
             page.onConsoleMessage = function(x){ console.log(x);};
-            page.onLoadFinished = function(){
+            var onLoad = function(){
                 console.log("page loaded = "+page.url);
                 page.injectJs(jq);
                 var eval = page.evaluate(getPageResults);
@@ -200,6 +206,9 @@ var handler = function(req,res,server){
             page.open(url,function(status){
                 if(!status=="success")
                     return respond(new Error("page_load_failed"));
+                if(conf.env == "dev" ) console.log("page url on open = "+page.url);
+                page.onLoadFinished = onLoad;
+                onLoad();
             });
         }catch(e){
             sendError("bad_json_request");

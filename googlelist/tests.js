@@ -23,6 +23,19 @@ var options = {
         'Content-Length': 0
     }
 };
+
+var testgen = function(num){
+    var strings = ["john", "adams", "steve", "christ","alex", "tom","hulk","fighter","player","bob","martin"];
+    var randIdx = function(){
+        return Math.ceil(Math.random()*strings.length);
+    }
+    var res = [];
+    for(var i=0;i<num;i++){
+        res[i] = {"q" : [strings[randIdx()],strings[randIdx()],strings[randIdx()]].join(" "), "id" : (i+1), "num" : 10};
+    }
+    return res;
+};
+
 var requester = function(item,callback){
     var postdata = JSON.stringify(item);
     options.headers['Content-Length'] = postdata.length;
@@ -33,11 +46,13 @@ var requester = function(item,callback){
         }).on("end",function(){
                 var d = JSON.parse(data);
                 processed++;
-                console.log("Processed "+processed+", result = "+(d.results?d.results.length:"empty"));
-                if(d.ok && d.results && d.results.length)
-                    callback(null,d.results.length);
+                console.log("Processed "+processed+", result = "+(d.result && d.result.length?d.result.length:JSON.stringify(d)));
+                if(!d.ok && d.error == "proxy_list_empty") return callback(new Error(d.error));
+                if(!d.ok && d.error.indexOf("proxy")) return callback(null, d.error);
+                if(d.ok && d.result && d.result.length)
+                    callback(null,d.result.length);
                 else
-                    callback(new Error("results = "+d.results+", ok = "+ d.ok+", "+JSON.stringify(d)),null);
+                    callback(new Error("results = "+d.result+", ok = "+ d.ok+", "+JSON.stringify(d)),null);
             });
     });
     req.on('error', function(e) {
@@ -47,13 +62,13 @@ var requester = function(item,callback){
     req.end();
 };
 
-fs.readFile("teststring.json",function(err,data){
-    var list = JSON.parse(data);
-    processed = 0;
-    async.mapSeries(list,requester,function(err,mapped){
-        if(err)
-            console.log("Error - "+err+",  processed = "+processed);
-        else
-            console.log("final mapped array = "+mapped+", processed = "+processed);
-    });
+var list = testgen(250);
+processed = 0;
+async.mapSeries(list,requester,function(err,mapped){
+    if(err)
+        console.log("Error - "+err);
+    else
+        console.log("final mapped array = "+JSON.stringify(mapped));
+    console.log("processed = "+processed);
+
 });
