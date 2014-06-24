@@ -83,7 +83,7 @@ var proxyApi = {
     }
 }
 
-var emptyresultcount = 0;
+var emptyresultcount = 0, google = "https://www.google.com";
 var handler = function(req,res,server){
     if(conf.env=='dev')
         console.log(req.method+": "+req.url);
@@ -123,10 +123,11 @@ var handler = function(req,res,server){
                 return sendError("missing_track_parameter:id");
             var q = tracinfo.q;
             var num = parseInt(tracinfo.num)?parseInt(tracinfo.num):conf.resultsperquery;
-            var url = "https://www.google.com/search?hl=en&as_q="+q;
+            var url = "https://www.google.com/search?q="+q;
             var page = pg.create();
             page.settings.userAgent = getUserAgent();
-            var timeout = server.timeout?server.timeout:60000,pagesloaded = 0,responded = false,timeoutretry=0;
+            page.viewportSize = {width: 1366,height: 800};
+            var timeout = server.timeout?server.timeout:90000,pagesloaded = 0,responded = false,timeoutretry=0;
             var totalres = [];
             var respond = function(err,result){
                 if(!responded){
@@ -135,18 +136,22 @@ var handler = function(req,res,server){
                         console.log("responding for err: "+erprint+", results: "+resprint+", emptyresultcount = "+emptyresultcount);
                     }
                     responded = true;
-                    if(err){
-                        if(err.message.match(/proxy/))
+                    if(!result || !result.length){
+                        emptyresultcount++;
+                        if(emptyresultcount>1){
                             server.nextProxy();
+                            emptyresultcount=0;
+                        }
+                    }
+                    if(err){
+                        if(emptyresultcount && err.message.match(/proxy/)){
+                            server.nextProxy();
+                            emptyresultcount=0;
+                        }
                         sendError(err.message);
                     }
                     else{
                         if(!result.length){
-                            emptyresultcount++;
-                            if(emptyresultcount>2){
-                                server.nextProxy();
-                                emptyresultcount=0;
-                            }
                             sendJson({ok: false, q: q, id: tracinfo.id, result: result, error: "empty_result"});
                         }
                         else{
@@ -169,7 +174,7 @@ var handler = function(req,res,server){
             setTimeout(ontimeout,timeout);
             page.onConsoleMessage = function(x){ console.log(x);};
             var onLoad = function(){
-                console.log("page loaded = "+page.url);
+                if(conf.env == "dev") console.log("result page loaded = "+page.url);
                 page.injectJs(jq);
                 var eval = page.evaluate(getPageResults);
                 totalres  = totalres.concat(eval.result);
@@ -180,7 +185,10 @@ var handler = function(req,res,server){
                     page.evaluate(clickNext);
                 }else{
                     if(!totalres || !totalres.length){
-                        page.render("lastgooglesearch.png");
+                        if(conf.env == "dev"){
+                            page.render("resultPage_"+tracinfo.id+".png");
+                            fs.write("page_"+ tracinfo.id+".html",page.content);
+                        }
                         console.log("No results: page url = "+page.url);
                     }
                     var filtered = [];
@@ -196,19 +204,36 @@ var handler = function(req,res,server){
                     });
                     if(page.url.match(/google.com\/sorry/i)){
                         console.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
-                        page.render("page_id_"+tracinfo.id+".png");
                         respond(new Error("proxy_failed"),null);
                     }else{
                         respond(null,filtered);
                     }
                 }
             }
-            page.open(url,function(status){
+            var onGoogleLoaded = function(){
+                if(!page.url.match(/google/))
+                    return respond(new Error("google_redirected:"+page.url));
+                page.injectJs(jq);
+                if(!page.url.match(/www\.google\.com/)){
+                    if(conf.env == "dev") console.log("Redirecting to google.com from "+page.url);
+                    page.evaluate(function(){
+                        window.location.href = $('a[href*="setprefdomain"]').attr("href");
+                    });
+                }else{
+                    if(conf.env == "dev") console.log("Google page being used - "+page.url);
+                    page.onLoadFinished = onLoad;
+                    page.evaluate(function(query){
+                        window.location.href = "http://www.google.com/search?q="+query;
+                    },q);
+                    if(conf.env == "dev") page.render("searchpage.png");
+                }
+            };
+            page.open(google,function(status){
                 if(!status=="success")
                     return respond(new Error("page_load_failed"));
                 if(conf.env == "dev" ) console.log("page url on open = "+page.url);
-                page.onLoadFinished = onLoad;
-                onLoad();
+                page.onLoadFinished = onGoogleLoaded;
+                onGoogleLoaded();
             });
         }catch(e){
             sendError("bad_json_request");
@@ -337,7 +362,7 @@ var handler = function(req,res,server){
 var server = function(){
     this.proxies  = [];
     this.currentproxy = 0;
-    this.timeout = 60000;
+    this.timeout = 90000;
     this.conf = {};
 }
 
