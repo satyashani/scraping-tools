@@ -18,7 +18,8 @@ var conf = {
     proxyapikey: "729fb2b0ef57fc06cdac1b5525c9b0",
     resultsperquery : 100,
     proxysource : "kingproxy",
-    useproxies: true
+    useproxies: true,
+    timeout: 30000
 }
 
 var useragents = fs.read("useragents.json");
@@ -112,6 +113,15 @@ var handler = function(req,res,server){
         });
     };
 
+    var checkHasSorry = function(page){
+        page.injectJs(jq);
+        if(page.url.match(/sorry/)) return true;
+        return page.evaluate(function(){
+            if(!$("h1").size() || !$("h1").eq(0).text()) return false;
+            return $("h1").eq(0).text().indexOf("sorry");
+        });
+    }
+
     var handleSearch = function(){
         if(conf.useproxies && !server.proxies.length && conf.proxysource=="manual")
             return sendError("proxy_list_empty");
@@ -127,7 +137,7 @@ var handler = function(req,res,server){
             var page = pg.create();
             page.settings.userAgent = getUserAgent();
             page.viewportSize = {width: 1366,height: 800};
-            var timeout = server.timeout?server.timeout:90000,pagesloaded = 0,responded = false,timeoutretry=0;
+            var timeout = server.timeout?server.timeout:30000,pagesloaded = 0,responded = false,timeoutretry=0;
             var totalres = [];
             var respond = function(err,result){
                 if(!responded){
@@ -138,7 +148,7 @@ var handler = function(req,res,server){
                     responded = true;
                     if(!result || !result.length){
                         emptyresultcount++;
-                        if(emptyresultcount>1){
+                        if(emptyresultcount>=1){
                             server.nextProxy();
                             emptyresultcount=0;
                         }
@@ -176,6 +186,7 @@ var handler = function(req,res,server){
             var onLoad = function(){
                 if(conf.env == "dev") console.log("result page loaded = "+page.url);
                 page.injectJs(jq);
+                if(checkHasSorry(page)) return respond(new Error("proxy_failed"));
                 var eval = page.evaluate(getPageResults);
                 totalres  = totalres.concat(eval.result);
                 if(conf.env=='dev') console.log("total results = "+totalres.length+", has more result = "+eval.hasmore);
@@ -214,11 +225,22 @@ var handler = function(req,res,server){
                 if(!page.url.match(/google/))
                     return respond(new Error("google_redirected:"+page.url));
                 page.injectJs(jq);
+                if(checkHasSorry(page))
+                    return respond(new Error("proxy_failed"));
                 if(!page.url.match(/www\.google\.com/)){
-                    if(conf.env == "dev") console.log("Redirecting to google.com from "+page.url);
-                    page.evaluate(function(){
-                        window.location.href = $('a[href*="setprefdomain"]').attr("href");
+                    var hasprefurl = page.evaluate(function(){
+                        return $('a[href*="setprefdomain"]').size();
                     });
+                    if(hasprefurl){
+                        if(conf.env == "dev") console.log("Redirecting to google.com from "+page.url);
+                        page.evaluate(function(){
+                            window.location.href = $('a[href*="setprefdomain"]').attr("href");
+                        });
+                    }
+                    else{
+                        if(conf.env =="dev") console.log("Loaded page "+page.url+" doesn't have link to set preferred domain");
+                        respond(new Error("cant_load_us_site"));
+                    }
                 }else{
                     if(conf.env == "dev") console.log("Google page being used - "+page.url);
                     page.onLoadFinished = onLoad;
@@ -228,12 +250,23 @@ var handler = function(req,res,server){
                     if(conf.env == "dev") page.render("searchpage.png");
                 }
             };
+            var onUrlChange =  function(){
+                if(page.url.match(/google/)){
+                    page.onLoadFinished = onGoogleLoaded;
+                }else {
+                    if(conf.env =='dev') console.log("Url loaded = "+page.url);
+                }
+            }
+            page.onUrlChanged = onUrlChange;
             page.open(google,function(status){
                 if(!status=="success")
                     return respond(new Error("page_load_failed"));
                 if(conf.env == "dev" ) console.log("page url on open = "+page.url);
-                page.onLoadFinished = onGoogleLoaded;
-                onGoogleLoaded();
+                if(page.url.match(/google/)){
+                    page.onUrlChanged = null;
+                    page.onLoadFinished = onGoogleLoaded;
+                    onGoogleLoaded();
+                }
             });
         }catch(e){
             sendError("bad_json_request");
@@ -342,7 +375,7 @@ var handler = function(req,res,server){
             case "/proxies" : handleSetProxies(); break;
             case "/timeout" : handleSetTimeout(); break;
             case "/search" :
-                setTimeout(handleSearch,Math.random()*7000);
+                handleSearch();
                 break;
             case "/whitelist" : handleSetWhiteList(); break;
             default : sendOk(); break;
@@ -362,7 +395,7 @@ var handler = function(req,res,server){
 var server = function(){
     this.proxies  = [];
     this.currentproxy = 0;
-    this.timeout = 90000;
+    this.timeout = conf.timeout?conf.timeout:30000;
     this.conf = {};
 }
 
@@ -455,6 +488,8 @@ server.prototype.init = function(){
     conf.changeproxyreqlimit = conf.changeproxyreqlimit && !isNaN(conf.changeproxyreqlimit)?conf.changeproxyreqlimit:30;
     conf.resultsperquery = conf.resultsperquery?conf.resultsperquery:100;
     conf.port = conf.port?conf.port:9092;
+    conf.timeout = conf.timeout?conf.timeout:30000;
+    o.timeout = conf.timeout;
     if(conf.useproxies)
         o.refreshProxies(function(){
             o.startServer();

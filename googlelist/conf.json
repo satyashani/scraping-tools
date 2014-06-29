@@ -4,5 +4,6 @@
     "proxyapikey": "2100799401279a1067b2a4304c6149",
     "resultsperquery" : 100,
     "useproxies" : true,
-    "proxysource" : "manual"
+    "proxysource" : "manual",
+    "timeout": 60000
 }

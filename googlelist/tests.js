@@ -31,7 +31,7 @@ var testgen = function(num){
     }
     var res = [];
     for(var i=0;i<num;i++){
-        res[i] = {"q" : [strings[randIdx()],strings[randIdx()],strings[randIdx()]].join(" "), "id" : (i+1), "num" : 10};
+        res[i] = {"q" : [strings[randIdx()],strings[randIdx()],strings[randIdx()]].join(" "), "id" : (i+1), "num" : 30};
     }
     return res;
 };
@@ -52,7 +52,7 @@ var requester = function(item,callback){
                 if(d.ok && d.result && d.result.length)
                     callback(null,d.result.length);
                 else
-                    callback(new Error("results = "+d.result+", ok = "+ d.ok+", "+JSON.stringify(d)),null);
+                    callback(null,d);
             });
     });
     req.on('error', function(e) {
