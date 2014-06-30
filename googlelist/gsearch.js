@@ -435,7 +435,10 @@ server.prototype.setProxy = function(){
         }
         var p = this.proxies[this.currentproxy];
         if(conf.env=='dev') console.log("Changing proxy, new proxy = "+ p.ip);
-        phantom.setProxy(p.ip, p.port);
+        var type = p.type? p.type:"http";
+        var user = p.user? p.user:"";
+        var passwd = p.password? p.password:"";
+        phantom.setProxy(p.ip, p.port,type,user,passwd);
         return true;
     }else{
         console.error("Failed to change proxy, proxy list is empty or not enough proxies, check proxy setup.");
