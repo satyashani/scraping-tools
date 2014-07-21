@@ -18,7 +18,7 @@ var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 var handler = function(req,res,server){
     console.log(req.method+": "+req.url);
 
-    var handleGet = function(){
+    var handleGetDetails = function(){
         //Put a worker to task
         var data = {};
         try{
@@ -26,10 +26,67 @@ var handler = function(req,res,server){
             server.getWorker(function(err,worker){
                 if(err) sendError(err.message);
                 else{
-                    console.log("Got worker from server");
-                    worker.getDashboard(data,function(errfilling,response){
-                        if(errfilling)
-                            sendError(errfilling.message);
+                    worker.getDashboard(data,function(errdash,response){
+                        if(errdash)
+                            sendError(errdash.message);
+                        else
+                            sendJson(response);
+                    });
+                }
+            });
+        }catch(e){
+            return sendError("bad_input:"+ e.message);
+        }
+    }
+
+    var handleGetUrlInfo = function(){
+        //Put a worker to task
+        var data = {};
+        try{
+            var data = JSON.parse(req.post);
+            if(!data.url) return sendError("Post data has no 'url' field");
+            server.getWorker(function(err,worker){
+                if(err) sendError(err.message);
+                else{
+                    worker.getUrlDetails(data.url,function(errget,response){
+                        if(errget)
+                            sendError(errget.message);
+                        else
+                            sendJson(response);
+                    });
+                }
+            });
+        }catch(e){
+            return sendError("bad_input:"+ e.message);
+        }
+    }
+
+    var handleGetConfIds = function(){
+        server.getWorker(function(err,worker){
+            if(err) sendError(err.message);
+            else{
+                worker.getConfIds(function(errget,response){
+                    if(errget)
+                        sendError(errget.message);
+                    else
+                        sendJson(response);
+                });
+            }
+        });
+    }
+
+    var handleGetConfIdByDate = function(){
+        var data = {};
+        try{
+            var data = JSON.parse(req.post);
+            if(!data.date) return sendError("Post data has no 'date' field");
+            var date = new Date(Date.parse(data.date));
+            server.getWorker(function(err,worker){
+                if(err) sendError(err.message);
+                else{
+                    worker.getConfIdByDate(date,function(errget,response){
+                        if(errget)
+                            sendError(errget.message);
                         else
                             sendJson(response);
                     });
@@ -61,9 +118,20 @@ var handler = function(req,res,server){
         res.write(out);
         res.closeGracefully();
     }
-    if(req.method == "POST" && req.url == "/get")
-        handleGet();
-    else sendOk();
+
+    if(req.method == "POST"){
+        switch(req.url){
+            case "/geturlinfo" : handleGetUrlInfo(); break;
+            case "/getsubmissiondetails" : handleGetDetails(); break;
+            case "/getidsbydate" : handleGetConfIdByDate(); break;
+            default : sendOk(); break;
+        }
+    }else{
+        switch(req.url){
+            case "/getcomfirmationids" : handleGetConfIds(); break;
+            default : sendOk(); break;
+        }
+    }
 }
 
 var worker = function(conf){
@@ -73,78 +141,175 @@ var worker = function(conf){
     var changes = 0;
     this.busy = false; this.loggedin = false;
     var page = pg.create();
+    page.onConsoleMessage = function(){console.log.apply(console,arguments);};
     this.relogin = false;
     var that = this;
-    this.getDashboard = function(ids,callback){
-        //Open Dmca Dashboard
-        that.busy = true;
-        page.injectJs(jq);
-        page.onConsoleMessage = function(x){console.log(x)};
-        var reports = page.evaluate(function(){
-            var rows = $("table#grid tbody tr");
-            if(!rows || ! rows.size()) return new Error("No submitted links found.");
-            var reports = [];
-            rows.each(function(){
-                var item = {};
-                var a = $(this).find("a[href*='dmca-dashboard-details']").eq(0);
-                var id = $(this).find("td.id-column").eq(0).text();
-                item.url = a.attr('href');
-                item.id = id;
-                reports.push(item);
-            });
-            return reports;
-        });
-        page.render("dashboard.png");
-        if(reports instanceof Error){
-            that.busy = false;
-            return callback(reports);
-        }
-        if(!reports || !reports.length){
-            that.busy = false;
-            return callback(new Error("Url list is empty at dashboard!!"));
-        }
-        var done = 0,results = [];
-        var onEnd = function(){
-            done++;
-            if(done===reports.length){
-                that.busy = false;
-                callback(null,results);
+    this.openDashboard = function(callback){
+        page.open("https://www.google.com/webmasters/tools/dmca-dashboard",function(stat){
+            if(!stat=='success'){
+                page.render("dashboard.png");
+                return callback(new Error("Failed to open dmca dashboard."));
             }
-        }
-        reports.forEach(function(report,i){
-            if(ids.indexOf(report.id)===-1) return onEnd();
-            var mypage = pg.create(),myurl = "https://www.google.com"+report.url+"&approved.s=100&pending.s=100&rejected.s=100";
-            mypage.onLoadFinished = function(){
-                mypage.injectJs(jq)
-                var onDetailsPage = mypage.evaluate(function(){
-                    return $("table#approved").size() || $("table#rejected").size() || $("table#pending").size();
-                });
-                if(onDetailsPage){
-                    setTimeout(function(){
-                        var res = mypage.evaluate(function(){
-                            var res = {
-                                approved: [],rejected: [],pending: []
-                            };
-                            $("table#approved div.url-item a").each(function(){
-                                res.approved.push($(this).attr('href'));
-                            });
-                            $("table#rejected div.url-item a").each(function(){
-                                res.rejected.push($(this).attr('href'));
-                            });
-                            $("table#pending div.url-item a").each(function(){
-                                res.pending.push($(this).attr('href'));
-                            });
-                            return res;
-                        });
-                        if(res.approved.length || res.pending.length || res.rejected.length){
-                            results.push({id: report.id, results: res});
-                            onEnd();
-                        }
-                    },3000);
-                }
-            };
-            mypage.open(myurl);
+            page.injectJs(jq);
+            callback(null);
         });
+    };
+    this.getConfIds = function(callback){
+        that.openDashboard(function(err){
+            if(err) return callback(err);
+            var reports = page.evaluate(function(){
+                var rows = $("table#grid tbody tr");
+                if(!rows || ! rows.size()) return new Error("No submitted forms found.");
+                var reports = [];
+                rows.each(function(){
+                    var item = {};
+                    var a = $(this).find("a[href*='dmca-dashboard-details']").eq(0);
+                    var id = $(this).find("td.id-column").eq(0).text();
+                    item.url = a.attr('href');
+                    item.id = id;
+                    reports.push(item);
+                });
+                return reports;
+            });
+            if(reports instanceof Error){
+                return callback(reports);
+            }
+            if(!reports || !reports.length){
+                return callback(new Error("Url list is empty at dashboard!!"));
+            }
+            callback(null,reports);
+        });
+    };
+    this.getUrlDetails = function(url,callback){
+        that.openDashboard(function(err){
+            if(err) return callback(err);
+            page.onLoadFinished = function(){
+                if(!page.url.match(/url\-match/i)){
+                    console.log("Search result page url = "+page.url);
+                    return;
+                }
+                page.onLoadFinished = null;
+                page.injectJs(jq);
+                var foundSubmitUrl = page.evaluate(function(){
+                    var size = $("table#grid tbody a").size();
+                    if(!size) return size;
+                    return "https://www.google.com"+$("table#grid tbody a").attr("href")+"&approved.s=100&pending.s=100&rejected.s=100";
+                });
+                if(!foundSubmitUrl) return callback(new Error("No dmca submission found for this url."));
+                page.open(foundSubmitUrl,function(stat){
+                    if(!stat=='success') return callback(new Error("Error opening url details page: "+foundSubmitUrl));
+                    page.injectJs(jq);
+                    var res = page.evaluate(function(url){
+                        var links = $("table.grid div.url-item a"),result={};
+                        for(var i=0;i<links.size();i++){
+                            if(links.eq(i).attr("href")===url){
+                                result.status = links.eq(i).parents("table.grid").attr("id");
+                                result.message = links.eq(i).parents("tr").find("td.rightmost").text();
+                                break;
+                            }
+                        }
+                        return result;
+                    },url);
+                    callback(null,res);
+                });
+            };
+            page.evaluate(function(url){
+                $('input[name="url-match"]').val(url);
+                $("form.url-match-form").submit();
+            },url);
+        })
+    }
+
+    this.getConfIdByDate = function(date,callback){
+        var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        that.openDashboard(function(err){
+            if(err) return callback(err);
+            var dt = months[date.getMonth()]+" "+(date.getDay()-1)+", "+date.getFullYear();
+            var ids = page.evaluate(function(date){
+                var rows = $("table#grid tbody tr");
+                if(!rows || ! rows.size()) return [];
+                var reports = [];
+                rows.each(function(){
+                    var a = $(this).find("td.date-column a");
+                    var id = $(this).find("td.id-column").text();
+                    if(a.text().indexOf(date)>-1)
+                        reports.push(id);
+                });
+                return reports;
+            },dt);
+            callback(null,ids);
+        });
+    }
+    this.getDashboard = function(ids,callback){
+        that.openDashboard(function(err){
+            if(err) return callback(err);
+            page.onConsoleMessage = function(x){console.log(x)};
+            var reports = page.evaluate(function(){
+                var rows = $("table#grid tbody tr");
+                if(!rows || ! rows.size()) return new Error("No submitted links found.");
+                var reports = [];
+                rows.each(function(){
+                    var item = {};
+                    var a = $(this).find("a[href*='dmca-dashboard-details']").eq(0);
+                    var id = $(this).find("td.id-column").eq(0).text();
+                    item.url = a.attr('href');
+                    item.id = id;
+                    reports.push(item);
+                });
+                return reports;
+            });
+            page.render("dashboard.png");
+            if(reports instanceof Error){
+                that.busy = false;
+                return callback(reports);
+            }
+            if(!reports || !reports.length){
+                that.busy = false;
+                return callback(new Error("Url list is empty at dashboard!!"));
+            }
+            var done = 0,results = [];
+            var onEnd = function(){
+                done++;
+                if(done===reports.length){
+                    that.busy = false;
+                    callback(null,results);
+                }
+            }
+            reports.forEach(function(report,i){
+                if(ids.indexOf(report.id)===-1) return onEnd();
+                var mypage = pg.create(),myurl = "https://www.google.com"+report.url+"&approved.s=100&pending.s=100&rejected.s=100";
+                mypage.onLoadFinished = function(){
+                    mypage.injectJs(jq)
+                    var onDetailsPage = mypage.evaluate(function(){
+                        return $("table#approved").size() || $("table#rejected").size() || $("table#pending").size();
+                    });
+                    if(onDetailsPage){
+                        setTimeout(function(){
+                            var res = mypage.evaluate(function(){
+                                var res = {
+                                    approved: [],rejected: [],pending: []
+                                };
+                                $("table#approved div.url-item a").each(function(){
+                                    res.approved.push($(this).attr('href'));
+                                });
+                                $("table#rejected div.url-item a").each(function(){
+                                    res.rejected.push($(this).attr('href'));
+                                });
+                                $("table#pending div.url-item a").each(function(){
+                                    res.pending.push($(this).attr('href'));
+                                });
+                                return res;
+                            });
+                            if(res.approved.length || res.pending.length || res.rejected.length){
+                                results.push({id: report.id, results: res});
+                                onEnd();
+                            }
+                        },3000);
+                    }
+                };
+                mypage.open(myurl);
+            });
+        })
     }
 
     this.login = function(callback){
@@ -162,6 +327,8 @@ var worker = function(conf){
                     $("input[type='password']").val(password);
                     $("input#signIn").click();
                 },username,password);
+            }else{
+                page.render("loginpage.png");
             }
         }
 
@@ -169,7 +336,7 @@ var worker = function(conf){
             console.log("Url changed to "+url);
             page.injectJs(jq);
             if(changes >=4) return callback(new Error("Could not log in"));
-            if(/dmca-dashboard/i.test(url) && changes > 1){
+            if(/settings/i.test(url) && changes > 1){
                 page.onLoadFinished = null;
                 page.onUrlChanged = null;
                 that.loggedin = true;
@@ -178,7 +345,7 @@ var worker = function(conf){
             }
             changes++;
         };
-        page.open("https://www.google.com/webmasters/tools/dmca-dashboard?hl=en&pid=0&pli=1",function(stat){
+        page.open("https://accounts.google.com/ServiceLogin",function(stat){
             if(stat == "success"){
                 page.injectJs(jq);
                 page.evaluate(function(username,password){
@@ -187,7 +354,7 @@ var worker = function(conf){
                     $("input#signIn").click();
                 },username,password);
             }else{
-                console.log("Worker : "+username+" Failed to login, page did not open");
+                console.log("Worker : "+username+" Failed to login, Login page did not open");
             }
         });
     }
