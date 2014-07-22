@@ -18,51 +18,58 @@ var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 var handler = function(req,res,server){
     console.log(req.method+": "+req.url);
 
-    var handleGetDetails = function(){
-        //Put a worker to task
-        var data = {};
+    var getPostData = function(){
         try{
-            var data = JSON.parse(req.post);
-            server.getWorker(function(err,worker){
-                if(err) sendError(err.message);
-                else{
-                    worker.getDashboard(data,function(errdash,response){
-                        if(errdash)
-                            sendError(errdash.message);
-                        else
-                            sendJson(response);
-                    });
-                }
-            });
+            var data= JSON.parse(req.post);
+            if(!data.workerid){
+                sendError("Post data has no 'workerid' field");
+                return false;
+            }
+            return data;
         }catch(e){
-            return sendError("bad_input:"+ e.message);
+            sendError("bad_input:"+ e.message);
+            return false;
         }
+    }
+
+    var handleGetDetails = function(){
+        var data = getPostData();
+        if(!data) return;
+        if(!data.ids) return sendError("Post data has no 'ids' field");
+        server.getWorker(data.workerid,function(err,worker){
+            if(err) sendError(err.message);
+            else{
+                worker.getDashboard(data.ids,function(errdash,response){
+                    if(errdash)
+                        sendError(errdash.message);
+                    else
+                        sendJson(response);
+                });
+            }
+        });
     }
 
     var handleGetUrlInfo = function(){
-        //Put a worker to task
-        var data = {};
-        try{
-            var data = JSON.parse(req.post);
-            if(!data.url) return sendError("Post data has no 'url' field");
-            server.getWorker(function(err,worker){
-                if(err) sendError(err.message);
-                else{
-                    worker.getUrlDetails(data.url,function(errget,response){
-                        if(errget)
-                            sendError(errget.message);
-                        else
-                            sendJson(response);
-                    });
-                }
-            });
-        }catch(e){
-            return sendError("bad_input:"+ e.message);
-        }
+        var data = getPostData();
+        if(!data) return;
+        if(!data.url) return sendError("Post data has no 'url' field");
+        server.getWorker(data.workerid,function(err,worker){
+            if(err) sendError(err.message);
+            else{
+                worker.getUrlDetails(data.url,function(errget,response){
+                    if(errget)
+                        sendError(errget.message);
+                    else
+                        sendJson(response);
+                });
+            }
+        });
     }
 
     var handleGetConfIds = function(){
-        server.getWorker(function(err,worker){
+        var data = getPostData();
+        if(!data) return;
+        server.getWorker(data.workerid,function(err,worker){
             if(err) sendError(err.message);
             else{
                 worker.getConfIds(function(errget,response){
@@ -76,25 +83,33 @@ var handler = function(req,res,server){
     }
 
     var handleGetConfIdByDate = function(){
-        var data = {};
-        try{
-            var data = JSON.parse(req.post);
-            if(!data.date) return sendError("Post data has no 'date' field");
-            var date = new Date(Date.parse(data.date));
-            server.getWorker(function(err,worker){
-                if(err) sendError(err.message);
-                else{
-                    worker.getConfIdByDate(date,function(errget,response){
-                        if(errget)
-                            sendError(errget.message);
-                        else
-                            sendJson(response);
-                    });
-                }
-            });
-        }catch(e){
-            return sendError("bad_input:"+ e.message);
-        }
+        var data = getPostData();
+        if(!data) return;
+        if(!data.date) return sendError("Post data has no 'date' field");
+        var date = new Date(Date.parse(data.date));
+        server.getWorker(data.workerid,function(err,worker){
+            if(err) sendError(err.message);
+            else{
+                worker.getConfIdByDate(date,function(errget,response){
+                    if(errget)
+                        sendError(errget.message);
+                    else
+                        sendJson(response);
+                });
+            }
+        });
+    }
+
+    var handleGetReqCount = function(){
+        var data = getPostData();
+        if(!data) return;
+        server.getWorker(data.workerid,function(err,worker){
+            if(err) sendError(err.message);
+            else{
+                sendJson({count: worker.requests, since: worker.lastreset.getTime()});
+                if(data.reset) worker.resetCount();
+            }
+        });
     }
 
     var sendJson = function(out){
@@ -124,11 +139,12 @@ var handler = function(req,res,server){
             case "/geturlinfo" : handleGetUrlInfo(); break;
             case "/getsubmissiondetails" : handleGetDetails(); break;
             case "/getidsbydate" : handleGetConfIdByDate(); break;
+            case "/getcomfirmationids" : handleGetConfIds(); break;
+            case "/getrequestcount" : handleGetReqCount(); break;
             default : sendOk(); break;
         }
     }else{
         switch(req.url){
-            case "/getcomfirmationids" : handleGetConfIds(); break;
             default : sendOk(); break;
         }
     }
@@ -139,12 +155,18 @@ var worker = function(conf){
     var password = conf.password?conf.password:gmailuser.password;
     this.username = username;
     var changes = 0;
-    this.busy = false; this.loggedin = false;
+    this.busy = false; this.loggedin = false; this.requests = 0,this.lastreset=new Date();
     var page = pg.create();
     page.onConsoleMessage = function(){console.log.apply(console,arguments);};
     this.relogin = false;
     var that = this;
+    this.resetCount = function(){this.requests = 0; this.lastreset = new Date()};
+    this.requestCheck = function(){
+        this.requests++;
+        if(new Date().getTime() - this.lastreset.getTime() > 86400000) this.resetCount();
+    }
     this.openDashboard = function(callback){
+        this.requestCheck();
         page.open("https://www.google.com/webmasters/tools/dmca-dashboard",function(stat){
             if(!stat=='success'){
                 page.render("dashboard.png");
@@ -195,7 +217,10 @@ var worker = function(conf){
                     if(!size) return size;
                     return "https://www.google.com"+$("table#grid tbody a").attr("href")+"&approved.s=100&pending.s=100&rejected.s=100";
                 });
-                if(!foundSubmitUrl) return callback(new Error("No dmca submission found for this url."));
+                if(!foundSubmitUrl){
+                    page.render("urlsearchpage.png");
+                    return callback(new Error("No dmca submission found for this url."));
+                }
                 page.open(foundSubmitUrl,function(stat){
                     if(!stat=='success') return callback(new Error("Error opening url details page: "+foundSubmitUrl));
                     page.injectJs(jq);
@@ -224,7 +249,7 @@ var worker = function(conf){
         var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
         that.openDashboard(function(err){
             if(err) return callback(err);
-            var dt = months[date.getMonth()]+" "+(date.getDay()-1)+", "+date.getFullYear();
+            var dt = months[date.getMonth()]+" "+(date.getDate())+", "+date.getFullYear();
             var ids = page.evaluate(function(date){
                 var rows = $("table#grid tbody tr");
                 if(!rows || ! rows.size()) return [];
@@ -366,7 +391,7 @@ var server = function(){
 }
 
 server.prototype.setProxies = function(p){
-	this.proxies = p; return this;
+    this.proxies = p; return this;
 }
 
 server.prototype.changeProxy = function(){
@@ -397,16 +422,16 @@ server.prototype.addWorker = function(conf){
  * @param callback function(err,worker){}. error could be "no_workers" or "workers_busy";
  * @returns {*}
  */
-server.prototype.getWorker = function(callback){
+server.prototype.getWorker = function(id,callback){
     if(!this.workers.length) callback(new Error("no_workers"),null);
     for(var i=0;i<this.workers.length;i++){
-        if(this.workers[i].loggedin && !this.workers[i].busy)
+        if(this.workers[i].username===id){
+            if(!this.workers[i].loggedin) return callback(new Error("not_logged_in"));
+            if(this.workers[i].busy) return callback(new Error("worker_busy"));
             return callback(null,this.workers[i]);
-        else{
-            console.log("worker "+i+" is "+(this.workers[i].loggedin?"logged in,":"not logged in,")+(this.workers[i].busy?"busy":"free"));
         }
     }
-    callback(new Error("workers_busy"),null);
+    callback(new Error("worker_not_found"),null);
 }
 
 server.prototype.start = function(port){
@@ -448,7 +473,7 @@ server.prototype.init = function(){
 }
 
 server.prototype.exit = function(){
-	phantom.exit();
+    phantom.exit();
 }
 
 new server().init();
