@@ -359,10 +359,24 @@ var handler = function(req,res,server){
         sendOk();
     }
 
-    var handleDmca = function(){
-        var data = {};
+
+    var getPostData = function(){
         try{
-            var data = JSON.parse(req.post);
+            var data= JSON.parse(req.post);
+            if(!data.workerid){
+                sendError("missing_field:workerid");
+                return false;
+            }
+            return data;
+        }catch(e){
+            sendError("bad_input:"+ e.message);
+            return false;
+        }
+    }
+
+    var handleDmca = function(){
+        var data = getPostData();
+        if(data){
             var formdata = [].concat(inputs);
             for(var i=0;i<formdata.length;i++){
                 if(formdata[i].required && !data[formdata[i].id])
@@ -384,7 +398,7 @@ var handler = function(req,res,server){
             formdata.push({id: "signaturedate", type: "input", selector: "input#signature-date", value: datestring});
 
             //Put a worker to task
-            server.getWorker(function(err,worker){
+            server.getWorker(data.workerid,function(err,worker){
                 if(err) sendError(err.message);
                 else{
                     console.log("Got worker from server");
@@ -396,17 +410,11 @@ var handler = function(req,res,server){
                     });
                 }
             });
-        }catch (e){
-            return sendError("bad_input:"+ e.message);
         }
     }
 
     var handleGetProxies = function(){
         send(200,server.proxies,true);
-    }
-
-    var sendContent = function(out){
-        send(200,content,false);
     }
 
     var sendOk = function(){
@@ -642,16 +650,16 @@ server.prototype.addWorker = function(conf){
  * @param callback function(err,worker){}. error could be "no_workers" or "workers_busy";
  * @returns {*}
  */
-server.prototype.getWorker = function(callback){
+server.prototype.getWorker = function(id,callback){
     if(!this.workers.length) callback(new Error("no_workers"),null);
     for(var i=0;i<this.workers.length;i++){
-        if(this.workers[i].loggedin && !this.workers[i].busy)
+        if(this.workers[i].username===id){
+            if(!this.workers[i].loggedin) return callback(new Error("not_logged_in"));
+            if(this.workers[i].busy) return callback(new Error("worker_busy"));
             return callback(null,this.workers[i]);
-        else{
-            console.log("worker "+i+" is "+(this.workers[i].loggedin?"logged in,":"not logged in,")+(this.workers[i].busy?"busy":"free"));
         }
     }
-    callback(new Error("workers_busy"),null);
+    callback(new Error("worker_not_found"),null);
 }
 
 server.prototype.start = function(port){

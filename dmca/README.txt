@@ -10,3 +10,6 @@ STARTING DMCA PHANTOM SERVER
 4. Wait for the server to say "web server started"
 
 Ready to roll :-)
+
+Update : 2014-03-24
+Add field 'workerid' in each POST Data to select the worker. e.g. {'workerid': 'amit.020585'}

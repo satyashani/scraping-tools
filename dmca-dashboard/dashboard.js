@@ -22,7 +22,7 @@ var handler = function(req,res,server){
         try{
             var data= JSON.parse(req.post);
             if(!data.workerid){
-                sendError("Post data has no 'workerid' field");
+                sendError("missing_field:workerid");
                 return false;
             }
             return data;
@@ -35,7 +35,7 @@ var handler = function(req,res,server){
     var handleGetDetails = function(){
         var data = getPostData();
         if(!data) return;
-        if(!data.ids) return sendError("Post data has no 'ids' field");
+        if(!data.ids) return sendError("missing_field:id");
         server.getWorker(data.workerid,function(err,worker){
             if(err) sendError(err.message);
             else{
@@ -52,7 +52,7 @@ var handler = function(req,res,server){
     var handleGetUrlInfo = function(){
         var data = getPostData();
         if(!data) return;
-        if(!data.url) return sendError("Post data has no 'url' field");
+        if(!data.url) return sendError("missing_field:url");
         server.getWorker(data.workerid,function(err,worker){
             if(err) sendError(err.message);
             else{
@@ -85,7 +85,7 @@ var handler = function(req,res,server){
     var handleGetConfIdByDate = function(){
         var data = getPostData();
         if(!data) return;
-        if(!data.date) return sendError("Post data has no 'date' field");
+        if(!data.date) return sendError("missing_field:date");
         var date = new Date(Date.parse(data.date));
         server.getWorker(data.workerid,function(err,worker){
             if(err) sendError(err.message);
