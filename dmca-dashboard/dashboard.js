@@ -158,6 +158,7 @@ var worker = function(conf){
     this.busy = false; this.loggedin = false; this.requests = 0,this.lastreset=new Date();
     var page = pg.create();
     page.onConsoleMessage = function(){console.log.apply(console,arguments);};
+    var dashboardurl = "https://www.google.com/webmasters/tools/dmca-dashboard?rlf=all&grid.s=500";
     this.relogin = false;
     var that = this;
     this.resetCount = function(){this.requests = 0; this.lastreset = new Date()};
@@ -167,39 +168,47 @@ var worker = function(conf){
     }
     this.openDashboard = function(callback){
         this.requestCheck();
-        page.open("https://www.google.com/webmasters/tools/dmca-dashboard",function(stat){
+        page.open(dashboardurl,function(stat){
             if(!stat=='success'){
                 page.render("dashboard.png");
                 return callback(new Error("Failed to open dmca dashboard."));
             }
-            page.injectJs(jq);
-            callback(null);
+            setTimeout(function(){
+                page.injectJs(jq);
+                callback(null);
+            },2000);
         });
     };
     this.getConfIds = function(callback){
-        that.openDashboard(function(err){
-            if(err) return callback(err);
-            var reports = page.evaluate(function(){
+        var ids = [];
+        page.onLoadFinished = function(){
+            page.injectJs(jq);
+            var counts = page.evaluate(function(){
+                var t = $("div.table-range-text").eq(0).text();
+                var m = t.match(/(\d+)\-(\d+) of (\d+)/);
+                return {total: parseInt(m[3]),read: parseInt(m[2])};
+            });
+            var newids = page.evaluate(function(){
                 var rows = $("table#grid tbody tr");
-                if(!rows || ! rows.size()) return new Error("No submitted forms found.");
+                if(!rows || ! rows.size()) return [];
                 var reports = [];
                 rows.each(function(){
-                    var item = {};
-                    var a = $(this).find("a[href*='dmca-dashboard-details']").eq(0);
-                    var id = $(this).find("td.id-column").eq(0).text();
-                    item.url = a.attr('href');
-                    item.id = id;
-                    reports.push(item);
+                    var a = $(this).find("td.date-column a");
+                    var id = $(this).find("td.id-column").text();
+                    reports.push(id);
                 });
                 return reports;
             });
-            if(reports instanceof Error){
-                return callback(reports);
+            ids = ids.concat(newids);
+            if(counts.read<counts.total){
+                page.open(dashboardurl+"&grid.r="+(counts.read+1));
+            }else{
+                page.onLoadFinished = null;
+                callback(null,ids);
             }
-            if(!reports || !reports.length){
-                return callback(new Error("Url list is empty at dashboard!!"));
-            }
-            callback(null,reports);
+        }
+        page.open(dashboardurl,function(status){
+            if(status!='success') callback(new Error("failed to open dashboard."));
         });
     };
     this.getUrlDetails = function(url,callback){
@@ -247,10 +256,16 @@ var worker = function(conf){
 
     this.getConfIdByDate = function(date,callback){
         var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-        that.openDashboard(function(err){
-            if(err) return callback(err);
-            var dt = months[date.getMonth()]+" "+(date.getDate())+", "+date.getFullYear();
-            var ids = page.evaluate(function(date){
+        var dt = months[date.getMonth()]+" "+(date.getDate())+", "+date.getFullYear();
+        var ids = [];
+        page.onLoadFinished = function(){
+            page.injectJs(jq);
+            var counts = page.evaluate(function(){
+                var t = $("div.table-range-text").eq(0).text();
+                var m = t.match(/(\d+)\-(\d+) of (\d+)/);
+                return {total: parseInt(m[3]),read: parseInt(m[2])};
+            });
+            var newids = page.evaluate(function(date){
                 var rows = $("table#grid tbody tr");
                 if(!rows || ! rows.size()) return [];
                 var reports = [];
@@ -262,36 +277,32 @@ var worker = function(conf){
                 });
                 return reports;
             },dt);
-            callback(null,ids);
+            ids = ids.concat(newids);
+            if(counts.read<counts.total){
+                page.open(dashboardurl+"&grid.r="+(counts.read+1));
+            }else{
+                page.onLoadFinished = null;
+                callback(null,ids);
+            }
+        }
+        page.open(dashboardurl,function(status){
+            if(status!='success') callback(new Error("failed to open dashboard."));
         });
     }
     this.getDashboard = function(ids,callback){
         that.openDashboard(function(err){
             if(err) return callback(err);
             page.onConsoleMessage = function(x){console.log(x)};
-            var reports = page.evaluate(function(){
+            var baseurl = page.evaluate(function(){
                 var rows = $("table#grid tbody tr");
-                if(!rows || ! rows.size()) return new Error("No submitted links found.");
-                var reports = [];
-                rows.each(function(){
-                    var item = {};
-                    var a = $(this).find("a[href*='dmca-dashboard-details']").eq(0);
-                    var id = $(this).find("td.id-column").eq(0).text();
-                    item.url = a.attr('href');
-                    item.id = id;
-                    reports.push(item);
-                });
-                return reports;
+                if(!rows || ! rows.size()) return false;
+                return rows.eq(0).find("a[href*='dmca-dashboard-details']").eq(0).attr('href');
             });
-            page.render("dashboard.png");
-            if(reports instanceof Error){
-                that.busy = false;
-                return callback(reports);
-            }
-            if(!reports || !reports.length){
-                that.busy = false;
-                return callback(new Error("Url list is empty at dashboard!!"));
-            }
+            if(!baseurl) return callback(new Error("No details url on dashboard"));
+            var reports = [];
+            ids.forEach(function(id){
+                reports.push({id: id, url: baseurl.replace(/dmcatid=.*\&/,"dmcatid="+id+"&")});
+            });
             var done = 0,results = [];
             var onEnd = function(){
                 done++;
