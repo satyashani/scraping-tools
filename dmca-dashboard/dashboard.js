@@ -263,7 +263,7 @@ var worker = function(conf){
             var counts = page.evaluate(function(){
                 var t = $("div.table-range-text").eq(0).text();
                 var m = t.match(/(\d+)\-(\d+) of (\d+)/);
-                return {total: m.length>3?parseInt(m[3]):0,read: m.length>2?parseInt(m[2]):0};
+                return {total: m && m.length>3?parseInt(m[3]):0,read: m && m.length>2?parseInt(m[2]):0};
             });
             var newids = page.evaluate(function(date){
                 var rows = $("table#grid tbody tr");
