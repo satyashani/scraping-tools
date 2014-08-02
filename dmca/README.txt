@@ -13,3 +13,27 @@ Ready to roll :-)
 
 Update : 2014-03-24
 Add field 'workerid' in each POST Data to select the worker. e.g. {'workerid': 'amit.020585'}
+
+
+ROUTES:
+GET /                               ->  Server check
+POST /submitdmca            ->  Get list of confirmation ids and their links from dashboard.
+	POST BODY
+	{
+		"workerid"		    :		"gmail_userid"
+	    "firstname"		    :		"firstname value",
+	    "lastname"		    :		"lastname value",
+	    "companyname"		:		"companyname value",
+	    "newcopyrightholder":		"newcopyrightholder value",
+	    "email"		        :		"email value",
+	    "countrycode"		:		"countrycode value",
+	    "crworkdesc0"		:		"crworkdesc0 value",
+	    "crworkurls0"		:		"crworkurls0 value",
+	    "infringingurls0" : "infringingurls0 value"
+    }
+POST /changeworker          ->  Get List of approved, rejected and pending urls
+	POST BODY
+	{
+        "workerid"		    :		"username",
+        "password"		    :		"password"
+    }

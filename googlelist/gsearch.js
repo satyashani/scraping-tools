@@ -205,7 +205,7 @@ var handler = function(req,res,server){
                     var filtered = [];
                     totalres.forEach(function(r){
                         for(var i=0;i<whitelist.length;i++){
-                            if(r.match(new RegExp(whitelist[i],"i"))) return;
+                            if(whitelist[i] && r.match(new RegExp(whitelist[i],"i"))) return;
                         }
                         for(var f=0;f<filtered.length;f++){
                             if(filtered[f].url == r) return;

@@ -413,6 +413,17 @@ var handler = function(req,res,server){
         }
     }
 
+    var handleChangeWorker = function(){
+        var worker = getPostData();
+        if(!worker.workerid || !worker.password)
+            return sendError("missing_workerid_or_password");
+        worker.username = worker.workerid;
+        server.changeWorker(worker,function(err,res){
+            if(!err && res) sendOk();
+            else sendError(err.message);
+        })
+    }
+
     var handleGetProxies = function(){
         send(200,server.proxies,true);
     }
@@ -439,6 +450,7 @@ var handler = function(req,res,server){
         switch(req.url){
             case "/proxies" : handleSetProxies(); break;
             case "/submitdmca" : handleDmca(); break;
+            case "/changeworker": handleChangeWorker(); break;
             default : sendOk(); break;
         }
     }else{
@@ -563,13 +575,15 @@ var worker = function(conf){
         console.log("Login request for "+username);
         page.onLoadFinished = function(){
             var url = page.url;
+            console.log("During login-url = ",url);
             page.injectJs(jq);
             if(changes >=4) return callback(new Error("Could not log in"));
-            if(/dmca-notice/i.test(url) && changes < 4){
+            if(/LoginVerification|VerifiedPhoneInterstitial/i.test(url)) return callback(new Error("login failed: requires verification"));
+            if(/checkCookie/i.test(url) && changes < 4){
                 page.onLoadFinished = null;
                 that.loggedin = true;
                 console.log("Logged in using "+that.username);
-                callback(true);
+                callback(null,true);
             }
             if(url.match(/ServiceLogin/)){
                 page.evaluate(function(username,password){
@@ -613,6 +627,7 @@ var worker = function(conf){
 }
 
 var server = function(){
+    this.started = false;
 	this.proxies  = [];
     this.workers = [];
     this.requests = 0;
@@ -633,15 +648,15 @@ server.prototype.changeProxy = function(){
  *
  * @param conf Object having {usrename :'',password: ''}
  */
-server.prototype.addWorker = function(conf){
+server.prototype.addWorker = function(conf,callback){
     var o = this;
     var wrk = new worker(conf);
-    wrk.login(function(res){
-        if(res===true){
+    wrk.login(function(err,res){
+        if(!err && res===true)
             o.workers.push(wrk);
-        }else{
-            console.log("Failed to add worker for conf - "+JSON.stringify(conf));
-        }
+        else
+            console.log("Failed to add worker "+conf.username+", error:"+err.message);
+        callback(err,res);
     });
 }
 
@@ -662,9 +677,16 @@ server.prototype.getWorker = function(id,callback){
     callback(new Error("worker_not_found"),null);
 }
 
+server.prototype.changeWorker = function(worker,callback){
+    phantom.clearCookies();
+    for(var i=0;i<this.workers.length;i++) this.workers[i] = null;
+    this.workers = [];
+    this.addWorker(worker,callback);
+}
+
 server.prototype.start = function(port){
     var o = this;
-    return ws.create().listen(port,function(req,res){
+    this.started = ws.create().listen(port,function(req,res){
         handler(req,res,o);
     });
 }
@@ -674,30 +696,28 @@ server.prototype.init = function(){
     var conf = JSON.parse(fs.read("conf.json"));
     if(conf.proxies)
         o.proxies = conf.proxies;
+    var failedlogins = 0;
     for(var i=0;i<conf.workers.length;i++){
-        o.addWorker(conf.workers[i]);
-    }
-    var timeout = 10000,retries=0;
-    var checkWorkersAndStart = function(){
-        if(!o.workers.length){
-            if(retries<6){
-                retries++;
-                console.log("Waiting for workers to log in, attempt "+retries);
-                setTimeout(checkWorkersAndStart,timeout);
+        o.addWorker(conf.workers[i],function(err,res){
+            if(!err && res){
+                if(!o.started){
+                    o.start(conf.port);
+                    if(!o.started){
+                        console.log("Workers logged in but failed to start web server on port "+conf.port+", exiting.");
+                        o.exit();
+                    }else{
+                        console.log("Web server started at port "+conf.port);
+                    }
+                }
             }else{
-                console.log("Workers failed to login in "+(retries*timeout)+" seconds, quitting.");
-                o.exit();
+                failedlogins++;
+                if(failedlogins===conf.workers.length){
+                    console.log("All accounts failed to login, exiting");
+                    o.exit();
+                }
             }
-        }else{
-            if(!o.start(conf.port)){
-                console.log('Workers logged in but failed to start web server, exiting.');
-                o.exit();
-            }else{
-                console.log("Web server started at http://localhost:"+conf.port);
-            }
-        }
+        });
     }
-    checkWorkersAndStart();
 }
 
 server.prototype.exit = function(){
