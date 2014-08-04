@@ -94,8 +94,10 @@ var handler = function(req,res,server){
         var res = [];
         $("div#ires li.g").each(function(){
             var u = $(this).find("h3.r a").attr("href");
-            var match = u.match(/\/url\?q=(http[s]*[^&]*)/);
-            res.push(match?decodeURIComponent(match[1]):u);
+            if(u){
+                var match = u.match(/url[\?q]*=(http[s]*[^&]*)/);
+                res.push(match?decodeURIComponent(match[1]):u);
+            }
         });
         var tds = $("div#foot td"),hasMore = !!tds.size();
         tds.each(function(i){
