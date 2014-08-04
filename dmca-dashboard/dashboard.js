@@ -129,7 +129,7 @@ var handler = function(req,res,server){
         var json = arguments.length>2?isjson:true;
         res.setHeader('Content-Type', json?"application/json":"text/html");
         var out = json?JSON.stringify(data):data;
-        res.setHeader('Content-Length', out.length);
+//        res.setHeader('Content-Length', out.length);
         res.write(out);
         res.closeGracefully();
     }
@@ -221,19 +221,23 @@ var worker = function(conf){
                 }
                 page.onLoadFinished = null;
                 page.injectJs(jq);
-                var foundSubmitUrl = page.evaluate(function(){
-                    var size = $("table#grid tbody a").size();
-                    if(!size) return size;
-                    return "https://www.google.com"+$("table#grid tbody a").attr("href")+"&approved.s=100&pending.s=100&rejected.s=100";
+                var res = page.evaluate(function(){
+                    var out = {};
+                    out.size = $("table#grid tbody a").size();
+                    if(!out.size) return out;
+                    out.url = "https://www.google.com"+$("table#grid tbody tr.first td.date-column a").attr("href")+"&approved.s=100&pending.s=100&rejected.s=100";
+                    out.id = $("table#grid tbody tr.first td.id-column").text();
+                    out.date = $("table#grid tbody tr.first td.date-column").text();
+                    return out;
                 });
-                if(!foundSubmitUrl){
+                if(!res.url){
                     page.render("urlsearchpage.png");
                     return callback(new Error("No dmca submission found for this url."));
                 }
-                page.open(foundSubmitUrl,function(stat){
-                    if(!stat=='success') return callback(new Error("Error opening url details page: "+foundSubmitUrl));
+                page.open(res.url,function(stat){
+                    if(!stat=='success') return callback(new Error("Error opening url details page: "+res.url));
                     page.injectJs(jq);
-                    var res = page.evaluate(function(url){
+                    var out = page.evaluate(function(url){
                         var links = $("table.grid div.url-item a"),result={};
                         for(var i=0;i<links.size();i++){
                             if(links.eq(i).attr("href")===url){
@@ -244,6 +248,10 @@ var worker = function(conf){
                         }
                         return result;
                     },url);
+                    res.message = out.message?out.message:" ";
+                    res.status = out.status?out.status:" ";
+                    delete res.size;
+                    delete res.url;
                     callback(null,res);
                 });
             };
