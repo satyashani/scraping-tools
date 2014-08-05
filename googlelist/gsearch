@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# chkconfig: 35 90 12
+# description: Google search server
+#
+# Get function from functions library
+. /etc/init.d/functions
+# Start the service gsearch
+start() {
+		cd /var/www/google-dmca/googlelist
+        phantomjs10 gsearch.js > access.log 2> error.log &
+        ### Create the lock file ###
+        touch /var/lock/gsearch
+        success $"gsearch server startup"
+        echo
+}
+# Restart the service FOO
+stop() {
+        initlog -c "echo -n Stopping gsearch server: "
+        kill gsearch
+        ### Now, delete the lock file ###
+        rm -f /var/lock/gsearch
+        echo
+}
+### main logic ###
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  status)
+        status gsearch
+        ;;
+  restart|reload|condrestart)
+        stop
+        start
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        exit 1
+esac
+exit 0
