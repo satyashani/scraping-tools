@@ -100,6 +100,24 @@ var handler = function(req,res,server){
         });
     }
 
+    handleGetUrlCountByDate = function(){
+        var data = getPostData();
+        if(!data) return;
+        if(!data.date) return sendError("missing_field:date");
+        var date = new Date(Date.parse(data.date));
+        server.getWorker(data.workerid,function(err,worker){
+            if(err) sendError(err.message);
+            else{
+                worker.getUrlCountByDate(date,function(errget,response){
+                    if(errget)
+                        sendError(errget.message);
+                    else
+                        sendJson(response);
+                });
+            }
+        });
+    }
+
     var handleGetReqCount = function(){
         var data = getPostData();
         if(!data) return;
@@ -141,6 +159,7 @@ var handler = function(req,res,server){
             case "/getidsbydate" : handleGetConfIdByDate(); break;
             case "/getcomfirmationids" : handleGetConfIds(); break;
             case "/getrequestcount" : handleGetReqCount(); break;
+            case "/geturlcountbydate" : handleGetUrlCountByDate(); break;
             default : sendOk(); break;
         }
     }else{
@@ -297,6 +316,52 @@ var worker = function(conf){
             if(status!='success') callback(new Error("failed to open dashboard."));
         });
     }
+
+    this.getUrlCountByDate = function(date,callback){
+        var dt = date.getFullYear()*10000+(date.getMonth()+1)*100+date.getDate();
+        var urlcount = 0;
+        page.onLoadFinished = function(){
+            page.injectJs(jq);
+            var results = page.evaluate(function(date){
+                var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                var t = $("div.table-range-text").eq(0).text();
+                var m = t.match(/(\d+)\-(\d+) of (\d+)/);
+                var result = {hasmore: false, totalurls: 0, read: m && m.length>2?parseInt(m[2]):0};
+                var rows = $("table#grid tbody tr");
+                if(!rows || ! rows.size()) return result;
+                if(m) result.hasmore = parseInt(m[2])<parseInt(m[3]);
+                for(var i=0;i<rows.size();i++){
+                    var a = $(rows.eq(i)).find("td.date-column a");
+                    if(a.size() && a.text()){
+                        var m = a.text().match(/([A-z]+) ([0-9]+), ([0-9]+)/);
+                        var rowdate = m?parseInt(m[3])*10000+(months.indexOf(m[1])+1)*100+parseInt(m[2]):false;
+                        if(rowdate){
+                            if(rowdate==date){
+                                result.totalurls += parseInt($(rows.eq(i)).find("td.number").eq(0).text());
+                            }
+                            if(rowdate<date){
+                                result.hasmore=false;
+                                return result;
+                            }
+                        }
+                    }else return result;
+
+                }
+                return result;
+            },dt);
+            urlcount+=results.totalurls;
+            if(results.hasmore){
+                page.open(dashboardurl+"&grid.r="+(results.read+1));
+            }else{
+                page.onLoadFinished = null;
+                callback(null,{urlcount: urlcount});
+            }
+        }
+        page.open(dashboardurl,function(status){
+            if(status!='success') callback(new Error("failed to open dashboard."));
+        });
+    };
+
     this.getDashboard = function(ids,callback){
         that.openDashboard(function(err){
             if(err) return callback(err);

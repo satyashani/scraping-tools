@@ -20,3 +20,6 @@ POST /getidsbydate                  ->  Get confirmation Ids by date
 POST /getrequestcount               ->  Get worker request count since last reset. Set reset = true to reset count.
     POST BODY
     {"workerid": "gmail_userid", "reset": true/false}
+POST /geturlcountbydate             ->  Get urls submitted by date
+	POST BODY
+	{"workerid": "gmail_userid", "date" : "yyyy-mm-dd"}
