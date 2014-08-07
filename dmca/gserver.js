@@ -15,6 +15,7 @@ var fs = require("fs");
 
 var dbc = {username: "hugs",password: "ugosara"};
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
+var conf = JSON.parse(fs.read("conf.json"));
 
 var inputs = [
     {id: "firstname", type: "input", selector: "input#first-name", required: true},
@@ -294,11 +295,15 @@ var getDbcPage =function(){
 }
 
 var decodeCatpcha = function(captchafile,callback){
-    var page = pg.create(),urlchanges=0;
+    var page = pg.create(),urlchanges= 0,timeout=false;
     page.content = getDbcPage(captchafile);
     page.injectJs(jq);
     page.uploadFile("input#captchafile",captchafile);
     page.onConsoleMessage = function(x){console.log(x)};
+    setTimeout(function(){
+        timeout=true;
+        callback(new Error("captcha_timeout"));
+    },conf.captchatimeout);
     page.onUrlChanged = function(url){
         urlchanges++;
         console.log("captcha_decode_step:url="+url);
@@ -336,11 +341,12 @@ var decodeCatpcha = function(captchafile,callback){
                 poll();
                 return c;
             },url);
+            if(timeout) return;
             if(captcha.text)
                 callback(null,captcha.text);
             else
                 callback(new Error("dbc_api_error:"+JSON.stringify(captcha)),null);
-        }else if(urlchanges==2)
+        }else if(urlchanges==2 && !timeout)
             callback(new Error("dbc_api_redirect_failed:"+url),null);
     }
     page.evaluate(function(){
@@ -424,6 +430,16 @@ var handler = function(req,res,server){
         })
     }
 
+    var handleGetCurrentWorker = function(){
+        var u = server.workers[0].username;
+        server.getWorker(u,function(err,worker){
+            if(err) return sendError("worker 0 not usable to testing");
+            worker.getCurrentLoggedIn(function(err,res){
+                send(200,res,true);
+            })
+        });
+    }
+
     var handleGetProxies = function(){
         send(200,server.proxies,true);
     }
@@ -456,14 +472,15 @@ var handler = function(req,res,server){
     }else{
         switch(req.url){
             case "/proxies" : handleGetProxies(); break;
+            case "/currentworker" : handleGetCurrentWorker(); break;
             default : sendOk(); break;
         }
     }
 }
 
-var worker = function(conf){
-    var username = conf.username?conf.username:gmailuser.username;
-    var password = conf.password?conf.password:gmailuser.password;
+var worker = function(config){
+    var username = config.username?config.username:gmailuser.username;
+    var password = config.password?config.password:gmailuser.password;
     this.username = username;
     var changes = 0;
     this.busy = false; this.loggedin = false;
@@ -483,8 +500,8 @@ var worker = function(conf){
             decodeCatpcha(filename,function(err,decodedcaptcha){
                 fs.remove(filename);
                 var dmcaurlchanges = 0,dmcapageloads = 0;
-                console.log("captcha decoded to be "+decodedcaptcha);
                 if(err) return callback(err,null);
+                console.log("captcha decoded to be "+decodedcaptcha);
                 page.onLoadFinished = function(){
                     var url = page.url;
                     dmcapageloads++;
@@ -624,6 +641,21 @@ var worker = function(conf){
             that.busy = false;
         })
     }
+    this.getCurrentLoggedIn = function(callback){
+        page.open("https://www.google.com/webmasters/tools/dmca-notice?hl=en&pid=0",function(opened){
+            if(opened !== "success")
+                return callback(new Error("error_opening_dmca_page"),null);
+            page.injectJs(jq);
+            console.log("dmca page loaded by "+username);
+            page.onConsoleMessage = function(x){console.log(x)};
+            var res = page.evaluate(function(){
+                var t = $("a[title*='Account']").eq(0).attr('title');
+                var m = t.match(/Account ([A-z ]*).*\((.*)\)/);
+                return {title: t, email: m?m[2]:"-",name:m?m[1]:'-'};
+            });
+            callback(null,res);
+        });
+    }
 }
 
 var server = function(){
@@ -648,14 +680,15 @@ server.prototype.changeProxy = function(){
  *
  * @param conf Object having {usrename :'',password: ''}
  */
-server.prototype.addWorker = function(conf,callback){
+server.prototype.addWorker = function(config,callback){
     var o = this;
-    var wrk = new worker(conf);
+    var wrk = new worker(config);
+    console.log("adding worker with username:",config.username);
     wrk.login(function(err,res){
         if(!err && res===true)
             o.workers.push(wrk);
         else
-            console.log("Failed to add worker "+conf.username+", error:"+err.message);
+            console.log("Failed to add worker "+config.username+", error:"+err.message);
         callback(err,res);
     });
 }
@@ -693,7 +726,6 @@ server.prototype.start = function(port){
 
 server.prototype.init = function(){
     var o = this;
-    var conf = JSON.parse(fs.read("conf.json"));
     if(conf.proxies)
         o.proxies = conf.proxies;
     var failedlogins = 0;

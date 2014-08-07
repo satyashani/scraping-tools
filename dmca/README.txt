@@ -16,7 +16,7 @@ Add field 'workerid' in each POST Data to select the worker. e.g. {'workerid': '
 
 
 ROUTES:
-GET /                               ->  Server check
+GET /                       ->  Server check
 POST /submitdmca            ->  Get list of confirmation ids and their links from dashboard.
 	POST BODY
 	{
@@ -37,3 +37,4 @@ POST /changeworker          ->  Get List of approved, rejected and pending urls
         "workerid"		    :		"username",
         "password"		    :		"password"
     }
+GET /currentworker          -> Current logged in worker email, check from dmca-notice page
