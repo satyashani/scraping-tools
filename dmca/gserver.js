@@ -295,6 +295,7 @@ var getDbcPage =function(){
 }
 
 var decodeCatpcha = function(captchafile,callback){
+    return callback(null,"12345");
     var page = pg.create(),urlchanges= 0,timeout=false;
     page.content = getDbcPage(captchafile);
     page.injectJs(jq);
@@ -486,6 +487,7 @@ var worker = function(config){
     this.busy = false; this.loggedin = false;
     var page = pg.create(); this.relogin = false;
     var that = this;
+    page.onError = function(err,trace){};
     var filldmca = function(dmcaformdata,callback){
         console.log("About to fill form as "+username);
         page.onCallback = function(imgdata){
@@ -555,6 +557,10 @@ var worker = function(config){
                 },decodedcaptcha,JSON.stringify(dmcaformdata));
             })
         }
+        page.onResourceError = function(resourceError) {
+            page.reason = resourceError.errorString;
+            page.reason_url = resourceError.url;
+        };
         page.open("https://www.google.com/webmasters/tools/dmca-notice?hl=en&pid=0",function(opened){
             if(opened == "success"){
                 page.injectJs(jq);
@@ -577,12 +583,13 @@ var worker = function(config){
                             var imgdata = canvas.toDataURL("image/jpeg").replace(/^data:image\/(png|jpg|jpeg);base64,/, "base64:");
                             window.callPhantom(imgdata);
                         }).error(function(x,t,r){
-                                window.callPhantom(false);
-                            }).attr({src :$("img#recaptcha_challenge_image").attr("src")});
+                            window.callPhantom(false);
+                        }).attr({src :$("img#recaptcha_challenge_image").attr("src")});
                     },5000);
                 });
             }
-            else callback(new Error("error_opening_dmca_page"),null);
+            else
+                callback(new Error("error_opening_dmca_page:"+page.reason),null);
         });
     }
     this.login = function(callback){
@@ -600,7 +607,20 @@ var worker = function(config){
                 page.onLoadFinished = null;
                 that.loggedin = true;
                 console.log("Logged in using "+that.username);
-                callback(null,true);
+            }
+            if(/dmca-notice/i.test(url) && that.loggedin){
+                console.log("at dmca page after  login");
+                var testpage = function(){
+                    page.injectJs(jq);
+                    page.render("dmcaafterlogin.png");
+                    var loaded = page.evaluate(function(){
+                        return $("input#signature").size();
+                    });
+                    if(loaded) setTimeout(function(){callback(null,true);},5000);
+                    else
+                        setTimeout(testpage,2000);
+                }
+                testpage();
             }
             if(url.match(/ServiceLogin/)){
                 page.evaluate(function(username,password){
