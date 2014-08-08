@@ -295,7 +295,6 @@ var getDbcPage =function(){
 }
 
 var decodeCatpcha = function(captchafile,callback){
-    return callback(null,"12345");
     var page = pg.create(),urlchanges= 0,timeout=false;
     page.content = getDbcPage(captchafile);
     page.injectJs(jq);
