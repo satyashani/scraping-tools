@@ -100,7 +100,7 @@ var handler = function(req,res,server){
         });
     }
 
-    handleGetUrlCountByDate = function(){
+    var handleGetUrlCountByDate = function(){
         var data = getPostData();
         if(!data) return;
         if(!data.date) return sendError("missing_field:date");
@@ -128,6 +128,17 @@ var handler = function(req,res,server){
                 if(data.reset) worker.resetCount();
             }
         });
+    }
+
+    var handleChangeWorker = function(){
+        var worker = getPostData();
+        if(!worker.workerid || !worker.password)
+            return sendError("missing_workerid_or_password");
+        worker.username = worker.workerid;
+        server.changeWorker(worker,function(err,res){
+            if(!err && res) sendOk();
+            else sendError(err.message);
+        })
     }
 
     var sendJson = function(out){
@@ -160,6 +171,7 @@ var handler = function(req,res,server){
             case "/getcomfirmationids" : handleGetConfIds(); break;
             case "/getrequestcount" : handleGetReqCount(); break;
             case "/geturlcountbydate" : handleGetUrlCountByDate(); break;
+            case "/changeworker" : handleChangeWorker(); break;
             default : sendOk(); break;
         }
     }else{
@@ -429,41 +441,47 @@ var worker = function(conf){
         page.onLoadFinished = function(){
             var url = page.url;
             page.injectJs(jq);
-            if(url.match(/ServiceLogin/)){
-                console.log("At login page..");
-                page.evaluate(function(username,password){
-                    $("input[type='email']").val(username);
-                    $("input[type='password']").val(password);
-                    $("input#signIn").click();
-                },username,password);
-            }else{
-                page.render("loginpage.png");
-            }
-        }
-
-        page.onUrlChanged = function(url){
-            console.log("Url changed to "+url);
-            page.injectJs(jq);
+            var loginerror = page.evaluate(function(){
+                var errorspan = $("span.error-msg");
+                if(!errorspan.size()) return false;
+                else return errorspan.text().trim();
+            });
+            if(loginerror) return callback(new Error("Login page error:"+loginerror));
             if(changes >=4) return callback(new Error("Could not log in"));
-            if(/settings/i.test(url) && changes > 1){
+            if(/LoginVerification|VerifiedPhoneInterstitial/i.test(url)) return callback(new Error("login failed: requires verification"));
+            if(/checkCookie/i.test(url) && changes < 4){
                 page.onLoadFinished = null;
-                page.onUrlChanged = null;
                 that.loggedin = true;
                 console.log("Logged in using "+that.username);
-                callback(true);
             }
-            changes++;
-        };
-        page.open("https://accounts.google.com/ServiceLogin",function(stat){
-            if(stat == "success"){
-                page.injectJs(jq);
+            if(/dmca-dashboard/i.test(url) && that.loggedin){
+                var testpage = function(){
+                    page.injectJs(jq);
+                    var loaded = page.evaluate(function(){
+                        return $("form.url-match-form").size();
+                    });
+                    if(loaded) setTimeout(function(){callback(null,true);},5000);
+                    else{
+                        page.render("dashboardafterlogin.png");
+                        setTimeout(testpage,2000);
+                    }
+
+                }
+                testpage();
+            }
+            if(url.match(/ServiceLogin/)){
                 page.evaluate(function(username,password){
                     $("input[type='email']").val(username);
                     $("input[type='password']").val(password);
                     $("input#signIn").click();
                 },username,password);
-            }else{
+            }
+            changes++;
+        }
+        page.open("https://www.google.com/webmasters/tools/dmca-dashboard",function(stat){
+            if(stat !== "success"){
                 console.log("Worker : "+username+" Failed to login, Login page did not open");
+                callback(new Error("login_page_load_failed"));
             }
         });
     }
@@ -489,16 +507,23 @@ server.prototype.changeProxy = function(){
  *
  * @param conf Object having {usrename :'',password: ''}
  */
-server.prototype.addWorker = function(conf){
+server.prototype.addWorker = function(config,callback){
     var o = this;
-    var wrk = new worker(conf);
-    wrk.login(function(res){
-        if(res===true){
+    var wrk = new worker(config);
+    wrk.login(function(err,res){
+        if(!err && res===true)
             o.workers.push(wrk);
-        }else{
-            console.log("Failed to add worker for conf - "+JSON.stringify(conf));
-        }
+        else
+            console.log("Failed to add worker "+config.username+", error:"+err.message);
+        callback(err,res);
     });
+}
+
+server.prototype.changeWorker = function(worker,callback){
+    phantom.clearCookies();
+    for(var i=0;i<this.workers.length;i++) this.workers[i] = null;
+    this.workers = [];
+    this.addWorker(worker,callback);
 }
 
 /**
@@ -520,7 +545,7 @@ server.prototype.getWorker = function(id,callback){
 
 server.prototype.start = function(port){
     var o = this;
-    return ws.create().listen(port,function(req,res){
+    this.started = ws.create().listen(port,function(req,res){
         handler(req,res,o);
     });
 }
@@ -530,30 +555,28 @@ server.prototype.init = function(){
     var conf = JSON.parse(fs.read("conf.json"));
     if(conf.proxies)
         o.proxies = conf.proxies;
-    for(var i=0;i<conf.workers.length;i++){
-        o.addWorker(conf.workers[i]);
-    }
-    var timeout = 10000,retries=0;
-    var checkWorkersAndStart = function(){
-        if(!o.workers.length){
-            if(retries<6){
-                retries++;
-                console.log("Waiting for workers to log in, attempt "+retries);
-                setTimeout(checkWorkersAndStart,timeout);
+    var failedlogins = 0;
+    var tryLogin = function(i){
+        o.addWorker(conf.workers[i],function(err,res){
+            if(err){
+                console.log("Error logging in using ",conf.workers[i].username,":",err.message);
+                if(i<conf.workers.length-1) tryLogin(i+1);
+                else{
+                    console.log("All workers failed to login");
+                    o.exit();
+                }
             }else{
-                console.log("Workers failed to login in "+(retries*timeout)+" seconds, quitting.");
-                o.exit();
+                o.start(conf.port);
+                if(!o.started){
+                    console.log("Workers logged in but failed to start web server on port "+conf.port+", exiting.");
+                    o.exit();
+                }else{
+                    console.log("Web server started at port "+conf.port);
+                }
             }
-        }else{
-            if(!o.start(conf.port)){
-                console.log('Workers logged in but failed to start web server, exiting.');
-                o.exit();
-            }else{
-                console.log("Web server started at http://localhost:"+conf.port);
-            }
-        }
+        });
     }
-    checkWorkersAndStart();
+    tryLogin(0);
 }
 
 server.prototype.exit = function(){

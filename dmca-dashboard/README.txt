@@ -23,3 +23,9 @@ POST /getrequestcount               ->  Get worker request count since last rese
 POST /geturlcountbydate             ->  Get urls submitted by date
 	POST BODY
 	{"workerid": "gmail_userid", "date" : "yyyy-mm-dd"}
+POST /changeworker                  ->  Get List of approved, rejected and pending urls
+    POST BODY
+    {
+        "workerid"		    :		"username",
+        "password"		    :		"password"
+    }

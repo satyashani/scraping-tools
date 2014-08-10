@@ -598,7 +598,6 @@ var worker = function(config){
         console.log("Login request for "+username);
         page.onLoadFinished = function(){
             var url = page.url;
-            console.log("During login-url = ",url);
             page.injectJs(jq);
             if(changes >=4) return callback(new Error("Could not log in"));
             if(/LoginVerification|VerifiedPhoneInterstitial/i.test(url)) return callback(new Error("login failed: requires verification"));
@@ -608,16 +607,17 @@ var worker = function(config){
                 console.log("Logged in using "+that.username);
             }
             if(/dmca-notice/i.test(url) && that.loggedin){
-                console.log("at dmca page after  login");
                 var testpage = function(){
                     page.injectJs(jq);
-                    page.render("dmcaafterlogin.png");
                     var loaded = page.evaluate(function(){
                         return $("input#signature").size();
                     });
                     if(loaded) setTimeout(function(){callback(null,true);},5000);
-                    else
+                    else{
+                        page.render("dmcaafterlogin.png");
                         setTimeout(testpage,2000);
+                    }
+
                 }
                 testpage();
             }
@@ -748,27 +748,27 @@ server.prototype.init = function(){
     if(conf.proxies)
         o.proxies = conf.proxies;
     var failedlogins = 0;
-    for(var i=0;i<conf.workers.length;i++){
+    var tryLogin = function(i){
         o.addWorker(conf.workers[i],function(err,res){
-            if(!err && res){
-                if(!o.started){
-                    o.start(conf.port);
-                    if(!o.started){
-                        console.log("Workers logged in but failed to start web server on port "+conf.port+", exiting.");
-                        o.exit();
-                    }else{
-                        console.log("Web server started at port "+conf.port);
-                    }
+            if(err){
+                console.log("Error logging in using ",conf.workers[i].username,":",err.message);
+                if(i<conf.workers.length-1) tryLogin(i+1);
+                else{
+                    console.log("All workers failed to login");
+                    o.exit();
                 }
             }else{
-                failedlogins++;
-                if(failedlogins===conf.workers.length){
-                    console.log("All accounts failed to login, exiting");
+                o.start(conf.port);
+                if(!o.started){
+                    console.log("Workers logged in but failed to start web server on port "+conf.port+", exiting.");
                     o.exit();
+                }else{
+                    console.log("Web server started at port "+conf.port);
                 }
             }
         });
     }
+    tryLogin(0);
 }
 
 server.prototype.exit = function(){

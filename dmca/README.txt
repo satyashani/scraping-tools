@@ -20,16 +20,16 @@ GET /                       ->  Server check
 POST /submitdmca            ->  Get list of confirmation ids and their links from dashboard.
 	POST BODY
 	{
-		"workerid"		    :		"gmail_userid"
-	    "firstname"		    :		"firstname value",
-	    "lastname"		    :		"lastname value",
-	    "companyname"		:		"companyname value",
-	    "newcopyrightholder":		"newcopyrightholder value",
-	    "email"		        :		"email value",
-	    "countrycode"		:		"countrycode value",
-	    "crworkdesc0"		:		"crworkdesc0 value",
-	    "crworkurls0"		:		"crworkurls0 value",
-	    "infringingurls0" : "infringingurls0 value"
+		"workerid"		    :		"amit.020585",
+	    "firstname"		    :		"amit",
+	    "lastname"		    :		"rai",
+	    "companyname"		:		"sony music",
+	    "newcopyrightholder":		"sony music",
+	    "email"		        :		"amit.020585@gmail.com",
+	    "countrycode"		:		"India",
+	    "crworkdesc0"		:		"Sony music copyright",
+	    "crworkurls0"		:		"http://www.sonymusic.com/videos/t-i-no-medicore/",
+	    "infringingurls0"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links"
     }
 POST /changeworker          ->  Get List of approved, rejected and pending urls
 	POST BODY

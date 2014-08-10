@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/googlelist/conf.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/googlelist/gsearch.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/googlelist/jquery-1.10.1.min.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/README.txt" afterPath="$PROJECT_DIR$/dmca/README.txt" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/conf.json" afterPath="$PROJECT_DIR$/dmca/conf.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/contributors.txt" afterPath="$PROJECT_DIR$/dmca/contributors.txt" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/dmacformvalues.json" afterPath="$PROJECT_DIR$/dmca/dmacformvalues.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/dmcaserver.conf" afterPath="$PROJECT_DIR$/dmca/dmcaserver.conf" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/gserver.js" afterPath="$PROJECT_DIR$/dmca/gserver.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/gserver_withproxy.js" afterPath="$PROJECT_DIR$/dmca/gserver_withproxy.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/jquery-1.10.1.min.js" afterPath="$PROJECT_DIR$/dmca/jquery-1.10.1.min.js" />
+    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="Timeout added for DBC captcha API">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca/README.txt" afterPath="$PROJECT_DIR$/dmca/README.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca-dashboard/README.txt" afterPath="$PROJECT_DIR$/dmca-dashboard/README.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca-dashboard/conf.json" afterPath="$PROJECT_DIR$/dmca-dashboard/conf.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca-dashboard/dashboard.js" afterPath="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca/gserver.js" afterPath="$PROJECT_DIR$/dmca/gserver.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="google-dmca.iws" />
@@ -36,28 +30,50 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="gserver_withproxy.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
+      <file leaf-file-name="gserver.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="717" column="21" selection-start="0" selection-end="28965" vertical-scroll-proportion="0.0" vertical-offset="10113" max-vertical-offset="11085">
+            <state line="674" column="26" selection-start="27518" selection-end="27518" vertical-scroll-proportion="0.0" vertical-offset="9855" max-vertical-offset="11745">
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dashboard.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="173" column="26" selection-start="5632" selection-end="5632" vertical-scroll-proportion="-8.1875" vertical-offset="2333" max-vertical-offset="8865">
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.txt" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dmca/README.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="34" column="9" selection-start="1365" selection-end="1541" vertical-scroll-proportion="0.0" vertical-offset="157" max-vertical-offset="675">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="gsearch.js" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
+      <file leaf-file-name="README.txt" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/dmca-dashboard/README.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="77" column="24" selection-start="2471" selection-end="2471" vertical-scroll-proportion="0.5442765" vertical-offset="768" max-vertical-offset="2565">
+            <state line="25" column="36" selection-start="1227" selection-end="1227" vertical-scroll-proportion="0.7944915" vertical-offset="0" max-vertical-offset="555">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="conf.json" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/googlelist/conf.json">
+        <entry file="file://$PROJECT_DIR$/dmca-dashboard/conf.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="29" selection-start="155" selection-end="155" vertical-scroll-proportion="-3.125" vertical-offset="0" max-vertical-offset="180">
+            <state line="7" column="1" selection-start="196" selection-end="196" vertical-scroll-proportion="-4.375" vertical-offset="0" max-vertical-offset="195">
               <folding />
             </state>
           </provider>
@@ -85,8 +101,28 @@
         <option value="$PROJECT_DIR$/proxyapitest.js" />
         <option value="$PROJECT_DIR$/gserver.js" />
         <option value="$PROJECT_DIR$/conf.json" />
+        <option value="$PROJECT_DIR$/googlelist/whitelist.json.js" />
+        <option value="$PROJECT_DIR$/googlelist/useragents.json.js" />
+        <option value="$PROJECT_DIR$/googlelist/teststring.json" />
+        <option value="$PROJECT_DIR$/googlelist/package.json" />
+        <option value="$PROJECT_DIR$/googlelist/README.txt" />
+        <option value="$PROJECT_DIR$/googlelist/useragents.json" />
+        <option value="$PROJECT_DIR$/googlelist/tests.js" />
+        <option value="$PROJECT_DIR$/googlelist/jquery.js" />
+        <option value="$PROJECT_DIR$/dmca-dashboard/gserver.js" />
+        <option value="$PROJECT_DIR$/dmca-dashboard/dashboard_workerSelect.js" />
+        <option value="$PROJECT_DIR$/googlelist/proxies.json" />
+        <option value="$PROJECT_DIR$/googlelist/whitelist.json" />
         <option value="$PROJECT_DIR$/googlelist/conf.json" />
         <option value="$PROJECT_DIR$/googlelist/gsearch.js" />
+        <option value="$PROJECT_DIR$/googlelist/googlesearch.sh" />
+        <option value="$PROJECT_DIR$/googlelist/gsearch.sh" />
+        <option value="$PROJECT_DIR$/dmca/conf.json" />
+        <option value="$PROJECT_DIR$/dmca/README.txt" />
+        <option value="$PROJECT_DIR$/dmca-dashboard/conf.json" />
+        <option value="$PROJECT_DIR$/dmca/gserver.js" />
+        <option value="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
+        <option value="$PROJECT_DIR$/dmca-dashboard/README.txt" />
       </list>
     </option>
   </component>
@@ -148,12 +184,15 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="FullScreen" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../marcl" />
+    <property name="SearchEverywhereHistory" value="" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/dmca-dashboard" />
       <recent name="$PROJECT_DIR$/googlelist" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/googlelist" />
       <recent name="$PROJECT_DIR$/dmca" />
       <recent name="$PROJECT_DIR$" />
     </key>
@@ -229,7 +268,147 @@
       <created>1401449722605</created>
       <updated>1401449722605</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Google search script added, pending further testing and any changes.">
+      <created>1401514394210</created>
+      <updated>1401514394210</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Updated to use white list, proxy change policy update.&#10;">
+      <created>1401610227983</created>
+      <updated>1401610227983</updated>
+    </task>
+    <task id="LOCAL-00005" summary="regex update for getting domain name">
+      <created>1401610867159</created>
+      <updated>1401610867159</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Updates as per discussion.">
+      <created>1401617697905</created>
+      <updated>1401617697905</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Disallowing google to set up cookies before next request.">
+      <created>1401783108454</created>
+      <updated>1401783108454</updated>
+    </task>
+    <task id="LOCAL-00008" summary="regex update for getting domain name&#10;">
+      <created>1401885232865</created>
+      <updated>1401885232865</updated>
+    </task>
+    <task id="LOCAL-00009" summary="config update and better mechanism to fool google">
+      <created>1401885305745</created>
+      <updated>1401885305745</updated>
+    </task>
+    <task id="LOCAL-00010" summary="bug in proxy refreshing code">
+      <created>1402213963964</created>
+      <updated>1402213963964</updated>
+    </task>
+    <task id="LOCAL-00011" summary="updated proxy collection method, now proxies can be provided in a file too.&#10;">
+      <created>1402219319089</created>
+      <updated>1402219319089</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Update in proxy management">
+      <created>1402389097166</created>
+      <updated>1402389097166</updated>
+    </task>
+    <task id="LOCAL-00013" summary="removed query string parsing&#10;">
+      <created>1402466840515</created>
+      <updated>1402466840515</updated>
+    </task>
+    <task id="LOCAL-00014" summary="proxy timeout">
+      <created>1402484068249</created>
+      <updated>1402484068249</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Update to provide as many results as needed per query. Set config variable resultsperquery or set property &quot;num&quot; in query json">
+      <created>1403024446132</created>
+      <updated>1403024446132</updated>
+    </task>
+    <task id="LOCAL-00016" summary="message update when result is empty&#10;">
+      <created>1403354822037</created>
+      <updated>1403354822037</updated>
+    </task>
+    <task id="LOCAL-00017" summary="one bug when results are less than 10&#10;">
+      <created>1403457260563</created>
+      <updated>1403457260563</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Small updates and test to check problem with proxy.">
+      <created>1403528395389</created>
+      <updated>1403528395389</updated>
+    </task>
+    <task id="LOCAL-00019" summary="An effort to improve proxy failure detection">
+      <created>1403594682026</created>
+      <updated>1403594682026</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Updates to check proxy fail more reliably">
+      <created>1404048460022</created>
+      <updated>1404048460022</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Support for username and password and other types(socks/https) in proxies">
+      <created>1404111573860</created>
+      <updated>1404111573860</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Dmca Dashboard scraper. Read README in the folder before use.">
+      <created>1405674455008</created>
+      <updated>1405674455008</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Dmca Dashboard server update as per discussions">
+      <created>1405959890976</created>
+      <updated>1405959890976</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Dmca Dashboard update, added worker selection on each request, request count and reset path.">
+      <created>1406013178069</created>
+      <updated>1406013178069</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Update dmca form submission script - now select worker to be used by sending 'workerid' in post data.">
+      <created>1406184456044</created>
+      <updated>1406184456044</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Dashboard update for scraping more than 25 submitted URLs">
+      <created>1406365248360</created>
+      <updated>1406365248360</updated>
+    </task>
+    <task id="LOCAL-00027" summary="bug in reading count of rows read and total rows on dashobard.">
+      <created>1406801143428</created>
+      <updated>1406801143428</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Bug in reading total and read rows">
+      <created>1406802023698</created>
+      <updated>1406802023698</updated>
+    </task>
+    <task id="LOCAL-00029" summary="DMCA uploader update , now only one worker works at a time, new route /changeworker">
+      <created>1406958515916</created>
+      <updated>1406958515916</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Updates for url collection bug">
+      <created>1406979476643</created>
+      <updated>1406979476643</updated>
+    </task>
+    <task id="LOCAL-00031" summary="URL extraction improvement">
+      <created>1407127195162</created>
+      <updated>1407127195162</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Collect confirmation id and date for url search">
+      <created>1407128757438</created>
+      <updated>1407128757438</updated>
+    </task>
+    <task id="LOCAL-00033" summary="init script test for gsearch">
+      <created>1407212602245</created>
+      <updated>1407212602245</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Timeout added for DBC captcha API, timeout value can be set in conf.json">
+      <created>1407388809211</created>
+      <updated>1407388809211</updated>
+    </task>
+    <task id="LOCAL-00035" summary="URL submitted on a  date.">
+      <created>1407389684449</created>
+      <updated>1407389684449</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Some debugging code added">
+      <created>1407500140019</created>
+      <updated>1407500140019</updated>
+    </task>
+    <task id="LOCAL-00037" summary="removed testing code, please use this commit rather than the previous one.">
+      <created>1407500435008</created>
+      <updated>1407500435008</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -256,24 +435,24 @@
     <frame x="1" y="0" width="1599" height="875" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32784638" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32784638" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32599726" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31550068" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32921812" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32737276" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -288,74 +467,49 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Added conf for proxy api" />
-    <MESSAGE value="Created two versions, without proxy and with proxy" />
-    <option name="LAST_COMMIT_MESSAGE" value="Created two versions, without proxy and with proxy" />
+    <MESSAGE value="removed query string parsing&#10;" />
+    <MESSAGE value="proxy timeout" />
+    <MESSAGE value="Update to provide as many results as needed per query. Set config variable resultsperquery or set property &quot;num&quot; in query json" />
+    <MESSAGE value="message update when result is empty&#10;" />
+    <MESSAGE value="one bug when results are less than 10&#10;" />
+    <MESSAGE value="Small updates and test to check problem with proxy." />
+    <MESSAGE value="An effort to improve proxy failure detection" />
+    <MESSAGE value="Updates to check proxy fail more reliably" />
+    <MESSAGE value="Support for username and password and other types(socks/https) in proxies" />
+    <MESSAGE value="Dmca Dashboard scraper. Read README in the folder before use." />
+    <MESSAGE value="Dmca Dashboard server update as per discussions" />
+    <MESSAGE value="Dmca Dashboard update, added worker selection on each request, request count and reset path." />
+    <MESSAGE value="Update dmca form submission script - now select worker to be used by sending 'workerid' in post data." />
+    <MESSAGE value="Dashboard update for scraping more than 25 submitted URLs" />
+    <MESSAGE value="bug in reading count of rows read and total rows on dashobard." />
+    <MESSAGE value="Bug in reading total and read rows" />
+    <MESSAGE value="DMCA uploader update , now only one worker works at a time, new route /changeworker" />
+    <MESSAGE value="Updates for url collection bug" />
+    <MESSAGE value="URL extraction improvement" />
+    <MESSAGE value="Collect confirmation id and date for url search" />
+    <MESSAGE value="init script test for gsearch" />
+    <MESSAGE value="Timeout added for DBC captcha API, timeout value can be set in conf.json" />
+    <MESSAGE value="URL submitted on a  date." />
+    <MESSAGE value="Some debugging code added" />
+    <MESSAGE value="removed testing code, please use this commit rather than the previous one." />
+    <option name="LAST_COMMIT_MESSAGE" value="removed testing code, please use this commit rather than the previous one." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="6" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/dmca/dmacformvalues.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="1" selection-start="337" selection-end="337" vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="240" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="498" column="64" selection-start="19644" selection-end="19644" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10560">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/conf.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="58" selection-start="45" selection-end="95" vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="180">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/dmacformvalues.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="1" selection-start="337" selection-end="337" vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="240" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="284" column="0" selection-start="11127" selection-end="11127" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10050">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/conf.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="1" selection-start="1" selection-end="1" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="180">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/dmcaserver.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="24" selection-start="651" selection-end="651" vertical-scroll-proportion="0.0" vertical-offset="405" max-vertical-offset="510" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/dmacformvalues.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="25" selection-start="0" selection-end="337" vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="240" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dmca/README.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="17" selection-start="591" selection-end="591" vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="255" />
+        <state line="32" column="5" selection-start="1364" selection-end="1364" vertical-scroll-proportion="0.0" vertical-offset="480" max-vertical-offset="675">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="223" column="25" selection-start="9229" selection-end="9229" vertical-scroll-proportion="0.0" vertical-offset="3345" max-vertical-offset="5970">
-          <folding />
-        </state>
+        <state line="242" column="103" selection-start="10307" selection-end="10307" vertical-scroll-proportion="0.0" vertical-offset="2051" max-vertical-offset="6030" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/dmacformvalues.json">
@@ -365,68 +519,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180">
-          <folding />
-        </state>
+        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="223" column="25" selection-start="9229" selection-end="9229" vertical-scroll-proportion="0.0" vertical-offset="3345" max-vertical-offset="5970">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/dmacformvalues.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="1" selection-start="397" selection-end="397" vertical-scroll-proportion="0.0" vertical-offset="195" max-vertical-offset="285" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180">
-          <folding />
-        </state>
+        <state line="284" column="1" selection-start="11463" selection-end="11463" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="5520" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="242" column="103" selection-start="10307" selection-end="10307" vertical-scroll-proportion="0.0" vertical-offset="2051" max-vertical-offset="6030">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/dmacformvalues.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="1" selection-start="397" selection-end="397" vertical-scroll-proportion="0.0" vertical-offset="195" max-vertical-offset="285" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180">
-          <folding />
-        </state>
+        <state line="220" column="18" selection-start="8991" selection-end="8991" vertical-scroll-proportion="0.0" vertical-offset="632" max-vertical-offset="4425" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="284" column="1" selection-start="11463" selection-end="11463" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="5520">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="220" column="18" selection-start="8991" selection-end="8991" vertical-scroll-proportion="0.0" vertical-offset="632" max-vertical-offset="4425">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="137" column="26" selection-start="6312" selection-end="6312" vertical-scroll-proportion="0.0" vertical-offset="1755" max-vertical-offset="4320">
-          <folding />
-        </state>
+        <state line="137" column="26" selection-start="6312" selection-end="6312" vertical-scroll-proportion="0.0" vertical-offset="1755" max-vertical-offset="4320" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/dmacformvalues.json">
@@ -436,150 +544,97 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180">
-          <folding />
-        </state>
+        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="185" column="40" selection-start="6721" selection-end="6721" vertical-scroll-proportion="0.0" vertical-offset="2472" max-vertical-offset="4290">
-          <folding />
-        </state>
+        <state line="185" column="40" selection-start="6721" selection-end="6721" vertical-scroll-proportion="0.0" vertical-offset="2472" max-vertical-offset="4290" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180">
-          <folding />
-        </state>
+        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="126" column="55" selection-start="4950" selection-end="4950" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="4155">
-          <folding />
-        </state>
+        <state line="126" column="55" selection-start="4950" selection-end="4950" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="4155" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180">
-          <folding />
-        </state>
+        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="126" column="55" selection-start="4950" selection-end="4950" vertical-scroll-proportion="0.0" vertical-offset="1732" max-vertical-offset="4155">
-          <folding />
-        </state>
+        <state line="126" column="55" selection-start="4950" selection-end="4950" vertical-scroll-proportion="0.0" vertical-offset="1732" max-vertical-offset="4155" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180">
-          <folding />
-        </state>
+        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="73" column="34" selection-start="2695" selection-end="2695" vertical-scroll-proportion="0.0" vertical-offset="755" max-vertical-offset="4125">
-          <folding />
-        </state>
+        <state line="73" column="34" selection-start="2695" selection-end="2695" vertical-scroll-proportion="0.0" vertical-offset="755" max-vertical-offset="4125" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180">
-          <folding />
-        </state>
+        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="180" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="86" column="27" selection-start="2822" selection-end="2822" vertical-scroll-proportion="0.0" vertical-offset="1277" max-vertical-offset="3285">
-          <folding />
-        </state>
+        <state line="86" column="27" selection-start="2822" selection-end="2822" vertical-scroll-proportion="0.0" vertical-offset="1277" max-vertical-offset="3285" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="86" column="27" selection-start="2822" selection-end="2822" vertical-scroll-proportion="0.0" vertical-offset="1142" max-vertical-offset="3285">
-          <folding />
-        </state>
+        <state line="86" column="27" selection-start="2822" selection-end="2822" vertical-scroll-proportion="0.0" vertical-offset="1142" max-vertical-offset="3285" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="19" selection-start="1079" selection-end="1079" vertical-scroll-proportion="0.0" vertical-offset="380" max-vertical-offset="2700">
-          <folding />
-        </state>
+        <state line="31" column="19" selection-start="1079" selection-end="1079" vertical-scroll-proportion="0.0" vertical-offset="380" max-vertical-offset="2700" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="111" column="37" selection-start="3318" selection-end="3318" vertical-scroll-proportion="0.0" vertical-offset="1607" max-vertical-offset="2430">
-          <folding />
-        </state>
+        <state line="111" column="37" selection-start="3318" selection-end="3318" vertical-scroll-proportion="0.0" vertical-offset="1607" max-vertical-offset="2430" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="143" column="14" selection-start="4245" selection-end="4245" vertical-scroll-proportion="0.0" vertical-offset="1652" max-vertical-offset="2385">
-          <folding />
-        </state>
+        <state line="143" column="14" selection-start="4245" selection-end="4245" vertical-scroll-proportion="0.0" vertical-offset="1652" max-vertical-offset="2385" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="32" selection-start="867" selection-end="867" vertical-scroll-proportion="0.0" vertical-offset="495" max-vertical-offset="1050">
-          <folding />
-        </state>
+        <state line="33" column="32" selection-start="867" selection-end="867" vertical-scroll-proportion="0.0" vertical-offset="495" max-vertical-offset="1050" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="30" selection-start="305" selection-end="325" vertical-scroll-proportion="0.0" vertical-offset="722" max-vertical-offset="1185">
-          <folding />
-        </state>
+        <state line="10" column="30" selection-start="305" selection-end="325" vertical-scroll-proportion="0.0" vertical-offset="722" max-vertical-offset="1185" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="1" selection-start="758" selection-end="758" vertical-scroll-proportion="0.0" vertical-offset="405" max-vertical-offset="1185">
-          <folding />
-        </state>
+        <state line="29" column="1" selection-start="758" selection-end="758" vertical-scroll-proportion="0.0" vertical-offset="405" max-vertical-offset="1185" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.08708273" vertical-offset="0" max-vertical-offset="689">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/dmcaserver.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="24" selection-start="651" selection-end="651" vertical-scroll-proportion="0.8173516" vertical-offset="47" max-vertical-offset="510" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="53" selection-start="0" selection-end="593" vertical-scroll-proportion="0.25917926" vertical-offset="0" max-vertical-offset="463" />
+        <state line="6" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.08708273" vertical-offset="0" max-vertical-offset="689" />
       </provider>
     </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/DHTML.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="996" column="0" selection-start="15304" selection-end="15304" vertical-scroll-proportion="0.33333334" vertical-offset="14706" max-vertical-offset="57195" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/conf.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="17" selection-start="19" selection-end="19" vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="210">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/contributors.txt">
@@ -592,35 +647,125 @@
         <state line="10" column="1" selection-start="337" selection-end="337" vertical-scroll-proportion="0.22189349" vertical-offset="0" max-vertical-offset="676" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/teststring.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="251" column="1" selection-start="12036" selection-end="12036" vertical-scroll-proportion="-156.875" vertical-offset="0" max-vertical-offset="3855" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/useragents.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="15" selection-start="589" selection-end="589" vertical-scroll-proportion="0.20454545" vertical-offset="0" max-vertical-offset="440" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="21" selection-start="183" selection-end="183" vertical-scroll-proportion="0.27272728" vertical-offset="0" max-vertical-offset="440" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/tests.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="19" selection-start="490" selection-end="490" vertical-scroll-proportion="0.0" vertical-offset="285" max-vertical-offset="1050" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/dmcaserver.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="24" selection-start="651" selection-end="651" vertical-scroll-proportion="0.5982275" vertical-offset="0" max-vertical-offset="677" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="717" column="21" selection-start="0" selection-end="28965" vertical-scroll-proportion="0.0" vertical-offset="10113" max-vertical-offset="11085">
-          <folding />
-        </state>
+        <state line="706" column="17" selection-start="27739" selection-end="27739" vertical-scroll-proportion="14.893163" vertical-offset="0" max-vertical-offset="11085" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca-dashboard/jquery-1.10.1.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="0" selection-start="93064" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="150" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/modemReset.exp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/proxies.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="2" selection-end="2" vertical-scroll-proportion="0.022123894" vertical-offset="0" max-vertical-offset="678" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/whitelist.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="1" selection-start="1" selection-end="1" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1050" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="43" selection-start="630" selection-end="669" vertical-scroll-proportion="0.32051283" vertical-offset="0" max-vertical-offset="702" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="689">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/googlesearch.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/conf.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="29" selection-start="155" selection-end="155" vertical-scroll-proportion="-3.125" vertical-offset="0" max-vertical-offset="180">
+        <state line="0" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="689">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="77" column="24" selection-start="2471" selection-end="2471" vertical-scroll-proportion="0.5442765" vertical-offset="768" max-vertical-offset="2565">
+        <state line="99" column="13" selection-start="3400" selection-end="3400" vertical-scroll-proportion="0.0" vertical-offset="945" max-vertical-offset="7590">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/conf.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="23" selection-start="143" selection-end="143" vertical-scroll-proportion="0.110946745" vertical-offset="0" max-vertical-offset="676" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/conf.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="1" selection-start="238" selection-end="238" vertical-scroll-proportion="0.3013393" vertical-offset="0" max-vertical-offset="448" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/gsearch">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="6" selection-start="897" selection-end="897" vertical-scroll-proportion="1.286017" vertical-offset="38" max-vertical-offset="735" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="674" column="26" selection-start="27518" selection-end="27518" vertical-scroll-proportion="0.0" vertical-offset="9855" max-vertical-offset="11745">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca-dashboard/conf.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="1" selection-start="196" selection-end="196" vertical-scroll-proportion="-4.375" vertical-offset="0" max-vertical-offset="195">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="173" column="26" selection-start="5632" selection-end="5632" vertical-scroll-proportion="-8.1875" vertical-offset="2333" max-vertical-offset="8865">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="9" selection-start="1365" selection-end="1541" vertical-scroll-proportion="0.0" vertical-offset="157" max-vertical-offset="675">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca-dashboard/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="36" selection-start="1227" selection-end="1227" vertical-scroll-proportion="0.7944915" vertical-offset="0" max-vertical-offset="555">
           <folding />
         </state>
       </provider>
