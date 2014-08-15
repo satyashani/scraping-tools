@@ -17,6 +17,7 @@ Add field 'workerid' in each POST Data to select the worker. e.g. {'workerid': '
 
 ROUTES:
 GET /                       ->  Server check
+GET /version                ->  Server version date check
 POST /submitdmca            ->  Get list of confirmation ids and their links from dashboard.
 	POST BODY
 	{

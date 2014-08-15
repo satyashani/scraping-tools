@@ -5,6 +5,7 @@ To run - phantomjs dashboard.js
 
 ROUTES:
 GET /                               ->  Server check
+GET /version                        ->  Server version date check
 POST /getcomfirmationids            ->  Get list of confirmation ids and their links from dashboard.
 	POST BODY
 	{"workerid": "gmail_userid"}

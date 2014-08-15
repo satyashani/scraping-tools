@@ -11,6 +11,7 @@ ROUTES:
 GET /           ->  Server check
 GET /proxies    ->  List of current proxies
 GET /whitelist  ->  List of current white list domains
+GET /version    ->  Server version date check
 POST /search    ->  Search google
 	POST BODY
 	{ "q" : "trackname","id" :"artistname"}

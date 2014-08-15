@@ -15,7 +15,7 @@ var fs = require("fs");
 
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 
-var versiondate = "2014-08-15";
+var versiondate = "2014-08-15 12:02";
 
 var logger = {
     error:function(){
@@ -467,11 +467,19 @@ var worker = function(conf){
     this.login = function(callback){
         this.loggedin = false;
         var that = this;
-        page.clearCookies();
         logger.log("Login request for "+username);
+        var timeout = false;
+        setTimeout(function(){
+            if(!that.loggedin){
+                timeout = true;
+                page.onLoadFinished = null;
+                callback(new Error("login_timeout"));
+            }
+        },20000);
         page.onLoadFinished = function(){
             var url = page.url;
             page.injectJs(jq);
+            if(timeout) return;
             var loginerror = page.evaluate(function(){
                 var errorspan = $("span.error-msg");
                 if(!errorspan.size()) return false;
@@ -491,12 +499,11 @@ var worker = function(conf){
                     var loaded = page.evaluate(function(){
                         return $("form.url-match-form").size();
                     });
-                    if(loaded) setTimeout(function(){callback(null,true);},5000);
+                    if(loaded) callback(null,true);
                     else{
                         page.render("dashboardafterlogin.png");
-                        setTimeout(testpage,2000);
+                        setTimeout(testpage,500);
                     }
-
                 }
                 testpage();
             }
