@@ -22,14 +22,32 @@ var conf = {
     timeout: 30000
 }
 
+
+var versiondate = "2014-08-15";
 var useragents = fs.read("useragents.json");
 var getUserAgent = function(){
     return useragents[Math.floor(Math.random()*useragents.length)];
 }
 
+var logger = {
+    error:function(){
+        var date = new Date();
+        var d = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
+        console.error.apply(console,args);
+    },
+    log:function(){
+        var date = new Date();
+        var d = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
+        console.log.apply(console,args);
+    }
+}
+
+
 var wl = JSON.parse(fs.read("whitelist.json"));
 if(!wl.length)
-    console.log("white list file whitelist.json is empty?");
+    logger.log("white list file whitelist.json is empty?");
 for(var i=0;i<wl.length;i++){
     wl[i] = wl[i].replace(/http[s]*:\/\/|\/$|www\./g,"");
 }
@@ -40,7 +58,7 @@ var proxyApi = {
         var page = pg.create();
         var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=5&protocols=http&supports=google&type=anonymous";
         var proxyhome = "http://kingproxies.com";
-        if(conf.env=='dev')  console.log("Loading proxies from kingproxies.com");
+        if(conf.env=='dev')  logger.log("Loading proxies from kingproxies.com");
         page.open(proxyhome,function(status){
             page.injectJs(jq);
             var p = page.evaluate(function(url){
@@ -75,7 +93,7 @@ var proxyApi = {
         });
     },
     file: function(callback){
-        if(conf.env=='dev')  console.log("Loading proxies from file proxies.json");
+        if(conf.env=='dev')  logger.log("Loading proxies from file proxies.json");
         if(!fs.isReadable("proxies.json"))
             return callback(new Error("file proxies.json not readable"),null);
         var data = JSON.parse(fs.read("proxies.json"));
@@ -87,7 +105,7 @@ var proxyApi = {
 var emptyresultcount = 0, google = "https://www.google.com";
 var handler = function(req,res,server){
     if(conf.env=='dev')
-        console.log(req.method+": "+req.url);
+        logger.log(req.method+": "+req.url);
     phantom.clearCookies();
 
     var getPageResults = function(){
@@ -145,7 +163,7 @@ var handler = function(req,res,server){
                 if(!responded){
                     if(conf.env == "dev"){
                         var erprint = (err?err.message:"none"), resprint = (result && result.length?result.length:0);
-                        console.log("responding for err: "+erprint+", results: "+resprint+", emptyresultcount = "+emptyresultcount);
+                        logger.log("responding for err: "+erprint+", results: "+resprint+", emptyresultcount = "+emptyresultcount);
                     }
                     responded = true;
                     if(!result || !result.length){
@@ -184,14 +202,14 @@ var handler = function(req,res,server){
                 }
             };
             setTimeout(ontimeout,timeout);
-            page.onConsoleMessage = function(x){ console.log(x);};
+            page.onConsoleMessage = logger.log;
             var onLoad = function(){
-                if(conf.env == "dev") console.log("result page loaded = "+page.url);
+                if(conf.env == "dev") logger.log("result page loaded = "+page.url);
                 page.injectJs(jq);
                 if(checkHasSorry(page)) return respond(new Error("proxy_failed"));
                 var eval = page.evaluate(getPageResults);
                 totalres  = totalres.concat(eval.result);
-                if(conf.env=='dev') console.log("total results = "+totalres.length+", has more result = "+eval.hasmore);
+                if(conf.env=='dev') logger.log("total results = "+totalres.length+", has more result = "+eval.hasmore);
 //                fs.write("page_"+totalres.length+".html",page.content);
 //                page.render("page_"+totalres.length+".png");
                 if(eval.hasmore && eval.result.length && totalres.length < num){
@@ -202,7 +220,7 @@ var handler = function(req,res,server){
                             page.render("resultPage_"+tracinfo.id+".png");
                             fs.write("page_"+ tracinfo.id+".html",page.content);
                         }
-                        console.log("No results: page url = "+page.url);
+                        logger.log("No results: page url = "+page.url);
                     }
                     var filtered = [];
                     totalres.forEach(function(r){
@@ -216,7 +234,7 @@ var handler = function(req,res,server){
                         filtered.push({url: r,domain: dom?dom[1]:false});
                     });
                     if(page.url.match(/google.com\/sorry/i)){
-                        console.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
+                        logger.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
                         respond(new Error("proxy_failed"),null);
                     }else{
                         respond(null,filtered);
@@ -234,17 +252,17 @@ var handler = function(req,res,server){
                         return $('a[href*="setprefdomain"]').size();
                     });
                     if(hasprefurl){
-                        if(conf.env == "dev") console.log("Redirecting to google.com from "+page.url);
+                        if(conf.env == "dev") logger.log("Redirecting to google.com from "+page.url);
                         page.evaluate(function(){
                             window.location.href = $('a[href*="setprefdomain"]').attr("href");
                         });
                     }
                     else{
-                        if(conf.env =="dev") console.log("Loaded page "+page.url+" doesn't have link to set preferred domain");
+                        if(conf.env =="dev") logger.log("Loaded page "+page.url+" doesn't have link to set preferred domain");
                         respond(new Error("cant_load_us_site"));
                     }
                 }else{
-                    if(conf.env == "dev") console.log("Google page being used - "+page.url);
+                    if(conf.env == "dev") logger.log("Google page being used - "+page.url);
                     page.onLoadFinished = onLoad;
                     page.evaluate(function(query){
                         window.location.href = "http://www.google.com/search?q="+query;
@@ -256,14 +274,14 @@ var handler = function(req,res,server){
                 if(page.url.match(/google/)){
                     page.onLoadFinished = onGoogleLoaded;
                 }else {
-                    if(conf.env =='dev') console.log("Url loaded = "+page.url);
+                    if(conf.env =='dev') logger.log("Url loaded = "+page.url);
                 }
             }
             page.onUrlChanged = onUrlChange;
             page.open(google,function(status){
                 if(!status=="success")
                     return respond(new Error("page_load_failed"));
-                if(conf.env == "dev" ) console.log("page url on open = "+page.url);
+                if(conf.env == "dev" ) logger.log("page url on open = "+page.url);
                 if(page.url.match(/google/)){
                     page.onUrlChanged = null;
                     page.onLoadFinished = onGoogleLoaded;
@@ -389,6 +407,7 @@ var handler = function(req,res,server){
             case "/currentproxy" : handleCurrentProxy(); break;
             case "/setnextproxy" : handleSetNextProxy(); break;
             case "/whitelist" : handleGetWhiteList(); break;
+            case "/version" : send(200,{"ok":true,"versiondate":versiondate},true); break;
             default : sendOk(); break;
         }
     }
@@ -421,7 +440,7 @@ server.prototype.nextProxy = function(){
     if(!conf.useproxies) return true;
     if(!this.proxies.length){
         this.refreshProxies(function(){
-            if(conf.env=='dev' && this.proxies.length) console.log("Proxies refreshed.");
+            if(conf.env=='dev' && this.proxies.length) logger.log("Proxies refreshed.");
         });
     }else{
         this.removeCurrentProxy();
@@ -432,18 +451,18 @@ server.prototype.nextProxy = function(){
 server.prototype.setProxy = function(){
     if(this.proxies.length){
         if(this.currentproxy>=this.proxies.length){
-            console.error("Current proxy index greater than proxy length, this shouldn't happen, it is a bug, contact script author.");
+            logger.error("Current proxy index greater than proxy length, this shouldn't happen, it is a bug, contact script author.");
             return false;
         }
         var p = this.proxies[this.currentproxy];
-        if(conf.env=='dev') console.log("Changing proxy, new proxy = "+ p.ip);
+        if(conf.env=='dev') logger.log("Changing proxy, new proxy = "+ p.ip);
         var type = p.type? p.type:"http";
         var user = p.user? p.user:"";
         var passwd = p.password? p.password:"";
         phantom.setProxy(p.ip, p.port,type,user,passwd);
         return true;
     }else{
-        console.error("Failed to change proxy, proxy list is empty or not enough proxies, check proxy setup.");
+        logger.error("Failed to change proxy, proxy list is empty or not enough proxies, check proxy setup.");
         return false;
     }
 }
@@ -459,12 +478,12 @@ server.prototype.refreshProxies = function(callback){
     var o = this;
     var onchange = function(err,data){
         if(!err){
-            if(conf.env=='dev')  console.log("Proxies loaded.");
+            if(conf.env=='dev')  logger.log("Proxies loaded.");
             o.setProxies(data)
             callback();
         }
         else{
-            console.error(err.message);
+            logger.error(err.message);
             o.exit();
         }
     }
@@ -479,10 +498,10 @@ server.prototype.refreshProxies = function(callback){
 
 server.prototype.startServer = function(){
     if(!this.start(conf.port)){
-        console.log('Failed to start web server on port "+conf.port+", exiting.');
+        logger.log('Failed to start web server on port "+conf.port+", exiting.');
         this.exit();
     }else{
-        console.log("Web server started at http://localhost:"+conf.port);
+        logger.log("Web server started at http://localhost:"+conf.port);
     }
 }
 

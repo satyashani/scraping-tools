@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="Timeout added for DBC captcha API">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca/README.txt" afterPath="$PROJECT_DIR$/dmca/README.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca-dashboard/README.txt" afterPath="$PROJECT_DIR$/dmca-dashboard/README.txt" />
+    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca-dashboard/conf.json" afterPath="$PROJECT_DIR$/dmca-dashboard/conf.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca-dashboard/dashboard.js" afterPath="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/googlelist/gsearch.js" afterPath="$PROJECT_DIR$/googlelist/gsearch.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca/gserver.js" afterPath="$PROJECT_DIR$/dmca/gserver.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -33,10 +32,8 @@
       <file leaf-file-name="gserver.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="674" column="26" selection-start="27518" selection-end="27518" vertical-scroll-proportion="0.0" vertical-offset="9855" max-vertical-offset="11745">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
+            <state line="472" column="33" selection-start="18047" selection-end="18047" vertical-scroll-proportion="-6.09375" vertical-offset="6750" max-vertical-offset="11895">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -44,7 +41,7 @@
       <file leaf-file-name="dashboard.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="173" column="26" selection-start="5632" selection-end="5632" vertical-scroll-proportion="-8.1875" vertical-offset="2333" max-vertical-offset="8865">
+            <state line="18" column="0" selection-start="513" selection-end="1172" vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="9555">
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -52,28 +49,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.txt" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/dmca/README.txt">
+      <file leaf-file-name="gsearch.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="9" selection-start="1365" selection-end="1541" vertical-scroll-proportion="0.0" vertical-offset="157" max-vertical-offset="675">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.txt" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/dmca-dashboard/README.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="25" column="36" selection-start="1227" selection-end="1227" vertical-scroll-proportion="0.7944915" vertical-offset="0" max-vertical-offset="555">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="conf.json" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/dmca-dashboard/conf.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="1" selection-start="196" selection-end="196" vertical-scroll-proportion="-4.375" vertical-offset="0" max-vertical-offset="195">
+            <state line="42" column="26" selection-start="1421" selection-end="1421" vertical-scroll-proportion="0.41949153" vertical-offset="297" max-vertical-offset="7875">
               <folding />
             </state>
           </provider>
@@ -114,15 +93,15 @@
         <option value="$PROJECT_DIR$/googlelist/proxies.json" />
         <option value="$PROJECT_DIR$/googlelist/whitelist.json" />
         <option value="$PROJECT_DIR$/googlelist/conf.json" />
-        <option value="$PROJECT_DIR$/googlelist/gsearch.js" />
         <option value="$PROJECT_DIR$/googlelist/googlesearch.sh" />
         <option value="$PROJECT_DIR$/googlelist/gsearch.sh" />
         <option value="$PROJECT_DIR$/dmca/conf.json" />
         <option value="$PROJECT_DIR$/dmca/README.txt" />
+        <option value="$PROJECT_DIR$/dmca-dashboard/README.txt" />
         <option value="$PROJECT_DIR$/dmca-dashboard/conf.json" />
         <option value="$PROJECT_DIR$/dmca/gserver.js" />
         <option value="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
-        <option value="$PROJECT_DIR$/dmca-dashboard/README.txt" />
+        <option value="$PROJECT_DIR$/googlelist/gsearch.js" />
       </list>
     </option>
   </component>
@@ -408,7 +387,11 @@
       <created>1407500435008</created>
       <updated>1407500435008</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="Single worker scheme for dmca and dashboard, use /changeworker to change worker">
+      <created>1407671350342</created>
+      <updated>1407671350342</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -467,7 +450,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="removed query string parsing&#10;" />
     <MESSAGE value="proxy timeout" />
     <MESSAGE value="Update to provide as many results as needed per query. Set config variable resultsperquery or set property &quot;num&quot; in query json" />
     <MESSAGE value="message update when result is empty&#10;" />
@@ -492,7 +474,8 @@
     <MESSAGE value="URL submitted on a  date." />
     <MESSAGE value="Some debugging code added" />
     <MESSAGE value="removed testing code, please use this commit rather than the previous one." />
-    <option name="LAST_COMMIT_MESSAGE" value="removed testing code, please use this commit rather than the previous one." />
+    <MESSAGE value="Single worker scheme for dmca and dashboard, use /changeworker to change worker" />
+    <option name="LAST_COMMIT_MESSAGE" value="Single worker scheme for dmca and dashboard, use /changeworker to change worker" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -500,13 +483,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="5" selection-start="1364" selection-end="1364" vertical-scroll-proportion="0.0" vertical-offset="480" max-vertical-offset="675">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="242" column="103" selection-start="10307" selection-end="10307" vertical-scroll-proportion="0.0" vertical-offset="2051" max-vertical-offset="6030" />
@@ -682,11 +658,6 @@
         <state line="6" column="0" selection-start="93064" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="150" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/modemReset.exp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/proxies.json">
       <provider selected="true" editor-type-id="text-editor">
         <state line="1" column="0" selection-start="2" selection-end="2" vertical-scroll-proportion="0.022123894" vertical-offset="0" max-vertical-offset="678" />
@@ -704,16 +675,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="689">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="99" column="13" selection-start="3400" selection-end="3400" vertical-scroll-proportion="0.0" vertical-offset="945" max-vertical-offset="7590">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="93064" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="689" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/conf.json">
@@ -721,51 +683,56 @@
         <state line="5" column="23" selection-start="143" selection-end="143" vertical-scroll-proportion="0.110946745" vertical-offset="0" max-vertical-offset="676" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/conf.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="1" selection-start="238" selection-end="238" vertical-scroll-proportion="0.3013393" vertical-offset="0" max-vertical-offset="448" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/gsearch">
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="6" selection-start="897" selection-end="897" vertical-scroll-proportion="1.286017" vertical-offset="38" max-vertical-offset="735" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
+    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="674" column="26" selection-start="27518" selection-end="27518" vertical-scroll-proportion="0.0" vertical-offset="9855" max-vertical-offset="11745">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
+        <state line="34" column="13" selection-start="1455" selection-end="1455" vertical-scroll-proportion="0.6504237" vertical-offset="203" max-vertical-offset="675" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca-dashboard/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="36" selection-start="1227" selection-end="1227" vertical-scroll-proportion="0.61864406" vertical-offset="83" max-vertical-offset="555">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca-dashboard/conf.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="1" selection-start="196" selection-end="196" vertical-scroll-proportion="-4.375" vertical-offset="0" max-vertical-offset="195">
+        <state line="4" column="56" selection-start="111" selection-end="111" vertical-scroll-proportion="0.13392857" vertical-offset="0" max-vertical-offset="448">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/conf.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="1" selection-start="238" selection-end="238" vertical-scroll-proportion="-5.625" vertical-offset="0" max-vertical-offset="225">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="472" column="33" selection-start="18047" selection-end="18047" vertical-scroll-proportion="-6.09375" vertical-offset="6750" max-vertical-offset="11895">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="173" column="26" selection-start="5632" selection-end="5632" vertical-scroll-proportion="-8.1875" vertical-offset="2333" max-vertical-offset="8865">
+        <state line="18" column="0" selection-start="513" selection-end="1172" vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="9555">
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
+    <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="9" selection-start="1365" selection-end="1541" vertical-scroll-proportion="0.0" vertical-offset="157" max-vertical-offset="675">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca-dashboard/README.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="36" selection-start="1227" selection-end="1227" vertical-scroll-proportion="0.7944915" vertical-offset="0" max-vertical-offset="555">
+        <state line="42" column="26" selection-start="1421" selection-end="1421" vertical-scroll-proportion="0.41949153" vertical-offset="297" max-vertical-offset="7875">
           <folding />
         </state>
       </provider>

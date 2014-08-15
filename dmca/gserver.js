@@ -17,6 +17,24 @@ var dbc = {username: "hugs",password: "ugosara"};
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 var conf = JSON.parse(fs.read("conf.json"));
 
+
+var versiondate = "2014-08-15";
+
+var logger = {
+    error:function(){
+        var date = new Date();
+        var d = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
+        console.error.apply(console,args);
+    },
+    log:function(){
+        var date = new Date();
+        var d = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
+        console.log.apply(console,args);
+    }
+}
+
 var inputs = [
     {id: "firstname", type: "input", selector: "input#first-name", required: true},
     {id: "lastname", type: "input", selector: "input#last-name", required: true},
@@ -299,17 +317,17 @@ var decodeCatpcha = function(captchafile,callback){
     page.content = getDbcPage(captchafile);
     page.injectJs(jq);
     page.uploadFile("input#captchafile",captchafile);
-    page.onConsoleMessage = function(x){console.log(x)};
+    page.onConsoleMessage = logger.log;
     setTimeout(function(){
         timeout=true;
         callback(new Error("captcha_timeout"));
     },conf.captchatimeout);
     page.onUrlChanged = function(url){
         urlchanges++;
-        console.log("captcha_decode_step:url="+url);
+        logger.log("captcha_decode_step:url="+url);
         if(url.match(/api\/captcha\/\d+/)){
             page.injectJs(jq);
-            console.log("captcha_decode_step:captcha uploaded");
+            logger.log("captcha_decode_step:captcha uploaded");
             var captcha = page.evaluate(function(captchaurl){
                 var c = "",tries=0;
                 var poll = function(){
@@ -355,7 +373,7 @@ var decodeCatpcha = function(captchafile,callback){
 }
 
 var handler = function(req,res,server){
-    console.log(req.method+": "+req.url);
+    logger.log(req.method+": "+req.url);
     server.requests++;
     if(server.requests>30)
         server.changeProxy();
@@ -407,7 +425,7 @@ var handler = function(req,res,server){
             server.getWorker(data.workerid,function(err,worker){
                 if(err) sendError(err.message);
                 else{
-                    console.log("Got worker from server");
+                    logger.log("Got worker from server");
                     worker.fillform(formdata,function(errfilling,response){
                         if(errfilling)
                             sendError(errfilling.message);
@@ -473,6 +491,7 @@ var handler = function(req,res,server){
         switch(req.url){
             case "/proxies" : handleGetProxies(); break;
             case "/currentworker" : handleGetCurrentWorker(); break;
+            case "/version" : send(200,{"ok":true,"versiondate":versiondate},true); break;
             default : sendOk(); break;
         }
     }
@@ -488,7 +507,7 @@ var worker = function(config){
     var that = this;
     page.onError = function(err,trace){};
     var filldmca = function(dmcaformdata,callback){
-        console.log("About to fill form as "+username);
+        logger.log("About to fill form as "+username);
         page.onCallback = function(imgdata){
             page.onCallback = null;
             if(!imgdata){
@@ -497,12 +516,12 @@ var worker = function(config){
             }
             var filename = "./captcha/captcha_"+new Date().getTime()+".txt"
             fs.write(filename,imgdata,"w");
-            console.log("retrieved captcha and wrote to file "+filename);
+            logger.log("retrieved captcha and wrote to file "+filename);
             decodeCatpcha(filename,function(err,decodedcaptcha){
                 fs.remove(filename);
                 var dmcaurlchanges = 0,dmcapageloads = 0;
                 if(err) return callback(err,null);
-                console.log("captcha decoded to be "+decodedcaptcha);
+                logger.log("captcha decoded to be "+decodedcaptcha);
                 page.onLoadFinished = function(){
                     var url = page.url;
                     dmcapageloads++;
@@ -534,7 +553,7 @@ var worker = function(config){
                 }
                 page.onUrlChanged = function(url){
                     dmcaurlchanges++;
-                    console.log("dmca url after submit - "+url);
+                    logger.log("dmca url after submit - "+url);
                 };
                 page.evaluate(function(captcha,formdatajson){
                     var formdata = JSON.parse(formdatajson);
@@ -563,8 +582,8 @@ var worker = function(config){
         page.open("https://www.google.com/webmasters/tools/dmca-notice?hl=en&pid=0",function(opened){
             if(opened == "success"){
                 page.injectJs(jq);
-                console.log("dmca page loaded by "+username);
-                page.onConsoleMessage = function(x){console.log(x)};
+                logger.log("dmca page loaded by "+username);
+                page.onConsoleMessage = logger.log;
                 page.evaluate(function(){
                     setTimeout(function(){
                         if(!$("img#recaptcha_challenge_image").size()){
@@ -595,7 +614,7 @@ var worker = function(config){
         this.loggedin = false;
         var that = this;
         page.clearCookies();
-        console.log("Login request for "+username);
+        logger.log("Login request for "+username);
         page.onLoadFinished = function(){
             var url = page.url;
             page.injectJs(jq);
@@ -604,7 +623,7 @@ var worker = function(config){
             if(/checkCookie/i.test(url) && changes < 4){
                 page.onLoadFinished = null;
                 that.loggedin = true;
-                console.log("Logged in using "+that.username);
+                logger.log("Logged in using "+that.username);
             }
             if(/dmca-notice/i.test(url) && that.loggedin){
                 var testpage = function(){
@@ -639,7 +658,7 @@ var worker = function(config){
                     $("input#signIn").click();
                 },username,password);
             }else{
-                console.log("Worker : "+username+" Failed to login, page did not open");
+                logger.log("Worker : "+username+" Failed to login, page did not open");
             }
         });
     }
@@ -651,9 +670,9 @@ var worker = function(config){
             if(that.relogin){
                 that.login(function(loggedin){
                     if(loggedin==true)
-                        console.log("Worker: "+username+" logged in again.");
+                        logger.log("Worker: "+username+" logged in again.");
                     else
-                        console.log("Worker: "+username+" failed to login.");
+                        logger.log("Worker: "+username+" failed to login.");
                     this.relogin = false;
                 });
             }
@@ -665,11 +684,11 @@ var worker = function(config){
             if(opened !== "success")
                 return callback(new Error("error_opening_dmca_page"),null);
             page.injectJs(jq);
-            console.log("dmca page loaded by "+username);
-            page.onConsoleMessage = function(x){console.log(x)};
+            logger.log("dmca page loaded by "+username);
+            page.onConsoleMessage = logger.log;
             var res = page.evaluate(function(){
                 var t = $("a[title*='Account']").eq(0).attr('title');
-                var m = t.match(/Account ([A-z ]*).*\((.*)\)/);
+                var m = t.match(/Account ([A-z ]*)\s*\((.*)\)/);
                 return {title: t, email: m?m[2]:"-",name:m?m[1]:'-'};
             });
             callback(null,res);
@@ -702,12 +721,12 @@ server.prototype.changeProxy = function(){
 server.prototype.addWorker = function(config,callback){
     var o = this;
     var wrk = new worker(config);
-    console.log("adding worker with username:",config.username);
+    logger.log("adding worker with username:",config.username);
     wrk.login(function(err,res){
         if(!err && res===true)
             o.workers.push(wrk);
         else
-            console.log("Failed to add worker "+config.username+", error:"+err.message);
+            logger.log("Failed to add worker "+config.username+", error:"+err.message);
         callback(err,res);
     });
 }
@@ -751,19 +770,19 @@ server.prototype.init = function(){
     var tryLogin = function(i){
         o.addWorker(conf.workers[i],function(err,res){
             if(err){
-                console.log("Error logging in using ",conf.workers[i].username,":",err.message);
+                logger.log("Error logging in using ",conf.workers[i].username,":",err.message);
                 if(i<conf.workers.length-1) tryLogin(i+1);
                 else{
-                    console.log("All workers failed to login");
+                    logger.log("All workers failed to login");
                     o.exit();
                 }
             }else{
                 o.start(conf.port);
                 if(!o.started){
-                    console.log("Workers logged in but failed to start web server on port "+conf.port+", exiting.");
+                    logger.log("Workers logged in but failed to start web server on port "+conf.port+", exiting.");
                     o.exit();
                 }else{
-                    console.log("Web server started at port "+conf.port);
+                    logger.log("Web server started at port "+conf.port);
                 }
             }
         });

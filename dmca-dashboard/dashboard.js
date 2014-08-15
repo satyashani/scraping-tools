@@ -15,8 +15,25 @@ var fs = require("fs");
 
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 
+var versiondate = "2014-08-15";
+
+var logger = {
+    error:function(){
+        var date = new Date();
+        var d = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
+        console.error.apply(console,args);
+    },
+    log:function(){
+        var date = new Date();
+        var d = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
+        console.log.apply(console,args);
+    }
+}
+
 var handler = function(req,res,server){
-    console.log(req.method+": "+req.url);
+    logger.log(req.method+": "+req.url);
 
     var getPostData = function(){
         try{
@@ -141,6 +158,18 @@ var handler = function(req,res,server){
         })
     }
 
+
+    var handleGetCurrentWorker = function(){
+        if(!server.workers.length || !server.workers[0].loggedin) return sendError("no workers");
+        var u = server.workers[0].username;
+        server.getWorker(u,function(err,worker){
+            if(err) return sendError("worker "+u+" not usable to testing");
+            worker.getCurrentLoggedIn(function(err,res){
+                send(200,res,true);
+            })
+        });
+    }
+
     var sendJson = function(out){
         send(200,out,true);
     }
@@ -176,6 +205,8 @@ var handler = function(req,res,server){
         }
     }else{
         switch(req.url){
+            case "/currentworker" : handleGetCurrentWorker(); break;
+            case "/version" : send(200,{"ok":true,"versiondate":versiondate},true); break;
             default : sendOk(); break;
         }
     }
@@ -188,7 +219,7 @@ var worker = function(conf){
     var changes = 0;
     this.busy = false; this.loggedin = false; this.requests = 0,this.lastreset=new Date();
     var page = pg.create();
-    page.onConsoleMessage = function(){console.log.apply(console,arguments);};
+    page.onConsoleMessage = logger.log;
     var dashboardurl = "https://www.google.com/webmasters/tools/dmca-dashboard?rlf=all&grid.s=500";
     this.relogin = false;
     var that = this;
@@ -247,7 +278,7 @@ var worker = function(conf){
             if(err) return callback(err);
             page.onLoadFinished = function(){
                 if(!page.url.match(/url\-match/i)){
-                    console.log("Search result page url = "+page.url);
+                    logger.log("Search result page url = "+page.url);
                     return;
                 }
                 page.onLoadFinished = null;
@@ -377,7 +408,7 @@ var worker = function(conf){
     this.getDashboard = function(ids,callback){
         that.openDashboard(function(err){
             if(err) return callback(err);
-            page.onConsoleMessage = function(x){console.log(x)};
+            page.onConsoleMessage = logger.log;
             var baseurl = page.evaluate(function(){
                 var rows = $("table#grid tbody tr");
                 if(!rows || ! rows.size()) return false;
@@ -437,7 +468,7 @@ var worker = function(conf){
         this.loggedin = false;
         var that = this;
         page.clearCookies();
-        console.log("Login request for "+username);
+        logger.log("Login request for "+username);
         page.onLoadFinished = function(){
             var url = page.url;
             page.injectJs(jq);
@@ -452,7 +483,7 @@ var worker = function(conf){
             if(/checkCookie/i.test(url) && changes < 4){
                 page.onLoadFinished = null;
                 that.loggedin = true;
-                console.log("Logged in using "+that.username);
+                logger.log("Logged in using "+that.username);
             }
             if(/dmca-dashboard/i.test(url) && that.loggedin){
                 var testpage = function(){
@@ -480,9 +511,24 @@ var worker = function(conf){
         }
         page.open("https://www.google.com/webmasters/tools/dmca-dashboard",function(stat){
             if(stat !== "success"){
-                console.log("Worker : "+username+" Failed to login, Login page did not open");
+                logger.log("Worker : "+username+" Failed to login, Login page did not open");
                 callback(new Error("login_page_load_failed"));
             }
+        });
+    }
+
+    this.getCurrentLoggedIn = function(callback){
+        page.open("https://www.google.com/webmasters/tools/dmca-dashboard?hl=en&pid=0",function(opened){
+            if(opened !== "success")
+                return callback(new Error("error_opening_dmca_page"),null);
+            page.injectJs(jq);
+            page.onConsoleMessage = logger.log;
+            var res = page.evaluate(function(){
+                var t = $("a[title*='Account']").eq(0).attr('title');
+                var m = t.match(/Account ([A-z ]*)\s*\((.*)\)/);
+                return {title: t, email: m?m[2]:"-",name:m?m[1]:'-'};
+            });
+            callback(null,res);
         });
     }
 }
@@ -514,7 +560,7 @@ server.prototype.addWorker = function(config,callback){
         if(!err && res===true)
             o.workers.push(wrk);
         else
-            console.log("Failed to add worker "+config.username+", error:"+err.message);
+            logger.log("Failed to add worker "+config.username+", error:"+err.message);
         callback(err,res);
     });
 }
@@ -559,19 +605,19 @@ server.prototype.init = function(){
     var tryLogin = function(i){
         o.addWorker(conf.workers[i],function(err,res){
             if(err){
-                console.log("Error logging in using ",conf.workers[i].username,":",err.message);
+                logger.log("Error logging in using ",conf.workers[i].username,":",err.message);
                 if(i<conf.workers.length-1) tryLogin(i+1);
                 else{
-                    console.log("All workers failed to login");
+                    logger.log("All workers failed to login");
                     o.exit();
                 }
             }else{
                 o.start(conf.port);
                 if(!o.started){
-                    console.log("Workers logged in but failed to start web server on port "+conf.port+", exiting.");
+                    logger.log("Workers logged in but failed to start web server on port "+conf.port+", exiting.");
                     o.exit();
                 }else{
-                    console.log("Web server started at port "+conf.port);
+                    logger.log("Web server started at port "+conf.port);
                 }
             }
         });
