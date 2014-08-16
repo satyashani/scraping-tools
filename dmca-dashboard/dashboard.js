@@ -15,7 +15,7 @@ var fs = require("fs");
 
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 
-var versiondate = "2014-08-15 12:02";
+var versiondate = "2014-08-16 8:30";
 
 var logger = {
     error:function(){
@@ -478,6 +478,7 @@ var worker = function(conf){
         },20000);
         page.onLoadFinished = function(){
             var url = page.url;
+            logger.log("login page redirect url=",url);
             page.injectJs(jq);
             if(timeout) return;
             var loginerror = page.evaluate(function(){
