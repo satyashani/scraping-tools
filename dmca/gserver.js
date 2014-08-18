@@ -18,7 +18,7 @@ var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 var conf = JSON.parse(fs.read("conf.json"));
 
 
-var versiondate = "2014-08-16 8:30";
+var versiondate = "2014-08-18 5:02";
 
 var logger = {
     error:function(){
@@ -612,7 +612,7 @@ var worker = function(config){
     }
     this.login = function(callback){
         this.loggedin = false;
-        var that = this;
+        var that = this,serviceLogin=false;
         page.clearCookies();
         logger.log("Login request for "+username);
         var timeout = false;
@@ -638,12 +638,10 @@ var worker = function(config){
             if(loginerror) return callback(new Error("Login page error:"+loginerror));
             if(changes >=4) return callback(new Error("Could not log in"));
             if(/LoginVerification|VerifiedPhoneInterstitial/i.test(url)) return callback(new Error("login failed: requires verification"));
-            if(/checkCookie/i.test(url) && changes < 4){
+            if(/dmca-notice/i.test(url) && serviceLogin){
+                that.loggedin  = true;
                 page.onLoadFinished = null;
-                that.loggedin = true;
                 logger.log("Logged in using "+that.username);
-            }
-            if(/dmca-notice/i.test(url) && that.loggedin){
                 var testpage = function(){
                     page.injectJs(jq);
                     var loaded = page.evaluate(function(){
@@ -654,11 +652,11 @@ var worker = function(config){
                         page.render("dmcaafterlogin.png");
                         setTimeout(testpage,500);
                     }
-
                 }
                 testpage();
             }
             if(url.match(/ServiceLogin/)){
+                serviceLogin = true;
                 page.evaluate(function(username,password){
                     $("input[type='email']").val(username);
                     $("input[type='password']").val(password);

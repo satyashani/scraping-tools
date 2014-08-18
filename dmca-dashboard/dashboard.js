@@ -15,7 +15,7 @@ var fs = require("fs");
 
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 
-var versiondate = "2014-08-16 8:30";
+var versiondate = "2014-08-18 5:02";
 
 var logger = {
     error:function(){
@@ -299,22 +299,38 @@ var worker = function(conf){
                 page.open(res.url,function(stat){
                     if(!stat=='success') return callback(new Error("Error opening url details page: "+res.url));
                     page.injectJs(jq);
-                    var out = page.evaluate(function(url){
-                        var links = $("table.grid div.url-item a"),result={};
-                        for(var i=0;i<links.size();i++){
-                            if(links.eq(i).attr("href")===url){
-                                result.status = links.eq(i).parents("table.grid").attr("id");
-                                result.message = links.eq(i).parents("tr").find("td.rightmost").text();
-                                break;
+                    var tries = 0,hasDetails = false;
+                    var checkhasdetails = function(){
+                        hasDetails = page.evaluate(function(){
+                            return $("table.grid div.url-item a").size();
+                        });
+                        if(!hasDetails){
+                            if(tries<10){
+                                tries++;
+                                setTimeout(checkhasdetails,500);
+                            }else{
+                                callback(new Error("url details failed to load in  5000ms"));
                             }
+                        }else{
+                            var out = page.evaluate(function(url){
+                                var links = $("table.grid div.url-item a"),result={};
+                                for(var i=0;i<links.size();i++){
+                                    if(links.eq(i).attr("href")===url){
+                                        result.status = links.eq(i).parents("table.grid").attr("id");
+                                        result.message = links.eq(i).parents("tr").find("td.rightmost").text();
+                                        break;
+                                    }
+                                }
+                                return result;
+                            },url);
+                            res.message = out.message?out.message:" ";
+                            res.status = out.status?out.status:" ";
+                            delete res.size;
+                            delete res.url;
+                            callback(null,res);
                         }
-                        return result;
-                    },url);
-                    res.message = out.message?out.message:" ";
-                    res.status = out.status?out.status:" ";
-                    delete res.size;
-                    delete res.url;
-                    callback(null,res);
+                    }
+                    checkhasdetails();
                 });
             };
             page.evaluate(function(url){
@@ -468,7 +484,7 @@ var worker = function(conf){
         this.loggedin = false;
         var that = this;
         logger.log("Login request for "+username);
-        var timeout = false;
+        var timeout = false,serviceLogin = false;
         setTimeout(function(){
             if(!that.loggedin){
                 timeout = true;
@@ -489,12 +505,10 @@ var worker = function(conf){
             if(loginerror) return callback(new Error("Login page error:"+loginerror));
             if(changes >=4) return callback(new Error("Could not log in"));
             if(/LoginVerification|VerifiedPhoneInterstitial/i.test(url)) return callback(new Error("login failed: requires verification"));
-            if(/checkCookie/i.test(url) && changes < 4){
+            if(/dmca-dashboard/i.test(url) && serviceLogin){
+                that.loggedin  = true;
                 page.onLoadFinished = null;
-                that.loggedin = true;
                 logger.log("Logged in using "+that.username);
-            }
-            if(/dmca-dashboard/i.test(url) && that.loggedin){
                 var testpage = function(){
                     page.injectJs(jq);
                     var loaded = page.evaluate(function(){
@@ -509,6 +523,7 @@ var worker = function(conf){
                 testpage();
             }
             if(url.match(/ServiceLogin/)){
+                serviceLogin = true;
                 page.evaluate(function(username,password){
                     $("input[type='email']").val(username);
                     $("input[type='password']").val(password);
