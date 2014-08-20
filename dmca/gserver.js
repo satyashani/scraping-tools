@@ -18,7 +18,7 @@ var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 var conf = JSON.parse(fs.read("conf.json"));
 
 
-var versiondate = "2014-08-18 5:02";
+var versiondate = "2014-08-20 3:46";
 
 var logger = {
     error:function(){
@@ -702,12 +702,26 @@ var worker = function(config){
             page.injectJs(jq);
             logger.log("dmca page loaded by "+username);
             page.onConsoleMessage = logger.log;
-            var res = page.evaluate(function(){
-                var t = $("a[title*='Account']").eq(0).attr('title');
-                var m = t.match(/Account ([A-z ]*)\s*\((.*)\)/);
-                return {title: t, email: m?m[2]:"-",name:m?m[1]:'-'};
-            });
-            callback(null,res);
+            var tries = 0;
+            var checkAccountDetails = function(){
+                var res = page.evaluate(function(){
+                    if(!$("a[title*='Account']").size()) return false;
+                    var t = $("a[title*='Account']").eq(0).attr('title');
+                    var m = t.match(/Account ([A-z ]*)\s*\((.*)\)/);
+                    return {title: t, email: m?m[2]:"-",name:m?m[1]:'-'};
+                });
+                if(!res){
+                    if(tries<5){
+                        tries++;
+                        setTimeout(checkAccountDetails,500);
+                    }else{
+                        callback(new Error("account details failed to load in  2500ms"));
+                    }
+                }else{
+                    callback(null,res);
+                }
+            }
+            checkAccountDetails();
         });
     }
 }
