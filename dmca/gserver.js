@@ -13,12 +13,12 @@ var pg = require("webpage");
 var jq = "jquery-1.10.1.min.js";
 var fs = require("fs");
 
-var dbc = {username: "hugs",password: "ugosara"};
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 var conf = JSON.parse(fs.read("conf.json"));
+conf.captchaApi = conf.captchaApi || "dbc";
 
 
-var versiondate = "2014-08-20 3:46";
+var versiondate = "2014-08-23 6:12";
 
 var logger = {
     error:function(){
@@ -302,74 +302,132 @@ var countrycodes = [
     {name: "Unlisted", code: "ZZ"}
 ]
 
-var getDbcPage =function(){
-    return "<html><body>" +
-        "<form action='http://api.dbcapi.me/api/captcha' method='post' enctype='multipart/form-data'>" +
-        "<input type='text'     name='username' value='"+dbc.username+"'>"+
-        "<input type='password' name='password' value='"+dbc.password+"'>"+
-        "<input id='captchafile' type='file'     name='captchafile' >"+
-        "</form>" +
-    "</body></html>"
+var  captchaApis = {
+    "dbc": function(captchafile,callback){
+        var dbc = {username: "hugs",password: "ugosara"};
+        var page = pg.create(),urlchanges= 0,timeout=false;
+        page.content = "<html><body>" +
+            "<form action='http://api.dbcapi.me/api/captcha' method='post' enctype='multipart/form-data'>" +
+            "<input type='text'     name='username' value='"+dbc.username+"'>"+
+            "<input type='password' name='password' value='"+dbc.password+"'>"+
+            "<input id='captchafile' type='file'     name='captchafile' >"+
+            "</form></body></html>";
+        page.injectJs(jq);
+        page.uploadFile("input#captchafile",captchafile);
+        page.onConsoleMessage = logger.log;
+        setTimeout(function(){
+            timeout=true;
+            callback(new Error("captcha_timeout"));
+        },conf.captchatimeout);
+        page.onUrlChanged = function(url){
+            urlchanges++;
+            logger.log("captcha_decode_step:url="+url);
+            if(url.match(/api\/captcha\/\d+/)){
+                page.injectJs(jq);
+                logger.log("captcha_decode_step:captcha uploaded");
+                var captcha = page.evaluate(function(captchaurl){
+                    var c = "",tries=0;
+                    var poll = function(){
+                        tries++;
+                        console.log("captcha_decode_step:poll try - "+tries);
+                        for(i=0,j=0;i<400000000;i++)
+                            j++;
+                        $.ajax({
+                            url: captchaurl,
+                            async: false,
+                            headers: {"Accept": "application/json"},
+                            success: function(data){
+                                console.log("captcha_decode_step:captcha decoded - "+tries);
+                                if(data.text)
+                                    c = data;
+                                else if(tries < 5){
+                                    poll();
+                                }
+                            },
+                            error: function(x,t,s){
+                                c = new Error(t);
+                                console.log("captcha_decode_step:error from DBC page - "+t);
+                                if(tries < 5){
+                                    poll();
+                                }
+                            }
+                        })
+                    }
+                    poll();
+                    return c;
+                },url);
+                if(timeout) return;
+                if(captcha.text)
+                    callback(null,captcha.text);
+                else
+                    callback(new Error("dbc_api_error:"+JSON.stringify(captcha)),null);
+            }else if(urlchanges==2 && !timeout)
+                callback(new Error("dbc_api_redirect_failed:"+url),null);
+        }
+        page.evaluate(function(){
+            $("form").submit();
+        });
+    },
+    "bpc": function(captchafile,callback){
+        var bpckey = "e5740194374a84031346a48321b32e58";
+        var page = pg.create(),urlchanges= 0,timeout=false;
+        page.content = "<html><body>" +
+            "<form id='uploadform' action='http://bypasscaptcha.com/upload.php' method='post' enctype='multipart/form-data'>"+
+            "<input type='text' name='key' value='"+bpckey+"'>"+
+            "<input type='file' name='file' id='captchafile'>"+
+            "<input type='text' name='gen_task_id' value='1'>"+
+            "<input type='text' name='vendor_key'>"+
+            "<input type='submit' value='Submit'>"+
+            "</form></body></html>";
+        page.injectJs(jq);
+        page.uploadFile("input#captchafile",captchafile);
+        page.onConsoleMessage = logger.log;
+        setTimeout(function(){
+            timeout=true;
+            callback(new Error("captcha_timeout"));
+        },conf.captchatimeout);
+        page.onLoadFinished = function(){
+            urlchanges++;
+            page.injectJs(jq);
+            var hasform = page.evaluate(function(){
+                return $("form#uploadform").size();
+            });
+            if(hasform){
+                if(urlchanges <= 2)
+                    return;
+                else
+                    callback(new Error("error submitting captcha form"));
+            }
+            logger.log("captcha_decode_step:url="+page.url);
+            var content = page.evaluate(function(){
+                return $("body").text();
+            });
+            var lines = content.split("\n");
+            var  res = {};
+            lines.forEach(function(l){
+                var m = l.match(/([A-z]+) (.*)/);
+                if(m){
+                    res[m[1].toLowerCase()] = m[2];
+                }else{
+                    console.log("unknown captcha response format:",l);
+                }
+            });
+            if(res.error) callback(new Error(res.error));
+            else if(!res.value) callback(new Error("No value in captcha response."));
+            else callback(null,res.value);
+        }
+        page.evaluate(function(){
+            $("form").submit();
+        });
+    }
 }
 
 var decodeCatpcha = function(captchafile,callback){
-    var page = pg.create(),urlchanges= 0,timeout=false;
-    page.content = getDbcPage(captchafile);
-    page.injectJs(jq);
-    page.uploadFile("input#captchafile",captchafile);
-    page.onConsoleMessage = logger.log;
-    setTimeout(function(){
-        timeout=true;
-        callback(new Error("captcha_timeout"));
-    },conf.captchatimeout);
-    page.onUrlChanged = function(url){
-        urlchanges++;
-        logger.log("captcha_decode_step:url="+url);
-        if(url.match(/api\/captcha\/\d+/)){
-            page.injectJs(jq);
-            logger.log("captcha_decode_step:captcha uploaded");
-            var captcha = page.evaluate(function(captchaurl){
-                var c = "",tries=0;
-                var poll = function(){
-                    tries++;
-                    console.log("captcha_decode_step:poll try - "+tries);
-                    for(i=0,j=0;i<400000000;i++)
-                        j++;
-                    $.ajax({
-                        url: captchaurl,
-                        async: false,
-                        headers: {"Accept": "application/json"},
-                        success: function(data){
-                            console.log("captcha_decode_step:captcha decoded - "+tries);
-                            if(data.text)
-                                c = data;
-                            else if(tries < 5){
-                                poll();
-                            }
-                        },
-                        error: function(x,t,s){
-                            c = new Error(t);
-                            console.log("captcha_decode_step:error from DBC page - "+t);
-                            if(tries < 5){
-                                poll();
-                            }
-                        }
-                    })
-                }
-                poll();
-                return c;
-            },url);
-            if(timeout) return;
-            if(captcha.text)
-                callback(null,captcha.text);
-            else
-                callback(new Error("dbc_api_error:"+JSON.stringify(captcha)),null);
-        }else if(urlchanges==2 && !timeout)
-            callback(new Error("dbc_api_redirect_failed:"+url),null);
+    if(conf.captchaApi && captchaApis.hasOwnProperty(conf.captchaApi)){
+        captchaApis[conf.captchaApi](captchafile,callback);
+    }else{
+        callback(new Error("Unknown captcha api:"+conf.captchaApi));
     }
-    page.evaluate(function(){
-        $("form").submit();
-    });
 }
 
 var handler = function(req,res,server){
@@ -384,12 +442,16 @@ var handler = function(req,res,server){
     }
 
 
-    var getPostData = function(){
+    var getPostData = function(checkfields){
         try{
             var data= JSON.parse(req.post);
-            if(!data.workerid){
-                sendError("missing_field:workerid");
-                return false;
+            if(checkfields && checkfields.length){
+                for(var i=0;i<checkfields.length;i++){
+                    if(!data.hasOwnProperty(checkfields[i])){
+                        sendError("missing_field:"+checkfields[i]);
+                        return false;
+                    }
+                }
             }
             return data;
         }catch(e){
@@ -399,7 +461,7 @@ var handler = function(req,res,server){
     }
 
     var handleDmca = function(){
-        var data = getPostData();
+        var data = getPostData(["workerid"]);
         if(data){
             var formdata = [].concat(inputs);
             for(var i=0;i<formdata.length;i++){
@@ -438,9 +500,7 @@ var handler = function(req,res,server){
     }
 
     var handleChangeWorker = function(){
-        var worker = getPostData();
-        if(!worker.workerid || !worker.password)
-            return sendError("missing_workerid_or_password");
+        var worker = getPostData(["workerid","password"]);
         worker.username = worker.workerid;
         server.changeWorker(worker,function(err,res){
             if(!err && res) sendOk();
@@ -451,16 +511,27 @@ var handler = function(req,res,server){
     var handleGetCurrentWorker = function(){
         var u = server.workers[0].username;
         server.getWorker(u,function(err,worker){
-            if(err) return sendError("worker 0 not usable to testing");
+            if(err) return sendError("no worker logged in");
             worker.getCurrentLoggedIn(function(err,res){
                 send(200,res,true);
             })
         });
     }
 
+    var handleChangeCaptcha = function(){
+        var data = getPostData(["captchasource"]);
+        if(data){
+            if(!captchaApis.hasOwnProperty(data.captchasource))
+                return sendError("Unknow captcha api "+data.captchasource);
+            conf.captchaApi = data.captchasource;
+            sendOk();
+        }
+    }
+
     var handleGetProxies = function(){
         send(200,server.proxies,true);
     }
+
 
     var sendOk = function(){
         send(200,{ok : true},true);
@@ -485,6 +556,7 @@ var handler = function(req,res,server){
             case "/proxies" : handleSetProxies(); break;
             case "/submitdmca" : handleDmca(); break;
             case "/changeworker": handleChangeWorker(); break;
+            case "/changecaptcha" : handleChangeCaptcha(); break;
             default : sendOk(); break;
         }
     }else{

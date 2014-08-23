@@ -38,4 +38,9 @@ POST /changeworker          ->  Get List of approved, rejected and pending urls
         "workerid"		    :		"username",
         "password"		    :		"password"
     }
+POST /changecaptcha          ->  Get List of approved, rejected and pending urls
+    POST BODY
+    {
+        "captchasource"	    :		"dbc" or "bpc"
+    }
 GET /currentworker          -> Current logged in worker email, check from dmca-notice page
