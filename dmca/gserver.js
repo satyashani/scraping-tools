@@ -18,7 +18,7 @@ var conf = JSON.parse(fs.read("conf.json"));
 conf.captchaApi = conf.captchaApi || "dbc";
 
 
-var versiondate = "2014-08-23 6:38";
+var versiondate = "2014-08-23 11:22";
 
 var logger = {
     error:function(){
@@ -556,14 +556,17 @@ var handler = function(req,res,server){
             case "/submitdmca" : handleDmca(); break;
             case "/changeworker": handleChangeWorker(); break;
             case "/changecaptcha" : handleChangeCaptcha(); break;
-            default : sendOk(); break;
+            case "/": sendOk();
+            default : sendError("Unknown POST route:"+req.url); break;
         }
     }else{
         switch(req.url){
             case "/proxies" : handleGetProxies(); break;
             case "/currentworker" : handleGetCurrentWorker(); break;
+            case "/currentcaptcha" : send(200,{"ok":true,"captchasource":conf.captchaApi},true); break;
             case "/version" : send(200,{"ok":true,"versiondate":versiondate},true); break;
-            default : sendOk(); break;
+            case "/": sendOk();
+            default : sendError("Unknown GET route: "+req.url); break;
         }
     }
 }

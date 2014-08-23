@@ -44,3 +44,4 @@ POST /changecaptcha          ->  Get List of approved, rejected and pending urls
         "captchasource"	    :		"dbc" or "bpc"
     }
 GET /currentworker          -> Current logged in worker email, check from dmca-notice page
+GET /currentcaptcha         -> Current captcha api code
