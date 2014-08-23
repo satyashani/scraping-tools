@@ -18,7 +18,7 @@ var conf = JSON.parse(fs.read("conf.json"));
 conf.captchaApi = conf.captchaApi || "dbc";
 
 
-var versiondate = "2014-08-23 6:12";
+var versiondate = "2014-08-23 6:38";
 
 var logger = {
     error:function(){
@@ -371,16 +371,17 @@ var  captchaApis = {
     "bpc": function(captchafile,callback){
         var bpckey = "e5740194374a84031346a48321b32e58";
         var page = pg.create(),urlchanges= 0,timeout=false;
+        var captcha = fs.read(captchafile).replace("base64:","");
         page.content = "<html><body>" +
             "<form id='uploadform' action='http://bypasscaptcha.com/upload.php' method='post' enctype='multipart/form-data'>"+
             "<input type='text' name='key' value='"+bpckey+"'>"+
-            "<input type='file' name='file' id='captchafile'>"+
+            "<textarea name='file' id='captchafile'>"+captcha+"</textarea>"+
             "<input type='text' name='gen_task_id' value='1'>"+
+            "<input type='text' name='base64_code' value='1'>"+
             "<input type='text' name='vendor_key'>"+
             "<input type='submit' value='Submit'>"+
             "</form></body></html>";
         page.injectJs(jq);
-        page.uploadFile("input#captchafile",captchafile);
         page.onConsoleMessage = logger.log;
         setTimeout(function(){
             timeout=true;
@@ -408,8 +409,6 @@ var  captchaApis = {
                 var m = l.match(/([A-z]+) (.*)/);
                 if(m){
                     res[m[1].toLowerCase()] = m[2];
-                }else{
-                    console.log("unknown captcha response format:",l);
                 }
             });
             if(res.error) callback(new Error(res.error));
