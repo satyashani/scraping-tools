@@ -15,7 +15,7 @@ var fs = require("fs");
 
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 
-var versiondate = "2014-08-20 3:46";
+var versiondate = "2014-08-29 15:22";
 
 var logger = {
     error:function(){
@@ -552,6 +552,7 @@ var worker = function(conf){
                     if(!$("a[title*='Account']").size()) return false;
                     var t = $("a[title*='Account']").eq(0).attr('title');
                     var m = t.match(/Account ([A-z ]*)\s*\((.*)\)/);
+                    if(!m) m = t.match(/Account(\s*)(.*@.*)/);
                     return {title: t, email: m?m[2]:"-",name:m?m[1]:'-'};
                 });
                 if(!res){

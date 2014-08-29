@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="">
+    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="route /currentworker">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca-dashboard/dashboard.js" afterPath="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca/gserver.js" afterPath="$PROJECT_DIR$/dmca/gserver.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -30,7 +30,7 @@
       <file leaf-file-name="dashboard.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="0" selection-start="481" selection-end="481" vertical-scroll-proportion="0.26030368" vertical-offset="0" max-vertical-offset="9540">
+            <state line="17" column="35" selection-start="516" selection-end="516" vertical-scroll-proportion="0.17416546" vertical-offset="0" max-vertical-offset="9990">
               <folding />
             </state>
           </provider>
@@ -39,10 +39,10 @@
       <file leaf-file-name="gserver.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="628" column="17" selection-start="25290" selection-end="25290" vertical-scroll-proportion="0.0" vertical-offset="6922" max-vertical-offset="9960">
+            <state line="20" column="35" selection-start="590" selection-end="606" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7965">
               <folding>
-                <element signature="e#12731#14563#0" expanded="false" />
-                <element signature="e#19411#24715#0" expanded="false" />
+                <element signature="e#2466#11864#0" expanded="false" />
+                <element signature="e#11885#17031#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -84,14 +84,14 @@
         <option value="$PROJECT_DIR$/googlelist/conf.json" />
         <option value="$PROJECT_DIR$/googlelist/googlesearch.sh" />
         <option value="$PROJECT_DIR$/googlelist/gsearch.sh" />
-        <option value="$PROJECT_DIR$/dmca/conf.json" />
         <option value="$PROJECT_DIR$/googlelist/gsearch.js" />
-        <option value="$PROJECT_DIR$/dmca/README.txt" />
         <option value="$PROJECT_DIR$/dmca-dashboard/README.txt" />
         <option value="$PROJECT_DIR$/googlelist/README.txt" />
-        <option value="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
-        <option value="$PROJECT_DIR$/dmca/gserver.js" />
         <option value="$PROJECT_DIR$/dmca-dashboard/conf.json" />
+        <option value="$PROJECT_DIR$/dmca/conf.json" />
+        <option value="$PROJECT_DIR$/dmca/README.txt" />
+        <option value="$PROJECT_DIR$/dmca/gserver.js" />
+        <option value="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
       </list>
     </option>
   </component>
@@ -199,14 +199,6 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
-      <option name="VMOptions" />
-      <option name="arguments" />
-      <option name="filePath" />
-      <option name="scope" value="ALL" />
-      <option name="testName" />
-      <method />
-    </configuration>
     <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
       <option name="VMOptions" />
       <option name="arguments" />
@@ -217,15 +209,23 @@
       <option name="showConsoleOnStdOut" value="false" />
       <method />
     </configuration>
+    <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
+      <option name="VMOptions" />
+      <option name="arguments" />
+      <option name="filePath" />
+      <option name="scope" value="ALL" />
+      <option name="testName" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" singleton="true" config-file="">
+      <envs />
+      <method />
+    </configuration>
     <configuration default="true" type="JSTestDriver:ConfigurationType" factoryName="JsTestDriver">
       <setting name="configLocationType" value="CONFIG_FILE" />
       <setting name="settingsFile" value="" />
       <setting name="serverType" value="INTERNAL" />
       <setting name="preferredDebugBrowser" value="CHROME" />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" singleton="true" config-file="">
-      <envs />
       <method />
     </configuration>
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug" singleton="true">
@@ -421,7 +421,31 @@
       <created>1408104355652</created>
       <updated>1408104355652</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="logging every redirect during login.">
+      <created>1408177947560</created>
+      <updated>1408177947560</updated>
+    </task>
+    <task id="LOCAL-00042" summary="trying to debug login problem on server and status scraping from dashboard">
+      <created>1408339040182</created>
+      <updated>1408339040182</updated>
+    </task>
+    <task id="LOCAL-00043" summary="trying to improve /currentworker performance">
+      <created>1408506437805</created>
+      <updated>1408506437805</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Added bypasscaptcha API and route /changecaptcha.">
+      <created>1408774450259</created>
+      <updated>1408774450259</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Corrected problem with image format for bypass captcha">
+      <created>1408775988729</created>
+      <updated>1408775988729</updated>
+    </task>
+    <task id="LOCAL-00046" summary="route /currentcaptcha and error response when unknown route is requested. For server test use only &quot;/&quot; now.">
+      <created>1408793082566</created>
+      <updated>1408793082566</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -445,19 +469,19 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="0" width="1599" height="875" extended-state="6" />
+    <frame x="1" y="0" width="1599" height="875" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32599726" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31463748" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31412894" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32921812" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24904943" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24968314" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24872774" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32737276" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32647464" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -480,13 +504,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="message update when result is empty&#10;" />
-    <MESSAGE value="one bug when results are less than 10&#10;" />
-    <MESSAGE value="Small updates and test to check problem with proxy." />
-    <MESSAGE value="An effort to improve proxy failure detection" />
-    <MESSAGE value="Updates to check proxy fail more reliably" />
-    <MESSAGE value="Support for username and password and other types(socks/https) in proxies" />
-    <MESSAGE value="Dmca Dashboard scraper. Read README in the folder before use." />
     <MESSAGE value="Dmca Dashboard server update as per discussions" />
     <MESSAGE value="Dmca Dashboard update, added worker selection on each request, request count and reset path." />
     <MESSAGE value="Update dmca form submission script - now select worker to be used by sending 'workerid' in post data." />
@@ -505,36 +522,29 @@
     <MESSAGE value="Single worker scheme for dmca and dashboard, use /changeworker to change worker" />
     <MESSAGE value="Added logger library" />
     <MESSAGE value="Added timeout for login, route /version for script version date" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added timeout for login, route /version for script version date" />
+    <MESSAGE value="logging every redirect during login." />
+    <MESSAGE value="trying to debug login problem on server and status scraping from dashboard" />
+    <MESSAGE value="trying to improve /currentworker performance" />
+    <MESSAGE value="Added bypasscaptcha API and route /changecaptcha." />
+    <MESSAGE value="Corrected problem with image format" />
+    <MESSAGE value="Corrected problem with image format for bypass captcha" />
+    <MESSAGE value="route /currentcaptcha and error response when unknown route is requested. For server test use only &quot;/&quot; now." />
+    <option name="LAST_COMMIT_MESSAGE" value="route /currentcaptcha and error response when unknown route is requested. For server test use only &quot;/&quot; now." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="6" />
+      <option name="time" value="11" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/dmca-dashboard/conf.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="65" selection-start="180" selection-end="180" vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="195">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="35" selection-start="612" selection-end="612" vertical-scroll-proportion="0.0" vertical-offset="300" max-vertical-offset="12150">
-          <folding>
-            <element signature="e#12731#14563#0" expanded="false" />
-            <element signature="e#19411#24715#0" expanded="false" />
-          </folding>
-        </state>
+        <state line="20" column="35" selection-start="612" selection-end="612" vertical-scroll-proportion="0.0" vertical-offset="300" max-vertical-offset="12150" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="35" selection-start="516" selection-end="516" vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="9660">
-          <folding />
-        </state>
+        <state line="17" column="35" selection-start="516" selection-end="516" vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="9660" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
@@ -739,14 +749,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="26" selection-start="1421" selection-end="1421" vertical-scroll-proportion="0.70851064" vertical-offset="162" max-vertical-offset="7875">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca-dashboard/README.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="24" selection-start="269" selection-end="287" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="570" />
+        <state line="42" column="26" selection-start="1421" selection-end="1421" vertical-scroll-proportion="0.70851064" vertical-offset="162" max-vertical-offset="7875" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/README.txt">
@@ -754,40 +757,39 @@
         <state line="13" column="12" selection-start="596" selection-end="596" vertical-scroll-proportion="0.3617021" vertical-offset="25" max-vertical-offset="510" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
+    <entry file="file://$PROJECT_DIR$/dmca-dashboard/conf.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="5" selection-start="927" selection-end="1422" vertical-scroll-proportion="0.26793247" vertical-offset="203" max-vertical-offset="690">
-          <folding />
-        </state>
+        <state line="5" column="0" selection-start="115" selection-end="115" vertical-scroll-proportion="0.16666667" vertical-offset="0" max-vertical-offset="450" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca-dashboard/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="24" selection-start="269" selection-end="287" vertical-scroll-proportion="0.2542373" vertical-offset="0" max-vertical-offset="570" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/conf.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="1" selection-start="238" selection-end="238" vertical-scroll-proportion="0.3" vertical-offset="0" max-vertical-offset="450">
-          <folding />
-        </state>
+        <state line="9" column="9" selection-start="243" selection-end="253" vertical-scroll-proportion="-5.625" vertical-offset="0" max-vertical-offset="240" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="55" selection-start="1899" selection-end="1899" vertical-scroll-proportion="0.8717949" vertical-offset="78" max-vertical-offset="780" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="628" column="17" selection-start="25290" selection-end="25290" vertical-scroll-proportion="0.0" vertical-offset="6922" max-vertical-offset="9960">
+        <state line="20" column="35" selection-start="590" selection-end="606" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7965">
           <folding>
-            <element signature="e#12731#14563#0" expanded="false" />
-            <element signature="e#19411#24715#0" expanded="false" />
+            <element signature="e#2466#11864#0" expanded="false" />
+            <element signature="e#11885#17031#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca-dashboard/conf.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="0" selection-start="115" selection-end="115" vertical-scroll-proportion="0.16666667" vertical-offset="0" max-vertical-offset="450">
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="481" selection-end="481" vertical-scroll-proportion="0.26030368" vertical-offset="0" max-vertical-offset="9540">
+        <state line="17" column="35" selection-start="516" selection-end="516" vertical-scroll-proportion="0.17416546" vertical-offset="0" max-vertical-offset="9990">
           <folding />
         </state>
       </provider>
