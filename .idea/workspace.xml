@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="route /currentworker">
+    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/dmca/test/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/dmca/test/tests.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca-dashboard/dashboard.js" afterPath="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/googlelist/gsearch.js" afterPath="$PROJECT_DIR$/googlelist/gsearch.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca/gserver.js" afterPath="$PROJECT_DIR$/dmca/gserver.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -27,10 +30,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="dashboard.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="dashboard.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="35" selection-start="516" selection-end="516" vertical-scroll-proportion="0.17416546" vertical-offset="0" max-vertical-offset="9990">
+            <state line="17" column="34" selection-start="515" selection-end="515" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10140">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gsearch.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="25" column="34" selection-start="641" selection-end="641" vertical-scroll-proportion="0.34188035" vertical-offset="0" max-vertical-offset="7875">
               <folding />
             </state>
           </provider>
@@ -39,10 +51,11 @@
       <file leaf-file-name="gserver.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="35" selection-start="590" selection-end="606" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7965">
+            <state line="20" column="27" selection-start="590" selection-end="605" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="9570">
               <folding>
-                <element signature="e#2466#11864#0" expanded="false" />
-                <element signature="e#11885#17031#0" expanded="false" />
+                <element signature="e#1281#2443#0" expanded="false" />
+                <element signature="e#2465#11863#0" expanded="false" />
+                <element signature="e#17082#17303#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -75,7 +88,6 @@
         <option value="$PROJECT_DIR$/googlelist/teststring.json" />
         <option value="$PROJECT_DIR$/googlelist/package.json" />
         <option value="$PROJECT_DIR$/googlelist/useragents.json" />
-        <option value="$PROJECT_DIR$/googlelist/tests.js" />
         <option value="$PROJECT_DIR$/googlelist/jquery.js" />
         <option value="$PROJECT_DIR$/dmca-dashboard/gserver.js" />
         <option value="$PROJECT_DIR$/dmca-dashboard/dashboard_workerSelect.js" />
@@ -84,14 +96,16 @@
         <option value="$PROJECT_DIR$/googlelist/conf.json" />
         <option value="$PROJECT_DIR$/googlelist/googlesearch.sh" />
         <option value="$PROJECT_DIR$/googlelist/gsearch.sh" />
-        <option value="$PROJECT_DIR$/googlelist/gsearch.js" />
         <option value="$PROJECT_DIR$/dmca-dashboard/README.txt" />
         <option value="$PROJECT_DIR$/googlelist/README.txt" />
         <option value="$PROJECT_DIR$/dmca-dashboard/conf.json" />
         <option value="$PROJECT_DIR$/dmca/conf.json" />
         <option value="$PROJECT_DIR$/dmca/README.txt" />
+        <option value="$PROJECT_DIR$/googlelist/tests.js" />
+        <option value="$PROJECT_DIR$/dmca/test/tests.js" />
         <option value="$PROJECT_DIR$/dmca/gserver.js" />
         <option value="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
+        <option value="$PROJECT_DIR$/googlelist/gsearch.js" />
       </list>
     </option>
   </component>
@@ -143,38 +157,6 @@
               <option name="myItemId" value="google-dmca" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="googlelist" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="google-dmca" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="google-dmca" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dmca-dashboard" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="google-dmca" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="google-dmca" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dmca" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
@@ -189,6 +171,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/dmca/test" />
       <recent name="$PROJECT_DIR$/dmca-dashboard" />
       <recent name="$PROJECT_DIR$/googlelist" />
     </key>
@@ -445,7 +428,11 @@
       <created>1408793082566</created>
       <updated>1408793082566</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="route /currentworker error collecting email">
+      <created>1409332974868</created>
+      <updated>1409332974868</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -476,7 +463,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31412894" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32921812" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24968314" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24872774" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24872774" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
@@ -504,7 +491,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Dmca Dashboard server update as per discussions" />
     <MESSAGE value="Dmca Dashboard update, added worker selection on each request, request count and reset path." />
     <MESSAGE value="Update dmca form submission script - now select worker to be used by sending 'workerid' in post data." />
     <MESSAGE value="Dashboard update for scraping more than 25 submitted URLs" />
@@ -529,24 +515,15 @@
     <MESSAGE value="Corrected problem with image format" />
     <MESSAGE value="Corrected problem with image format for bypass captcha" />
     <MESSAGE value="route /currentcaptcha and error response when unknown route is requested. For server test use only &quot;/&quot; now." />
-    <option name="LAST_COMMIT_MESSAGE" value="route /currentcaptcha and error response when unknown route is requested. For server test use only &quot;/&quot; now." />
+    <MESSAGE value="route /currentworker error collecting email" />
+    <option name="LAST_COMMIT_MESSAGE" value="route /currentworker error collecting email" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="11" />
+      <option name="time" value="13" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="35" selection-start="612" selection-end="612" vertical-scroll-proportion="0.0" vertical-offset="300" max-vertical-offset="12150" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="35" selection-start="516" selection-end="516" vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="9660" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="242" column="103" selection-start="10307" selection-end="10307" vertical-scroll-proportion="0.0" vertical-offset="2051" max-vertical-offset="6030" />
@@ -702,11 +679,6 @@
         <state line="8" column="21" selection-start="183" selection-end="183" vertical-scroll-proportion="0.27272728" vertical-offset="0" max-vertical-offset="440" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/tests.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="19" selection-start="490" selection-end="490" vertical-scroll-proportion="0.0" vertical-offset="285" max-vertical-offset="1050" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dmca/dmcaserver.conf">
       <provider selected="true" editor-type-id="text-editor">
         <state line="27" column="24" selection-start="651" selection-end="651" vertical-scroll-proportion="0.5982275" vertical-offset="0" max-vertical-offset="677" />
@@ -747,11 +719,6 @@
         <state line="43" column="6" selection-start="897" selection-end="897" vertical-scroll-proportion="1.286017" vertical-offset="38" max-vertical-offset="735" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="26" selection-start="1421" selection-end="1421" vertical-scroll-proportion="0.70851064" vertical-offset="162" max-vertical-offset="7875" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/README.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state line="13" column="12" selection-start="596" selection-end="596" vertical-scroll-proportion="0.3617021" vertical-offset="25" max-vertical-offset="510" />
@@ -772,24 +739,51 @@
         <state line="9" column="9" selection-start="243" selection-end="253" vertical-scroll-proportion="-5.625" vertical-offset="0" max-vertical-offset="240" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
+    <entry file="file://$PROJECT_DIR$/dmca/test/package.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="55" selection-start="1899" selection-end="1899" vertical-scroll-proportion="0.8717949" vertical-offset="78" max-vertical-offset="780" />
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="702" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
+    <entry file="file://$PROJECT_DIR$/googlelist/tests.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="35" selection-start="590" selection-end="606" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7965">
+        <state line="58" column="41" selection-start="1973" selection-end="1973" vertical-scroll-proportion="1.7610993" vertical-offset="37" max-vertical-offset="1185">
           <folding>
-            <element signature="e#2466#11864#0" expanded="false" />
-            <element signature="e#11885#17031#0" expanded="false" />
+            <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/test/tests.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="51" column="96" selection-start="1838" selection-end="1838" vertical-scroll-proportion="0.32656023" vertical-offset="540" max-vertical-offset="1230" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="45" column="18" selection-start="1758" selection-end="1771" vertical-scroll-proportion="0.8504273" vertical-offset="78" max-vertical-offset="780" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dmca-dashboard/dashboard.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="35" selection-start="516" selection-end="516" vertical-scroll-proportion="0.17416546" vertical-offset="0" max-vertical-offset="9990">
+        <state line="17" column="34" selection-start="515" selection-end="515" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10140">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/gserver.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="27" selection-start="590" selection-end="605" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="9570">
+          <folding>
+            <element signature="e#1281#2443#0" expanded="false" />
+            <element signature="e#2465#11863#0" expanded="false" />
+            <element signature="e#17082#17303#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="34" selection-start="641" selection-end="641" vertical-scroll-proportion="0.34188035" vertical-offset="0" max-vertical-offset="7875">
           <folding />
         </state>
       </provider>

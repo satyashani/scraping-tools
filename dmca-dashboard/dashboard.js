@@ -15,7 +15,7 @@ var fs = require("fs");
 
 var gmailuser = {username : "amit.020585",password : "Rewq!234"};
 
-var versiondate = "2014-08-29 15:22";
+var versiondate = "2014-09-04 8:52";
 
 var logger = {
     error:function(){
@@ -163,9 +163,10 @@ var handler = function(req,res,server){
         if(!server.workers.length || !server.workers[0].loggedin) return sendError("no workers");
         var u = server.workers[0].username;
         server.getWorker(u,function(err,worker){
-            if(err) return sendError("worker "+u+" not usable to testing");
+            if(err) return sendError("No worker logged in");
             worker.getCurrentLoggedIn(function(err,res){
-                send(200,res,true);
+                if(err) sendError(err.message);
+                else send(200,res,true);
             })
         });
     }
@@ -232,7 +233,8 @@ var worker = function(conf){
         this.requestCheck();
         page.open(dashboardurl,function(stat){
             if(!stat=='success'){
-                page.render("dashboard.png");
+                var time = new Date().toString().replace(/ /g,'_');
+                page.render("images/dashboard.+"+time+".png");
                 return callback(new Error("Failed to open dmca dashboard."));
             }
             setTimeout(function(){
@@ -293,7 +295,8 @@ var worker = function(conf){
                     return out;
                 });
                 if(!res.url){
-                    page.render("urlsearchpage.png");
+                    var time = new Date().toString().replace(/ /g,'_');
+                    page.render("images/urlsearchpage."+time+".png");
                     return callback(new Error("No dmca submission found for this url."));
                 }
                 page.open(res.url,function(stat){
@@ -492,6 +495,7 @@ var worker = function(conf){
                 callback(new Error("login_timeout"));
             }
         },20000);
+        var time = new Date().toString().replace(/ /g,'_');
         page.onLoadFinished = function(){
             var url = page.url;
             logger.log("login page redirect url=",url);
@@ -502,9 +506,15 @@ var worker = function(conf){
                 if(!errorspan.size()) return false;
                 else return errorspan.text().trim();
             });
-            if(loginerror) return callback(new Error("Login page error:"+loginerror));
+            if(loginerror){
+                page.render("images/dashboardloginerror."+time+".png");
+                return callback(new Error("Login page error:"+loginerror));
+            }
             if(changes >=4) return callback(new Error("Could not log in"));
-            if(/LoginVerification|VerifiedPhoneInterstitial/i.test(url)) return callback(new Error("login failed: requires verification"));
+            if(/LoginVerification|VerifiedPhoneInterstitial/i.test(url)){
+                page.render("images/dashboardloginverify."+time+".png");
+                return callback(new Error("login failed: requires verification"));
+            }
             if(/dmca-dashboard/i.test(url) && serviceLogin){
                 that.loggedin  = true;
                 page.onLoadFinished = null;
@@ -516,7 +526,7 @@ var worker = function(conf){
                     });
                     if(loaded) callback(null,true);
                     else{
-                        page.render("dashboardafterlogin.png");
+                        page.render("images/dashboardafterlogin."+time+".png");
                         setTimeout(testpage,500);
                     }
                 }

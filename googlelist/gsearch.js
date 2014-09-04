@@ -23,7 +23,7 @@ var conf = {
 }
 
 
-var versiondate = "2014-08-15";
+var versiondate = "2014-09-04 8:52";
 var useragents = fs.read("useragents.json");
 var getUserAgent = function(){
     return useragents[Math.floor(Math.random()*useragents.length)];
@@ -217,8 +217,8 @@ var handler = function(req,res,server){
                 }else{
                     if(!totalres || !totalres.length){
                         if(conf.env == "dev"){
-                            page.render("resultPage_"+tracinfo.id+".png");
-                            fs.write("page_"+ tracinfo.id+".html",page.content);
+                            page.render("images/resultPage_"+tracinfo.id+".png");
+                            fs.write("html/page_"+ tracinfo.id+".html",page.content);
                         }
                         logger.log("No results: page url = "+page.url);
                     }
@@ -267,7 +267,7 @@ var handler = function(req,res,server){
                     page.evaluate(function(query){
                         window.location.href = "http://www.google.com/search?q="+query;
                     },q);
-                    if(conf.env == "dev") page.render("searchpage.png");
+                    if(conf.env == "dev") page.render("images/searchpage_"+tracinfo.id+".png");
                 }
             };
             var onUrlChange =  function(){

@@ -18,7 +18,7 @@ var conf = JSON.parse(fs.read("conf.json"));
 conf.captchaApi = conf.captchaApi || "dbc";
 
 
-var versiondate = "2014-08-29 15:22";
+var versiondate = "2014-09-04 8:52";
 
 var logger = {
     error:function(){
@@ -512,7 +512,8 @@ var handler = function(req,res,server){
         server.getWorker(u,function(err,worker){
             if(err) return sendError("no worker logged in");
             worker.getCurrentLoggedIn(function(err,res){
-                send(200,res,true);
+                if(err) sendError(err.message);
+                else send(200,res,true);
             })
         });
     }
@@ -585,7 +586,8 @@ var worker = function(config){
         page.onCallback = function(imgdata){
             page.onCallback = null;
             if(!imgdata){
-                page.render("captcha_not_loaded.png");
+                var time = new Date().toString().replace(/ /g,'_');
+                page.render("images/captcha_error."+time+".png");
                 return callback(new Error("dmca_captcha_not_loaded"),null);
             }
             var filename = "./captcha/captcha_"+new Date().getTime()+".txt"
@@ -687,6 +689,7 @@ var worker = function(config){
     this.login = function(callback){
         this.loggedin = false;
         var that = this,serviceLogin=false;
+        var time = new Date().toString().replace(/ /g,'_');
         page.clearCookies();
         logger.log("Login request for "+username);
         var timeout = false;
@@ -709,9 +712,15 @@ var worker = function(config){
                     else return errorspan.text().trim();
                 }
             });
-            if(loginerror) return callback(new Error("Login page error:"+loginerror));
+            if(loginerror){
+                page.render("images/dashboardloginerror."+time+".png");
+                return callback(new Error("Login page error:"+loginerror));
+            }
             if(changes >=4) return callback(new Error("Could not log in"));
-            if(/LoginVerification|VerifiedPhoneInterstitial/i.test(url)) return callback(new Error("login failed: requires verification"));
+            if(/LoginVerification|VerifiedPhoneInterstitial/i.test(url)){
+                page.render("images/dashboardloginverify."+time+".png");
+                return callback(new Error("login failed: requires verification"));
+            }
             if(/dmca-notice/i.test(url) && serviceLogin){
                 that.loggedin  = true;
                 page.onLoadFinished = null;
@@ -723,7 +732,7 @@ var worker = function(config){
                     });
                     if(loaded) callback(null,true);
                     else{
-                        page.render("dmcaafterlogin.png");
+                        page.render("images/dmcaafterlogin."+time+".png");
                         setTimeout(testpage,500);
                     }
                 }
