@@ -66,7 +66,7 @@ var worker = function(config){
                         console.log("finally items:",items.size());
                         items.each(function(){
                             var o = {
-                                videoUrl: $(this).find('a.search_video_row_relative').attr("href"),
+                                videoUrl: "http://vk.com"+$(this).find('a.search_video_row_relative').attr("href"),
                                 title: $(this).find('div.search_video_raw_info_name').text(),
                                 duration :$(this).find("div.search_video_row_duration").text()
                             };
@@ -107,8 +107,9 @@ var worker = function(config){
         logger.log("Login request for "+config.username);
         var calledback = false;
         var caller = function(err,res){
-            if(!calledback) callback(err,res);
+            if(calledback) return;
             calledback = true;
+            callback(err,res);
         };
         setTimeout(function(){
             caller(new Error("login_timeout"));
@@ -197,19 +198,27 @@ var worker = function(config){
         }
         var calledback = false;
         var caller = function(err,res){
-            if(!calledback) callback(err,res);
+            if(calledback) return;
             calledback = true;
+            callback(err,res);
         };
-        setTimeout(function(){
-            caller(new Error("login_timeout"));
-        },30000);
         page.open("https://vk.com/support?act=new_dmca",function(stat){
             if(stat !== "success") return caller(new Error("error_opening_page"),null);
-            page.onUrlChanged(function (url) {
-                var m = url.match(/act=show&id=([0-9])+/);
-                if (m)  caller(null, {ok: true, qid: m[1]});
-                else logger.log("submitDmca:submitUrl =", url);
-            });
+            setTimeout(function(){
+                page.render("dmcatimeout.png");
+                page.onUrlChanged = null;
+                caller(new Error("submit_timeout"));
+            },30000);
+            logger.log("dmca page opened");
+            page.injectJs(jq);
+            page.onUrlChanged = function (url) {
+                logger.log("submitDmca:submitUrl =", url);
+                var m = url.match(/act=show&id=([0-9]+)/);
+                if (m){
+                    page.onUrlChanged = null;
+                    caller(null, {ok: true, qid: m[1]});
+                }
+            };
             page.evaluate(function (data) {
                 data.forEach(function (d) {
                     if (d.type === 'input' || d.type === 'textarea') $(d.type + "#" + d.id).val(d.value);

@@ -28,16 +28,29 @@ POST /search                ->  Search
 POST /submitdmca            ->  Get list of confirmation ids and their links from dashboard.
 	POST BODY
 	{
-		"workerid"		    :		"amit.020585",
-	    "firstname"		    :		"amit",
-	    "lastname"		    :		"rai",
-	    "companyname"		:		"sony music",
-	    "newcopyrightholder":		"sony music",
-	    "email"		        :		"amit.020585@gmail.com",
-	    "countrycode"		:		"India",
-	    "crworkdesc0"		:		"Sony music copyright",
-	    "crworkurls0"		:		"http://www.sonymusic.com/videos/t-i-no-medicore/",
-	    "infringingurls0"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links"
+	    "tickets_text" : "ticket text",
+        "tickets_links" : "ticket links",
+        "person" : "legal",
+        "tickets_dmca_name" : "Max steiner",
+        "tickets_dmca_email" : "satyashani@gmail.com",
+        "tickets_dmca_region" : "Rome",
+        "tickets_dmca_address" : "Katni MP India",
+        "tickets_dmca_corp" : "total wipes music group",
+        "tickets_dmca_repr" : "Shani Mahadeva",
+        "tickets_dmca_post" : "Service provider",
+        "tickets_dmca_country_wrap" : 80,
+        "tickets_dmca_city_wrap" : 437,
+        "support_dmca_agree_owner" : false,
+        "support_dmca_agree_unauthorized" : false,
+        "support_dmca_agree_perjury" : false,
+        "support_dmca_agree_email" : false,
+        "support_dmca_agree_inform" : false,
+        "support_dmca_agree_rules" : true,
+        "support_dmca_agree_owner_legal" : true,
+        "support_dmca_agree_unauthorized_legal" : true,
+        "support_dmca_agree_perjury_legal" : true,
+        "support_dmca_agree_email_legal" : true,
+        "support_dmca_agree_inform_legal" : true
     }
 POST /changeworker          ->  Get List of approved, rejected and pending urls
 	POST BODY
