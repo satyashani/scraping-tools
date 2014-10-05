@@ -45,25 +45,56 @@ var worker = function(config){
                 };
                 page.evaluate(function(){
                     var items = $("td#results div.audio"),size = 0;
-                    console.log("results found = ",items.size());
                     var scroll = function(){
                         window.scrollTo(0,$("body").height());
                         setTimeout(function(){
-                            console.log("after scroll results found = ",items.size());
                             items = $("td#results div.audio");
                             if(size<items.size()) {
                                 size = items.size();
                                 scroll();
                             }
-                            else{
-                                console.log("finished scrolling, calling back");
-                                window.callPhantom();
-                            }
+                            else window.callPhantom();
                         },5000)
                     }
                     scroll();
                 });
-            }else{
+            }
+            else if(type==='video'){
+                page.onCallback = function(){
+                    var res = page.evaluate(function(){
+                        var items = $("div#results div.search_video_row_cont"),res = [];
+                        console.log("finally items:",items.size());
+                        items.each(function(){
+                            var o = {
+                                videoUrl: $(this).find('a.search_video_row_relative').attr("href"),
+                                title: $(this).find('div.search_video_raw_info_name').text(),
+                                duration :$(this).find("div.search_video_row_duration").text()
+                            };
+                            res.push(o);
+                        });
+                        return res;
+                    });
+                    callback(null,res);
+                };
+                page.evaluate(function(){
+                    var items = $("div#results div.search_video_row_cont"),size = 0;
+                    console.log("items:",items.size());
+                    var scroll = function(){
+                        window.scrollTo(0,$("body").height());
+                        setTimeout(function(){
+                            console.log("after scroll items:",items.size());
+                            items = $("td#results div.search_video_row_cont");
+                            if(size<items.size()) {
+                                size = items.size();
+                                scroll();
+                            }
+                            else window.callPhantom();
+                        },5000)
+                    }
+                    scroll();
+                });
+            }
+            else{
                 callback(new Error("unknown_type:"+type));
             }
         });
