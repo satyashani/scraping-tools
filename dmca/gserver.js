@@ -18,7 +18,7 @@ var conf = JSON.parse(fs.read("conf.json"));
 conf.captchaApi = conf.captchaApi || "dbc";
 
 
-var versiondate = "2014-09-04 8:52";
+var versiondate = "2014-10-14 8:52";
 
 var logger = {
     error:function(){
@@ -36,11 +36,11 @@ var logger = {
 }
 
 var inputs = [
-    {id: "firstname", type: "input", selector: "input#first-name", required: true},
-    {id: "lastname", type: "input", selector: "input#last-name", required: true},
-    {id: "companyname", type: "input", selector: "input#company-name", required: false,default: ""},
+    {id: "firstname", type: "input", selector: "input[name='first-name']", required: true},
+    {id: "lastname", type: "input", selector: "input[name='last-name']", required: true},
+    {id: "companyname", type: "input", selector: "input[name='company-name']", required: false,default: ""},
     {id: "newcopyrightholder", type: "input", selector: "input#new-copyright-holder", required: true},
-    {id: "email", type: "input", selector: "input#email", required: true},
+    {id: "email", type: "input", selector: "input[name='email']", required: true},
     {id: "countrycode", type: "select", selector: "select#country-code", required: true},
     {id: "crworkdesc0", type: "textarea", selector: "textarea[name='cr-work-desc0']", required: true},
     {id: "crworkurls0", type: "textarea", selector: "textarea[name='cr-work-urls0']", required: true},
