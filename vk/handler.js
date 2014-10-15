@@ -104,7 +104,7 @@ var handler = function(req,res,server){
         var json = arguments.length>2?isjson:true;
         res.setHeader('Content-Type', json?"application/json":"text/html");
         var out = json?JSON.stringify(data):data;
-        res.setHeader('Content-Length', out.length);
+//        res.setHeader('Content-Length', out.length);
         res.write(out);
         res.closeGracefully();
     }
