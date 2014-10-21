@@ -114,17 +114,21 @@ var worker = function(config){
             callback(err,res);
         };
         setTimeout(function(){
+            page.render("afterlogin_timeout.png");
             caller(new Error("login_timeout"));
         },mainconf.timeout);
         var postbody = "email="+config.username+"&pass="+config.password;
+        var starttime = new Date().getTime();
         page.open("http://vk.com",function(stat){
             if(stat !== "success"){
                 caller(new Error("error_opening_page:vk.com"),null);
             }else{
+                logger.log("Login page opened in",(new Date().getTime() - starttime)/1000,'seconds');
                 page.onUrlChanged = function(url){
                     page.onUrlChanged = null;
                     if(url.match(/vk\.com\/id[0-9]+/)){
                         that.loggedin = true;
+                        logger.log("Logged-in in ",(new Date().getTime()-starttime)/1000,' seconds');
                         caller(null,true);
                     }else{
                         page.render("afterlogin.png");
