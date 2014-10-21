@@ -7,6 +7,8 @@ var logger = require("./logger");
 var jq = "jquery-1.10.1.min.js";
 var countries = require("./countries.json");
 var cities = require("./cities.json");
+var mainconf = require("./conf.json");
+
 var worker = function(config){
     this.username = config.username;
     this.loggedin = false;
@@ -113,7 +115,7 @@ var worker = function(config){
         };
         setTimeout(function(){
             caller(new Error("login_timeout"));
-        },30000);
+        },mainconf.timeout);
         var postbody = "email="+config.username+"&pass="+config.password;
         page.open("http://vk.com",function(stat){
             if(stat !== "success"){

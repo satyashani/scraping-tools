@@ -2,8 +2,8 @@
     "env": "dev",
     "port": 9094,
     "workers": [
-        {"username":"satyashani@gmail.com","password":"rewq1234"}
+        {"username":"ugo@totalwipes.com","password":"music4,piracy"}
     ],
     "timeout": 60000,
-    "version":"0.0.4"
+    "version":"0.0.5"
 }
