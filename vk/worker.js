@@ -4,6 +4,7 @@
 
 var pg = require("webpage");
 var logger = require("./logger");
+var fs = require("fs");
 var jq = "jquery-1.10.1.min.js";
 var countries = require("./countries.json");
 var cities = require("./cities.json");
@@ -13,6 +14,7 @@ var worker = function(config){
     this.username = config.username;
     this.loggedin = false;
     var page = pg.create(); this.relogin = false;
+    page.settings.userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0";
     var that = this;
     page.onConsoleMessage =  function(){
         var args = ["pageMessage:"].concat(Array.prototype.slice.call(arguments));
@@ -111,10 +113,10 @@ var worker = function(config){
         var caller = function(err,res){
             if(calledback) return;
             calledback = true;
+            if(err) page.render("login_error.png");
             callback(err,res);
         };
         setTimeout(function(){
-            page.render("afterlogin_timeout.png");
             caller(new Error("login_timeout"));
         },mainconf.timeout);
         var postbody = "email="+config.username+"&pass="+config.password;
@@ -126,12 +128,11 @@ var worker = function(config){
                 logger.log("Login page opened in",(new Date().getTime() - starttime)/1000,'seconds');
                 page.onUrlChanged = function(url){
                     page.onUrlChanged = null;
-                    if(url.match(/vk\.com\/id[0-9]+/)){
+                    if(url.match(/vk\.com\/([A-za-z]+|id[0-9-]+)$/)){
                         that.loggedin = true;
                         logger.log("Logged-in in ",(new Date().getTime()-starttime)/1000,' seconds');
                         caller(null,true);
                     }else{
-                        page.render("afterlogin.png");
                         logger.log("login_failed:url=",url);
                         caller(new Error("login_failed"));
                     }
@@ -182,7 +183,8 @@ var worker = function(config){
             {id: "support_dmca_agree_unauthorized_legal", type: "checkbox", required: false, value: true},
             {id: "support_dmca_agree_perjury_legal", type: "checkbox", required: false, value: true},
             {id: "support_dmca_agree_email_legal", type: "checkbox", required: false, value: true},
-            {id: "support_dmca_agree_inform_legal", type: "checkbox", required: false, value: true}
+            {id: "support_dmca_agree_inform_legal", type: "checkbox", required: false, value: true},
+            {id: "files", type: "file", required: false, value: []}
         ];
         for (var i = 0; i < fields.length; i++) {
             if (formdata.hasOwnProperty(fields[i].id)) fields[i].value = formdata[fields[i].id];
@@ -225,6 +227,26 @@ var worker = function(config){
                     caller(null, {ok: true, qid: m[1]});
                 }
             };
+//            if(fields[fields.length-1].id==='files' && fields[fields.length-1].value.length){
+//                fields[fields.length-1].value.forEach(function(f){
+//                    page.onFilePicker = function(){
+//                        console.log("filepicker opened, returning ",f);
+//                        return f;
+//                    }
+//                    page.evaluate(function(){
+//                        $("span.add_media_lnk").trigger("click");
+//                        $("a.add_media_type_1_doc nobr").trigger("click");
+//                        setTimeout(function(){
+//                           if($("input#tickets_doc_inputnew").size())
+//                               $("input#tickets_doc_inputnew").trigger("click");
+//                           else if($("input[type='file']").size())
+//                               $("input[type='file']").trigger("click");
+//                           else console.log("No file input button found");
+//                        },100);
+//                    });
+//                });
+//            }
+//            page.onUrlChanged = null;
             page.evaluate(function (data) {
                 data.forEach(function (d) {
                     if (d.type === 'input' || d.type === 'textarea') $(d.type + "#" + d.id).val(d.value);
