@@ -260,21 +260,19 @@ var worker = function(config){
     };
 
     this.getTicketStatus = function(ticketid,callback){
-        page.open("http://vk.com/support",function(stat){
-            if(stat !== "success") return caller(new Error("error_opening_page"),null);
+        page.open("http://vk.com/support?act=show&id="+ticketid,function(stat){
+            if(stat !== "success") return callback(new Error("error_opening_page"),null);
             page.injectJs(jq);
             var res = page.evaluate(function(t){
-                var list = $("div#tickets_list div.tu_row");
-                for(var i=0;i<list.size();i++){
-                    var url = list.eq(i).find("a.tu_last").attr("href");
-                    if(url && url.indexOf(t)>-1){
-                        var text = list.eq(i).find("div.tu_row_comment").text();
-                        console.log("status:",text);
-                        var status = text && text.indexOf("pending")>-1?"pending":(text.indexOf("has an answer")>-1?"answered":"unknown");
-                        return {ok:true,status: status};
-                    }
+                var list = $("div.tickets_reply_text");
+                if(!list.size()) return {ok: true, status: "unknown_ticket_id"}
+                else if(list.size()==1) return {ok: true, status: "pending"}
+                else{
+                    if(list.eq(1).text().indexOf("removed")>-1)
+                        return {ok: true, status: "removed"}
+                    else
+                        return {ok: true, status: "answered"}
                 }
-                return {ok: false, status: 'not_found'};
             },ticketid);
             callback(null, res);
         })
