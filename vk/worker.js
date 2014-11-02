@@ -270,6 +270,8 @@ var worker = function(config){
                 else{
                     if(list.eq(1).text().indexOf("removed")>-1)
                         return {ok: true, status: "removed"}
+                    else if(list.eq(1).text().indexOf("declined")>-1)
+                        return {ok: true, status: "rejected"}
                     else
                         return {ok: true, status: "answered"}
                 }
