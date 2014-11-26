@@ -3,13 +3,27 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
     <script src="https://www.dropbox.com/static/api/dropbox-datastores-1.2-latest.js"></script>
-    <script type="text/javascript" src="handler.js"></script>
+    <script type="text/javascript" src="public/js/purl.js"></script>
+    <script type="text/javascript" src="public/js/handler.js"></script>
+    <script type="text/javascript" src="public/js/bootstrap.min.js"></script>
+    <link href="public/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <link href="public/css/bootstrap-theme.min.css" type="text/css" rel="stylesheet"/>
+    <link href="public/css/style.css" type="text/css" rel="stylesheet"/>
 </head>
 <body>
 <form>
     <input type="file" name="dbupload" id="dbupload" />
-    <p id="status"></p>
-    <p id="progress"></p>
+    <div id="files"></div>
+    <div id="filediv" style="display: none">
+        <p class="filename"></p>
+        <p class="status"></p>
+        <div class="progress" style="display: none;">
+            <div class="progress-bar" role="progressbar" aria-valuemax="100" style="width: 0%;">
+                <span class="sr-only">0% Complete</span>
+            </div>
+        </div>
+        <a href="#" id="upload">Upload</a>
+    </div>
 </form>
 
 </body>
