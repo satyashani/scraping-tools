@@ -32,32 +32,37 @@ var StateTitle = [
 ];
 var Uploader = function(file){
     this.file = file;
+    this.chunk = 102400;
     this.makeDiv();
     this.state = States.init;
     this.lastCursor = null;
-}
+    this.reader = new FileReader();
+};
 
 Uploader.prototype.setState = function(state,message){
     this.state = state;
-    if(state === States.complete) {
-        this.setPercent(100);
+    if(state === States.complete || state === States.error || state === States.canceled) {
+        this.div.find("div#buttons a").slideUp('fast');
     }
-    this.div.find("div.status span").attr({"title":StateTitle[state]})
+    this.div.find("div.status span").attr({"title":StateTitle[state]});
     for(var i=0;i<StateClass.length;i++){
         this.div.find("div.status span").removeClass(StateClass[i]);
     }
-    this.div.find("div.status span").attr({"title":StateTitle[state]+(message?message:"")})
+    this.div.find("div.status span").attr({"title":StateTitle[state]+(message?message:"")});
     this.div.find("div.status span").addClass(StateClass[state]);
-}
+};
 
 Uploader.prototype.makeDiv = function(){
     var div = $("div#filediv").clone();
+    div.removeAttr("id");
     div.find('div.filename').text(this.file.name);
     $("div#files").append(div);
     div.fadeIn();
     div.find("a#upload").click(this.uploadClick.bind(this));
+    div.find("a#pause").click(this.pauseClick.bind(this));
+    div.find("a#cancel").click(this.cancelClick.bind(this));
     this.div = div;
-}
+};
 
 
 Uploader.prototype.setPercent = function(p){
@@ -66,7 +71,7 @@ Uploader.prototype.setPercent = function(p){
     console.log("progressing to ",p,"% in time ",timediff);
     var percent = p+"%";
     this.div.find("div.progress-bar").stop().animate({"width": percent},timediff).find("span").text(percent);
-}
+};
 
 Uploader.prototype.uploadClick = function(e){
     e.preventDefault();
@@ -75,60 +80,64 @@ Uploader.prototype.uploadClick = function(e){
     this.div.find("a#cancel").show();
     this.div.find("div.progress").fadeIn('fast');
     this.startResumableUpload();
-}
+};
 
 Uploader.prototype.pauseClick = function(e){
     e.preventDefault();
+    if(this.state == States.canceled || this.state == States.error) return;
     if(this.state == States.paused){
-
+        this.div.find("a#pause").text("Pause");
+        this.setState(States.running);
+        this.step(null,this.lastCursor);
     }else if(this.state == States.running){
+        this.div.find("a#pause").text("Resume");
         this.setState(States.paused);
     }
-}
+};
+
+Uploader.prototype.cancelClick = function(e){
+    e.preventDefault();
+    this.setState(States.canceled);
+};
+
+Uploader.prototype.onComplete = function(){
+    var my = this;
+    dbclient.resumableUploadFinish(folder + '/' + this.file.name, this.lastCursor, function (err, stat) {
+        if (err) my.setState(States.error,err);
+        else my.setState(States.complete);
+    });
+};
+
+Uploader.prototype.step = function(err,cursor){
+    var my = this;
+    if (!err && cursor) {
+        var p = (cursor.offset / this.file.size) * 100;
+        this.setPercent(p);
+        this.lastCursor = cursor;
+        if (cursor.offset && cursor.offset >= this.file.size) {
+            this.onComplete();
+        }
+        else {
+            if(this.state === States.paused || this.state === States.canceled) return;
+            this.setState(States.running);
+            var end = Math.min(my.file.size, cursor.offset + this.chunk);
+            this.reader.onloadend = function () {
+                dbclient.resumableUploadStep(my.reader.result, cursor, my.step.bind(my));
+            }
+            this.reader.readAsArrayBuffer(my.file.slice(cursor.offset, end));
+        }
+    } else this.setState(States.error,err);
+};
 
 Uploader.prototype.startResumableUpload = function() {
     var my = this;
-    var f = my.file;
-    var reader = new FileReader(), lastGoodCursor = null;
-    var chunk = 102400;
     this.time = new Date().getTime();
-    var onComplete = function (cursor) {
-        dbclient.resumableUploadFinish(folder + '/' + f.name, cursor, function (err, stat) {
-            if (err) {
-                console.log("Failed to finish upload.");
-                onFail(err);
-            } else {
-                my.setState(States.complete);
-            }
-        });
+    var end = Math.min(this.file.size, this.chunk);
+    this.reader.onloadend = function () {
+        dbclient.resumableUploadStep(my.reader.result, null, my.step.bind(my));
     }
-    var onFail = function (err) {
-        my.setState(States.error,err);
-    }
-    var onStep = function (err, cursor) {
-        if (!err && cursor) {
-            my.lastCursor = cursor;
-            if (cursor.offset && cursor.offset >= f.size) {
-                onComplete(cursor);
-            }
-            else {
-                my.setState(States.running);
-                var p = (cursor.offset / f.size) * 100;
-                my.setPercent(p);
-                var end = Math.min(f.size, cursor.offset + chunk);
-                reader.onloadend = function () {
-                    dbclient.resumableUploadStep(reader.result, cursor, onStep);
-                }
-                reader.readAsArrayBuffer(f.slice(cursor.offset, end));
-            }
-        } else onFail(err);
-    }
-    var end = Math.min(f.size, chunk);
-    reader.onloadend = function () {
-        dbclient.resumableUploadStep(reader.result, null, onStep);
-    }
-    reader.readAsArrayBuffer(f.slice(0, end));
-}
+    this.reader.readAsArrayBuffer(this.file.slice(0, end));
+};
 
 Uploader.prototype.constructor = Uploader;
 
@@ -144,7 +153,7 @@ function addUpload(){
 
 $(document).ready(function(){
     if(folder){
-        $("input#dbupload").on("change",addUpload);
+        $("input#dbupload").change(addUpload);
         $("a#addUpload").click(function(e){
             e.preventDefault();
             $("input#dbupload").click();
