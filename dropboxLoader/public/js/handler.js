@@ -2,9 +2,7 @@
  * Created by Shani(satyashani@gmail.com) on 22/11/14.
  */
 
-var types = ['image/jpeg','application/pdf','audio/mpeg','video/mpeg'];
-var chunkSize = 1024*1024;
-var dbclient = new Dropbox.Client({ key: 'lycuobyql232wwf' ,token: "vwsVrfBEX7AAAAAAAAAAB0G3FyKl8oE_fkc1lXSg93sRV64c_Q8gr9ZjRSdeLAlX"});
+var dbclient = new Dropbox.Client({ key: dbApiConf.auth.key ,token: dbApiConf.auth.token});
 var folder = $.url().param('foldername');
 if(!folder) console.error("bad dropbox folder name",folder);
 
@@ -44,7 +42,7 @@ var StateTitle = [
 ];
 var Uploader = function(file){
     this.file = file;
-    this.chunk = chunkSize;
+    this.chunk = dbApiConf.chunkSize;
     this.makeDiv();
     this.state = States.init;
     this.lastCursor = null;
@@ -99,11 +97,11 @@ Uploader.prototype.pauseClick = function(e){
     e.preventDefault();
     if(this.state == States.canceled || this.state == States.error) return;
     if(this.state == States.paused){
-        this.div.find("a#pause").text("Pause");
+        this.div.find("a#pause span.glyphicon").removeClass("glyphicon-play").addClass("glyphicon-pause");
         this.setState(States.running);
         this.step(null,this.lastCursor);
     }else if(this.state == States.running){
-        this.div.find("a#pause").text("Resume");
+        this.div.find("a#pause span.glyphicon").removeClass("glyphicon-pause").addClass("glyphicon-play");
         this.setState(States.paused);
     }
 };
@@ -141,6 +139,7 @@ Uploader.prototype.startResumableUpload = function() {
     var my = this;
     this.time = new Date().getTime();
     var end = Math.min(this.file.size, this.chunk);
+    this.setState(States.running);
     this.reader.onloadend = function () {
         var xhr = dbclient.resumableUploadStep(my.reader.result, my.lastCursor, my.step.bind(my));
         xhr.upload.onprogress = function(e){
@@ -157,11 +156,14 @@ Uploader.prototype.constructor = Uploader;
 function addUpload(){
     if(dbclient && dbclient.isAuthenticated()){
         for(var i=0;i<this.files.length;i++){
-            if(types.indexOf(this.files[i].type) > -1)
+            if(dbApiConf.types.indexOf(this.files[i].type) > -1)
                 new Uploader(this.files[i]);
             else showError("Mime type "+this.files[i].type+" of file "+this.files[i].name+" not allowed!!");
         }
-    }else console.log("Auth error");
+    }else {
+        console.log("Auth error");
+        showError("Unable to connect to upload server.");
+    }
 }
 
 $(document).ready(function(){

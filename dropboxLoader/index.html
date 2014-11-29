@@ -4,6 +4,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
     <script src="https://www.dropbox.com/static/api/dropbox-datastores-1.2-latest.js"></script>
     <script type="text/javascript" src="public/js/purl.js"></script>
+    <script type="text/javascript" src="public/js/conf.js"></script>
     <script type="text/javascript" src="public/js/handler.js"></script>
     <script type="text/javascript" src="public/js/bootstrap.min.js"></script>
     <link href="public/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
@@ -14,19 +15,25 @@
 <form>
     <input style="display: none;" type="file" name="dbupload" id="dbupload" />
     <a href="#" id="addUpload" class="btn btn-primary btn-sm">Add File</a>
-    <div id="files"></div>
-    <div id="filediv" style="display: none;" class="row">
+    <div id="files" style="width: 1024px;"></div>
+    <div id="filediv" style="display: none;padding: 10px;" class="row">
         <div class="filename col-lg-3"></div>
-        <div id="buttons" class="col-lg-2">
-            <a href="#" id="upload" class="btn btn-xs btn-primary">Upload</a>
-            <a href="#" id="pause" class="btn btn-xs btn-primary" style="display: none;">Pause</a>
-            <a href="#" id="cancel" class="btn btn-xs btn-primary" style="display: none;">Cancel</a>
-        </div>
-        <div class="status col-lg-1"><span class="" style="cursor: pointer;"></span></div>
         <div class="progress col-lg-4" style="display: none;padding: 0px;">
             <div class="progress-bar" role="progressbar" aria-valuemax="100" style="width: 0%;">
                 <span style="color: #000000; width: 100%;">0% Complete</span>
             </div>
+        </div>
+        <div id="buttons" class="col-lg-1">
+            <a href="#" id="upload" class="btn btn-xs btn-primary">
+                <span class="glyphicon glyphicon-upload"></span>
+            </a>
+            <a href="#" id="pause" class="btn btn-xs btn-primary" style="display: none;">
+                <span class="glyphicon glyphicon-pause"></span>
+            </a>
+            <a href="#" id="cancel" class="btn btn-xs btn-primary" style="display: none;">
+                <span class="glyphicon glyphicon-stop"></span>
+            </a>
+            <div class="status" style="display: inline;"><span class="" style="cursor: pointer;"></span></div>
         </div>
     </div>
     <div id="error" class="alert alert-danger" style="display: none;"></div>
