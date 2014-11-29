@@ -156,8 +156,14 @@ Uploader.prototype.constructor = Uploader;
 function addUpload(){
     if(dbclient && dbclient.isAuthenticated()){
         for(var i=0;i<this.files.length;i++){
-            if(dbApiConf.types.indexOf(this.files[i].type) > -1)
-                new Uploader(this.files[i]);
+            if(dbApiConf.types.indexOf(this.files[i].type) > -1) {
+                if(UploadedAdded >= dbApiConf.maxFiles){
+                    return showError("Maximum "+ dbApiConf.maxFiles+" uploads allowed simultaneously!!");
+                }else {
+                    new Uploader(this.files[i]);
+                    UploadedAdded++;
+                }
+            }
             else showError("Mime type "+this.files[i].type+" of file "+this.files[i].name+" not allowed!!");
         }
     }else {
@@ -166,6 +172,7 @@ function addUpload(){
     }
 }
 
+var UploadedAdded = 0;
 $(document).ready(function(){
     if(folder){
         $("input#dbupload").change(addUpload);

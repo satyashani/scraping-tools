@@ -8,5 +8,6 @@ var dbApiConf = {
     auth: {
         key: 'lycuobyql232wwf',
         token: "vwsVrfBEX7AAAAAAAAAAB0G3FyKl8oE_fkc1lXSg93sRV64c_Q8gr9ZjRSdeLAlX"
-    }
+    },
+    maxFiles : 5
 };
