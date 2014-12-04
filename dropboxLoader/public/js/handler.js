@@ -47,6 +47,9 @@ var Uploader = function(file){
     this.state = States.init;
     this.lastCursor = null;
     this.reader = new FileReader();
+    this.lastChunkStartTime = 0;
+    this.lastProgress = 0;
+    this.speeds = [];
 };
 
 Uploader.prototype.setState = function(state,message){
@@ -76,12 +79,23 @@ Uploader.prototype.makeDiv = function(){
 
 
 Uploader.prototype.setPercent = function(p){
-    var timediff = new Date().getTime() - this.time;
+    var totalSpeed = 0;
+    for(var i =0;i<this.speeds.length;i++){
+        totalSpeed += this.speeds[i];
+    }
+    var etc = 'unknown';
+    if(totalSpeed) {
+        var speed = totalSpeed/this.speeds.length;
+        var s = Math.round(this.file.size * (1 - p / 100) / (speed * 1000)) // time in second
+        var h = Math.floor(s/3600), m = Math.floor((s-h*3600)/60),ss = s - h*3600 - m*60;
+        etc = (h?(h+" h,"):"")+(m?(m+"m,"):"")+ss+" s";
+    }
+    var timeDiff = new Date().getTime() - this.time;
     this.time = new Date().getTime();
-    console.log("progressing to ",p,"% in time ",timediff);
+    console.log("progressing to ",p,"% in time ",timeDiff);
     var percent = p.toFixed(2)+"%";
-    this.div.find("div.progress-bar").stop().animate({"width": percent},timediff)
-    this.div.find("div.progress-bar span").text(percent);
+    this.div.find("div.progress-bar").stop().animate({"width": percent},timeDiff);
+    this.div.find("div.progress-bar span").text(percent+", expected time "+etc+" seconds");
 };
 
 Uploader.prototype.uploadClick = function(e){
@@ -99,6 +113,7 @@ Uploader.prototype.pauseClick = function(e){
     if(this.state == States.paused){
         this.div.find("a#pause span.glyphicon").removeClass("glyphicon-play").addClass("glyphicon-pause");
         this.setState(States.running);
+        this.lastChunkStartTime = 0;
         this.step(null,this.lastCursor);
     }else if(this.state == States.running){
         this.div.find("a#pause span.glyphicon").removeClass("glyphicon-pause").addClass("glyphicon-play");
@@ -129,6 +144,7 @@ Uploader.prototype.step = function(err,cursor){
         else {
             if(this.state === States.paused || this.state === States.canceled) return;
             this.setState(States.running);
+//            this.lastChunkStartTime = new Date().getTime();
             var end = Math.min(my.file.size, cursor.offset + this.chunk);
             this.reader.readAsArrayBuffer(my.file.slice(cursor.offset, end));
         }
@@ -145,9 +161,17 @@ Uploader.prototype.startResumableUpload = function() {
         xhr.upload.onprogress = function(e){
             var l = my.lastCursor ? my.lastCursor.offset : 0;
             var p = ((l + e.loaded)/my.file.size)*100;
+            if(my.lastChunkStartTime) {
+                var t = new Date().getTime();
+                var speed = (p-my.lastProgress)*my.file.size/(100*(t-my.lastChunkStartTime)); // speed in bytes/ms
+                my.speeds.push(speed);
+                my.lastChunkStartTime = t;
+                my.lastProgress = p;
+            }else my.lastChunkStartTime = new Date().getTime();
             my.setPercent(p);
         };
     }
+    this.lastChunkStartTime = new Date().getTime();
     this.reader.readAsArrayBuffer(this.file.slice(0, end));
 };
 
