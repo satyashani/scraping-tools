@@ -540,6 +540,19 @@ var handler = function(req,res,server){
         })
     }
 
+    var handleRefreshWorker = function(){
+        var data = getPostData(["workerid"]);
+        server.getWorker(data.workerid,function(err,worker){
+            if(err) sendError(err.message);
+            else{
+                worker.refresh(function(err,res){
+                    if(!err && res) sendOk();
+                    else sendError(err.message);
+                });
+            }
+        });
+    }
+
     var handleGetCurrentWorker = function(){
         var u = server.workers[0].username;
         server.getWorker(u,function(err,worker){
@@ -589,6 +602,7 @@ var handler = function(req,res,server){
             case "/proxies" : handleSetProxies(); break;
             case "/submitdmca" : handleDmca(); break;
             case "/changeworker": handleChangeWorker(); break;
+            case "/refreshworker": handleRefreshWorker(); break;
             case "/changecaptcha" : handleChangeCaptcha(); break;
             case "/": sendOk();
             default : sendError("Unknown POST route:"+req.url); break;
@@ -614,6 +628,12 @@ var worker = function(config){
     var page = pg.create(); this.relogin = false;
     var that = this;
     page.onError = function(err,trace){};
+    this.refresh = function(callback){
+        page.close();
+        page = pg.create();
+        page.onError = function(err,trace){};
+        this.login(callback);
+    }
     var filldmca = function(dmcaformdata,callback){
         logger.log("About to fill form as "+username);
         page.onCallback = function(imgdata){

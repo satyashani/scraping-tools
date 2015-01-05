@@ -45,3 +45,7 @@ POST /changecaptcha          ->  Get List of approved, rejected and pending urls
     }
 GET /currentworker          -> Current logged in worker email, check from dmca-notice page
 GET /currentcaptcha         -> Current captcha api code
+POST /refreshworker          -> Refresh worker's page to keep memory usage low
+    {
+        "workerid"		    :		"username"
+    }
