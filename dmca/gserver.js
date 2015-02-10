@@ -18,7 +18,7 @@ var conf = JSON.parse(fs.read("conf.json"));
 conf.captchaApi = conf.captchaApi || "dbc";
 
 
-var versiondate = "2014-10-14 8:52";
+var versiondate = "2015-02-10 22:40";
 
 var logger = {
     error:function(){
@@ -45,6 +45,33 @@ var inputs = [
     {id: "crworkdesc0", type: "textarea", selector: "textarea[name='cr-work-desc0']", required: true},
     {id: "crworkurls0", type: "textarea", selector: "textarea[name='cr-work-urls0']", required: true},
     {id: "infringingurls0", type: "textarea", selector: "textarea[name='infringing-urls0']", required: true},
+    {id: "crworkdesc1", type: "textarea", selector: "textarea[name='cr-work-desc1']", required: true},
+    {id: "crworkurls1", type: "textarea", selector: "textarea[name='cr-work-urls1']", required: true},
+    {id: "infringingurls1", type: "textarea", selector: "textarea[name='infringing-urls1']", required: false},
+    {id: "crworkdesc2", type: "textarea", selector: "textarea[name='cr-work-desc2']", required: false},
+    {id: "crworkurls2", type: "textarea", selector: "textarea[name='cr-work-urls2']", required: false},
+    {id: "infringingurls2", type: "textarea", selector: "textarea[name='infringing-urls2']", required: false},
+    {id: "crworkdesc3", type: "textarea", selector: "textarea[name='cr-work-desc3']", required: false},
+    {id: "crworkurls3", type: "textarea", selector: "textarea[name='cr-work-urls3']", required: false},
+    {id: "infringingurls3", type: "textarea", selector: "textarea[name='infringing-urls3']", required: false},
+    {id: "crworkdesc4", type: "textarea", selector: "textarea[name='cr-work-desc4']", required: false},
+    {id: "crworkurls4", type: "textarea", selector: "textarea[name='cr-work-urls4']", required: false},
+    {id: "infringingurls4", type: "textarea", selector: "textarea[name='infringing-urls4']", required: false},
+    {id: "crworkdesc5", type: "textarea", selector: "textarea[name='cr-work-desc5']", required: false},
+    {id: "crworkurls5", type: "textarea", selector: "textarea[name='cr-work-urls5']", required: false},
+    {id: "infringingurls5", type: "textarea", selector: "textarea[name='infringing-urls5']", required: false},
+    {id: "crworkdesc6", type: "textarea", selector: "textarea[name='cr-work-desc6']", required: false},
+    {id: "crworkurls6", type: "textarea", selector: "textarea[name='cr-work-urls6']", required: false},
+    {id: "infringingurls6", type: "textarea", selector: "textarea[name='infringing-urls6']", required: false},
+    {id: "crworkdesc7", type: "textarea", selector: "textarea[name='cr-work-desc7']", required: false},
+    {id: "crworkurls7", type: "textarea", selector: "textarea[name='cr-work-urls7']", required: false},
+    {id: "infringingurls7", type: "textarea", selector: "textarea[name='infringing-urls7']", required: false},
+    {id: "crworkdesc8", type: "textarea", selector: "textarea[name='cr-work-desc8']", required: false},
+    {id: "crworkurls8", type: "textarea", selector: "textarea[name='cr-work-urls8']", required: false},
+    {id: "infringingurls8", type: "textarea", selector: "textarea[name='infringing-urls8']", required: false},
+    {id: "crworkdesc9", type: "textarea", selector: "textarea[name='cr-work-desc9']", required: false},
+    {id: "crworkurls9", type: "textarea", selector: "textarea[name='cr-work-urls9']", required: false},
+    {id: "infringingurls9", type: "textarea", selector: "textarea[name='infringing-urls9']", required: false},
     {id: "agree2", type: "checkbox", selector: "input[name='agree2']", required: false,default: true},
     {id: "agree1", type: "checkbox", selector: "input[name='agree1']", required: false,default: true},
     {id: "agree5", type: "checkbox", selector: "input[name='agree5']", required: false,default: true}
@@ -351,7 +378,6 @@ var  captchaApis = {
                                     console.log("captcha_decode_step:captcha decoded - " + tries);
                                     if (data.text) {
                                         c = data;
-                                        captchaApis.dbc.reqlist[captchafile] = id;
                                     }
                                     else if (tries < 5) {
                                         poll();
@@ -369,6 +395,7 @@ var  captchaApis = {
                         poll();
                         return c;
                     }, url);
+                    captchaApis.dbc.reqlist[captchafile] = id;
                     if (captcha.text)
                         caller(null, captcha.text);
                     else
@@ -691,7 +718,11 @@ var worker = function(config){
                     logger.log("dmca url after submit - "+url);
                 };
                 page.evaluate(function(captcha,formdatajson){
-                    var formdata = JSON.parse(formdatajson);
+                    var formdata = JSON.parse(formdatajson),groups = 0;
+                    formdata.forEach(function(f){
+                        if(f.id.match(/crworkdesc\d+/) && f.value) groups++;
+                    });
+                    for(var i=1;i<groups;i++) $("#add-group-link").click();
                     $("input#recaptcha_response_field").val(captcha);
                     formdata.forEach(function(f){
                         if(f.id=="newcopyrightholder"){
@@ -700,7 +731,7 @@ var worker = function(config){
                             $("select#cr-holder").val(f.value);
                         }else if(f.type=="input" || f.type=="select")
                             $(f.selector).val(f.value);
-                        else if(f.type=="textarea")
+                        else if(f.type=="textarea" && f.value)
                             $(f.selector).text(f.value);
                         else if(f.type=="checkbox"){
                             $(f.selector).prop('checked', f.value);

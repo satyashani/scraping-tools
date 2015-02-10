@@ -11,7 +11,7 @@ STARTING DMCA PHANTOM SERVER
 
 Ready to roll :-)
 
-Update : 2014-03-24
+Update : 2015-02-10
 Add field 'workerid' in each POST Data to select the worker. e.g. {'workerid': 'amit.020585'}
 
 
@@ -30,7 +30,17 @@ POST /submitdmca            ->  Get list of confirmation ids and their links fro
 	    "countrycode"		:		"India",
 	    "crworkdesc0"		:		"Sony music copyright",
 	    "crworkurls0"		:		"http://www.sonymusic.com/videos/t-i-no-medicore/",
-	    "infringingurls0"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links"
+	    "infringingurls0"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links",
+
+	    "crworkdesc1"		:		"Sony music copyright",
+	    "crworkurls1"		:		"http://www.sonymusic.com/videos/t-i-no-medicore/",
+	    "infringingurls1"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links",
+	    ...
+	    ...  // same three fields with 0 to 9 at the end
+	    ...
+	    "crworkdesc9"		:		"Sony music copyright",
+	    "crworkurls9"		:		"http://www.sonymusic.com/videos/t-i-no-medicore/",
+	    "infringingurls9"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links"
     }
 POST /changeworker          ->  Get List of approved, rejected and pending urls
 	POST BODY
