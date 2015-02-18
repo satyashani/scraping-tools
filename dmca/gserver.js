@@ -18,7 +18,7 @@ var conf = JSON.parse(fs.read("conf.json"));
 conf.captchaApi = conf.captchaApi || "dbc";
 
 
-var versiondate = "2015-02-10 22:40";
+var versiondate = "2015-02-18 23:15";
 
 var logger = {
     error:function(){
