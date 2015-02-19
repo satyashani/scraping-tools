@@ -687,7 +687,7 @@ var worker = function(config){
             page.onLoadFinished = function(){
                 if(!page.url.match(/url\-match/i)){
                     logger.log("Search result page url = "+page.url);
-                    return callback(new Error("Could not open url page"));
+                    return callback(new Error("Could not open dashboard url page"));
                 }
                 page.onLoadFinished = null;
                 page.injectJs(jq);
@@ -709,17 +709,31 @@ var worker = function(config){
                 $("form.url-match-form").submit();
             },url);
         })
-    }
+    };
+    var getConfId = function(urls,callback){
+        if(urls.length){
+            var u = urls.shift();
+            that.openDashboard(function(err){
+                if(err) return getConfId(urls,callback);
+                else that.getUrlDetails(urls,function(err,res){
+                    if(err || !res || !res.id) return getConfId(urls,callback);
+                    else callback(null,res);
+                });
+            });
+        }else{
+            callback(null,{id: ""});
+        }
+    };
     var filldmca = function(dmcaformdata,callback){
         logger.log("About to fill form as "+username);
-        var confcheckurl = "";
+        var confcheckurl = [];
         for(var i=0;i<dmcaformdata.length;i++){
             if(dmcaformdata[i].id==='infringingurls0'){
-                confcheckurl = dmcaformdata[i].value.split(",")[0];
+                confcheckurl = dmcaformdata[i].value.split(",").slice(0,2);
                 break;
             }
         }
-        if(!confcheckurl) return callback(new Error("no urls were given for submission"));
+        if(!confcheckurl.length) return callback(new Error("no urls were given for submission"));
         page.onCallback = function(imgdata){
             page.onCallback = null;
             if(!imgdata){
@@ -743,10 +757,7 @@ var worker = function(config){
                     if(url.match(/dmca-submission-success/)){
                         page.onUrlChanged = null;
                         page.onLoadFinished = null;
-                        that.openDashboard(function(err){
-                            if(err) return callback(new Error("Could not get confirmation id after submission."));
-                            else that.getUrlDetails(confcheckurl,callback);
-                        });
+                        getConfId(confcheckurl,callback);
                     }
                     else if(url.match(/dmca-notice-ac/)){
                         page.injectJs(jq);
