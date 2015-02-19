@@ -18,7 +18,7 @@ var conf = JSON.parse(fs.read("conf.json"));
 conf.captchaApi = conf.captchaApi || "dbc";
 
 
-var versiondate = "2015-02-18 23:15";
+var versiondate = "2015-02-19 12:17";
 
 var logger = {
     error:function(){
@@ -415,7 +415,7 @@ var  captchaApis = {
             });
         },
         remove: function(filename){
-            fs.unlink(filename);
+            fs.remove(filename);
             if(captchaApis.dbc.reqlist.hasOwnProperty(filename)) delete captchaApis.dbc.reqlist[filename];
         }
     },
@@ -476,7 +476,7 @@ var  captchaApis = {
 
         },
         remove: function(filename){
-            fs.unlink(filename);
+            fs.remove(filename);
         }
     }
 }

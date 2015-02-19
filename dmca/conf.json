@@ -7,5 +7,5 @@
     "proxyapikey": "729fb2b0ef57fc06cdac1b5525c9b0",
     "proxyrefreshtime" : 14400000,
     "captchatimeout": 60000,
-    "captchaApi" : "bpc"
+    "captchaApi" : "dbc"
 }
