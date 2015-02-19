@@ -18,7 +18,7 @@ var conf = JSON.parse(fs.read("conf.json"));
 conf.captchaApi = conf.captchaApi || "dbc";
 
 
-var versiondate = "2015-02-19 12:17";
+var versiondate = "2015-02-19 14:55";
 
 var logger = {
     error:function(){
@@ -33,7 +33,7 @@ var logger = {
         var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
         console.log.apply(console,args);
     }
-}
+};
 
 var inputs = [
     {id: "firstname", type: "input", selector: "input[name='first-name']", required: true},
@@ -327,7 +327,7 @@ var countrycodes = [
     {name: "Zambia", code: "ZM"},
     {name: "Zimbabwe", code: "ZW"},
     {name: "Unlisted", code: "ZZ"}
-]
+];
 
 
 var  captchaApis = {
@@ -383,7 +383,7 @@ var  captchaApis = {
                                         poll();
                                     }
                                 },
-                                error: function (x, t, s) {
+                                error: function (x, t) {
                                     c = new Error(t);
                                     console.log("captcha_decode_step:error from DBC page - " + t);
                                     if (tries < 5) {
@@ -391,7 +391,7 @@ var  captchaApis = {
                                     }
                                 }
                             })
-                        }
+                        };
                         poll();
                         return c;
                     }, url);
@@ -402,7 +402,7 @@ var  captchaApis = {
                         caller(new Error("dbc_api_error:" + JSON.stringify(captcha)), null);
                 } else if (urlchanges >= 2)
                     caller(new Error("dbc_api_redirect_failed:" + url), null);
-            }
+            };
             page.evaluate(function () {
                 $("form").submit();
             });
@@ -467,7 +467,7 @@ var  captchaApis = {
                     if(res.error) callback(new Error(res.error));
                     else if(!res.value) callback(new Error("No value in captcha response."));
                     else callback(null,res.value);
-                }
+                };
                 page.evaluate(function(){
                     $("form").submit();
                 });
@@ -479,7 +479,7 @@ var  captchaApis = {
             fs.remove(filename);
         }
     }
-}
+};
 
 var decodeCatpcha = function(captchafile,callback){
     if(conf.captchaApi && captchaApis.hasOwnProperty(conf.captchaApi)){
@@ -487,7 +487,7 @@ var decodeCatpcha = function(captchafile,callback){
     }else{
         callback(new Error("Unknown captcha api:"+conf.captchaApi));
     }
-}
+};
 
 var handler = function(req,res,server){
     logger.log(req.method+": "+req.url);
@@ -498,7 +498,7 @@ var handler = function(req,res,server){
     var handleSetProxies = function(){
         server.setProxies(req.post.split(","));
         sendOk();
-    }
+    };
 
 
     var getPostData = function(checkfields){
@@ -517,7 +517,7 @@ var handler = function(req,res,server){
             sendError("bad_input:"+ e.message);
             return false;
         }
-    }
+    };
 
     var handleDmca = function(){
         var data = getPostData(["workerid"]);
@@ -547,16 +547,21 @@ var handler = function(req,res,server){
                 if(err) sendError(err.message);
                 else{
                     logger.log("Got worker from server");
-                    worker.fillform(formdata,function(errfilling,response){
+                    worker.fillform(formdata,function(errfilling,res){
                         if(errfilling)
                             sendError(errfilling.message);
-                        else
-                            sendOk();
+                        else {
+                            var response = {ok : true};
+                            if(res){
+                                for(var k in res) response[k] = res[k];
+                            }
+                            send(200,response,true);
+                        }
                     });
                 }
             });
         }
-    }
+    };
 
     var handleChangeWorker = function(){
         var worker = getPostData(["workerid","password"]);
@@ -565,7 +570,7 @@ var handler = function(req,res,server){
             if(!err && res) sendOk();
             else sendError(err.message);
         })
-    }
+    };
 
     var handleRefreshWorker = function(){
         var data = getPostData(["workerid"]);
@@ -578,7 +583,7 @@ var handler = function(req,res,server){
                 });
             }
         });
-    }
+    };
 
     var handleGetCurrentWorker = function(){
         var u = server.workers[0].username;
@@ -589,7 +594,7 @@ var handler = function(req,res,server){
                 else send(200,res,true);
             })
         });
-    }
+    };
 
     var handleChangeCaptcha = function(){
         var data = getPostData(["captchasource"]);
@@ -599,20 +604,20 @@ var handler = function(req,res,server){
             conf.captchaApi = data.captchasource;
             sendOk();
         }
-    }
+    };
 
     var handleGetProxies = function(){
         send(200,server.proxies,true);
-    }
+    };
 
 
     var sendOk = function(){
         send(200,{ok : true},true);
-    }
+    };
 
     var sendError = function(msg){
         send(200,{ok : false, error: msg},true);
-    }
+    };
 
     var send = function(status,data,isjson){
         res.statusCode = status;
@@ -622,7 +627,7 @@ var handler = function(req,res,server){
         res.setHeader('Content-Length', out.length);
         res.write(out);
         res.closeGracefully();
-    }
+    };
 
     if(req.method == "POST"){
         switch(req.url){
@@ -631,7 +636,7 @@ var handler = function(req,res,server){
             case "/changeworker": handleChangeWorker(); break;
             case "/refreshworker": handleRefreshWorker(); break;
             case "/changecaptcha" : handleChangeCaptcha(); break;
-            case "/": sendOk();
+            case "/": sendOk(); break;
             default : sendError("Unknown POST route:"+req.url); break;
         }
     }else{
@@ -640,11 +645,11 @@ var handler = function(req,res,server){
             case "/currentworker" : handleGetCurrentWorker(); break;
             case "/currentcaptcha" : send(200,{"ok":true,"captchasource":conf.captchaApi},true); break;
             case "/version" : send(200,{"ok":true,"versiondate":versiondate},true); break;
-            case "/": sendOk();
+            case "/": sendOk(); break;
             default : sendError("Unknown GET route: "+req.url); break;
         }
     }
-}
+};
 
 var worker = function(config){
     var username = config.username?config.username:gmailuser.username;
@@ -654,15 +659,67 @@ var worker = function(config){
     this.busy = false; this.loggedin = false;
     var page = pg.create(); this.relogin = false;
     var that = this;
+    var dashboardurl = "https://www.google.com/webmasters/tools/dmca-dashboard?rlf=all&grid.s=500";
     page.onError = function(err,trace){};
     this.refresh = function(callback){
         page.close();
         page = pg.create();
         page.onError = function(err,trace){};
         this.login(callback);
+    };
+    this.openDashboard = function(callback){
+        page.onLoadFinished = function(){
+            page.onLoadFinished = null;
+            page.injectJs(jq);
+            callback(null);
+        };
+        page.open(dashboardurl,function(stat){
+            if(!stat=='success'){
+                var time = new Date().toString().replace(/ /g,'_');
+                page.render("images/dashboard.+"+time+".png");
+                return callback(new Error("Failed to open dmca dashboard."));
+            }
+        });
+    };
+    this.getUrlDetails = function(url,callback){
+        that.openDashboard(function(err){
+            if(err) return callback(err);
+            page.onLoadFinished = function(){
+                if(!page.url.match(/url\-match/i)){
+                    logger.log("Search result page url = "+page.url);
+                    return callback(new Error("Could not open url page"));
+                }
+                page.onLoadFinished = null;
+                page.injectJs(jq);
+                var res = page.evaluate(function(){
+                    var out = {};
+                    out.size = $("table#grid tbody a").size();
+                    if(!out.size) return out;
+                    out.id = $("table#grid tbody tr.first td.id-column").text();
+                    return out;
+                });
+                if(!res.id){
+                    var time = new Date().toString().replace(/ /g,'_');
+                    page.render("images/urlsearchpage."+time+".png");
+                    return callback(new Error("confirmation id not found"));
+                }else callback(null,res);
+            };
+            page.evaluate(function(url){
+                $('input[name="url-match"]').val(url);
+                $("form.url-match-form").submit();
+            },url);
+        })
     }
     var filldmca = function(dmcaformdata,callback){
         logger.log("About to fill form as "+username);
+        var confcheckurl = "";
+        for(var i=0;i<dmcaformdata.length;i++){
+            if(dmcaformdata[i].id==='infringingurls0'){
+                confcheckurl = dmcaformdata[i].value.split(",")[0];
+                break;
+            }
+        }
+        if(!confcheckurl) return callback(new Error("no urls were given for submission"));
         page.onCallback = function(imgdata){
             page.onCallback = null;
             if(!imgdata){
@@ -670,7 +727,7 @@ var worker = function(config){
                 page.render("images/captcha_error."+time+".png");
                 return callback(new Error("dmca_captcha_not_loaded"),null);
             }
-            var filename = "./captcha/captcha_"+new Date().getTime()+".txt"
+            var filename = "./captcha/captcha_"+new Date().getTime()+".txt";
             fs.write(filename,imgdata,"w");
             logger.log("retrieved captcha and wrote to file "+filename);
             decodeCatpcha(filename,function(err,decodedcaptcha){
@@ -686,7 +743,10 @@ var worker = function(config){
                     if(url.match(/dmca-submission-success/)){
                         page.onUrlChanged = null;
                         page.onLoadFinished = null;
-                        callback(null,true);
+                        that.openDashboard(function(err){
+                            if(err) return callback(new Error("Could not get confirmation id after submission."));
+                            else that.getUrlDetails(confcheckurl,callback);
+                        });
                     }
                     else if(url.match(/dmca-notice-ac/)){
                         page.injectJs(jq);
@@ -695,7 +755,7 @@ var worker = function(config){
                             console.log("Found errors in submit page - "+$("div.errormsg").size());
                             $("div.errormsg").each(function(){
                                 errors += $(this).text();
-                            })
+                            });
                             return errors;
                         });
                         page.onLoadFinished = null;
@@ -712,7 +772,7 @@ var worker = function(config){
                         else
                             callback(new Error("bad_captcha"),null);
                     }
-                }
+                };
                 page.onUrlChanged = function(url){
                     dmcaurlchanges++;
                     logger.log("dmca url after submit - "+url);

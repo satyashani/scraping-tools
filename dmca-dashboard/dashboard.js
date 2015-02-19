@@ -281,7 +281,7 @@ var worker = function(conf){
             page.onLoadFinished = function(){
                 if(!page.url.match(/url\-match/i)){
                     logger.log("Search result page url = "+page.url);
-                    return;
+                    return callback(new Error("Could not open url page"));
                 }
                 page.onLoadFinished = null;
                 page.injectJs(jq);
