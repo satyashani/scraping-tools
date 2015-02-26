@@ -111,10 +111,16 @@ var handler = function(req,res,server){
     var getPageResults = function(){
         var res = [];
         $("div#ires li.g").each(function(){
-            var u = $(this).find("h3.r a").attr("href");
+            var u = $(this).find("h3.r a").attr("href"),kw = $(this).find('span.st em,span.st b');
             if(u){
                 var match = u.match(/url[\?q]*=(http[s]*[^&]*)/);
-                res.push(match?decodeURIComponent(match[1]):u);
+                var kwg = [];
+                if(kw.size()){
+                    kw.each(function(){
+                        kwg.push($(this).text())
+                    })
+                }
+                res.push({url: match?decodeURIComponent(match[1]):u, keywords: kwg});
             }
         });
         var tds = $("div#foot td"),hasMore = !!tds.size();
@@ -225,13 +231,14 @@ var handler = function(req,res,server){
                     var filtered = [];
                     totalres.forEach(function(r){
                         for(var i=0;i<whitelist.length;i++){
-                            if(whitelist[i] && r.match(new RegExp(whitelist[i],"i"))) return;
+                            if(whitelist[i] && r.url.match(new RegExp(whitelist[i],"i"))) return;
                         }
                         for(var f=0;f<filtered.length;f++){
-                            if(filtered[f].url == r) return;
+                            if(filtered[f].url == r.url) return;
                         }
-                        var dom = r.match(/http[s]*:\/\/([^\/\?]*)/);
-                        filtered.push({url: r,domain: dom?dom[1]:false});
+                        var dom = r.url.match(/http[s]*:\/\/([^\/\?]*)/);
+                        r.domain = dom?dom[1]:false;
+                        filtered.push(r);
                     });
                     if(page.url.match(/google.com\/sorry/i)){
                         logger.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
@@ -313,6 +320,120 @@ var handler = function(req,res,server){
             sendError("bad_json_request");
         }
     }
+
+    var getTpResult = function() {
+        var table1 = $("div.maia-cols div.maia-col-5 div.layout-table-container tbody");
+        var total1 = table1.find('tr:first').find("td").eq(1).text();
+        var total2 = table1.find('tr').eq(1).find("td").eq(1).text();
+        var table2 = $("table[__gwtcellbasedwidgetimpldispatchingblur]").find('tr.PJDF32-b-b:first');
+        var highestreporter = table2.size() > 1 ? table2.eq(1).find("td:first").text() : "";
+        var highestreported = table2.size() > 1 ? table2.eq(1).find("td").eq(1).text() : "";
+        if (total1 && !isNaN(parseInt(total1)) && highestreported && !isNaN(parseInt(highestreported)))
+            return {
+                totalrequests: total1, totalmedian: total2, topreporter: highestreporter, topreported: highestreported
+            }
+        else return null;
+    }
+
+    var handleGetTpData = function(){
+        if(conf.useproxies && !server.proxies.length && conf.proxysource=="manual")
+            return sendError("proxy_list_empty");
+        try{
+            var tracinfo = JSON.parse(req.post);
+            if(!tracinfo.q)
+                return sendError("missing_query_parameter:q");
+            var url = "https://www.google.com/transparencyreport/removals/copyright/domains/"+tracinfo.q;
+            var page = pg.create();
+            page.settings.userAgent = getUserAgent();
+            page.viewportSize = {width: 1366,height: 800};
+            var timeout = server.timeout?server.timeout:30000,pagesloaded = 0,responded = false;
+            var respond = function(err,result){
+                if(!responded){
+                    if(conf.env == "dev"){
+                        var erprint = (err?err.message:"none"), resprint = (result && result.totalrequests?result.totalrequests:0);
+                        logger.log("responding for err: "+erprint+", results: "+resprint+", emptyresultcount = "+emptyresultcount);
+                    }
+                    responded = true;
+                    if(!result || !result.hasOwnProperty('totalrequests')){
+                        emptyresultcount++;
+                        if(emptyresultcount>=1){
+                            server.nextProxy();
+                            emptyresultcount=0;
+                        }
+                    }
+                    if(err){
+                        if(emptyresultcount && err.message.match(/proxy/)){
+                            server.nextProxy();
+                            emptyresultcount=0;
+                        }
+                        sendError(err.message);
+                    }
+                    else{
+                        if(!result.hasOwnProperty('totalrequests')){
+                            sendJson({ok: false, q: tracinfo.q, result: result, error: "empty_result"});
+                        }
+                        else{
+                            emptyresultcount = 0;
+                            sendJson({ok: true, q: tracinfo.q, result: result});
+                        }
+                    }
+                }
+            };
+            var ontimeout = function(){
+                if(!responded){
+                    respond(new Error("proxy_timeout"),null);
+                }
+            };
+            setTimeout(ontimeout,timeout);
+            page.onConsoleMessage = logger.log;
+            var getResult = function(callback){
+                var eval = page.evaluate(getTpResult);
+                fs.write("domainsearchpage.html",page.content);
+                page.render("domainsearchpage.png");
+                if(eval && eval.hasOwnProperty('totalrequests')) callback(null,eval);
+                else if(!responded){
+                    setTimeout(function(){
+                        getResult(callback);
+                    },2000);
+                }
+            };
+            var onLoad = function(){
+                if(conf.env == "dev") logger.log("result page loaded = "+page.url);
+                page.injectJs(jq);
+                if(checkHasSorry(page)) return respond(new Error("proxy_failed"));
+                if(page.url.match(/google.com\/sorry/i)){
+                    logger.error("Google detected that we are a bot :-p");
+                    respond(new Error("proxy_failed"),null);
+                }else{
+                    getResult(respond)
+                }
+            }
+            page.onLoadFinished = onLoad;
+
+//            page.onResourceError = function(req){
+//                logger.log("ERROR",req.url,req.errorString);
+//            };
+//            page.onResourceReceived = function(req){
+//                logger.log("DONE",req.status,req.url);
+//            };
+            page.onResourceRequested = function(req,nw){
+                if(req.url.match(/undefined.cache.js/)){
+                    logger.log("START",req.method,req.url);
+                    nw.changeUrl("https://www.google.com/transparencyreport/gwt/54E2BC16CC25BACB635B9D0EB47CD66F.cache.js")
+                }
+            };
+//            page.onResourceTimeout = function(req){
+//                logger.log("TIMEOUT",req.method,req.url,req.errorString);
+//            };
+            page.open(url,function(status){
+                if(!status=="success")
+                    return respond(new Error("page_load_failed"));
+                if(conf.env == "dev" ) logger.log("page url on open = "+page.url);
+            });
+        }catch(e){
+            sendError("bad_json_request");
+        }
+    };
 
     var handleCurrentProxy = function(){
         if(!server.proxies.length)
@@ -397,6 +518,7 @@ var handler = function(req,res,server){
             case "/search" :
                 handleSearch();
                 break;
+            case "/piracyreport": handleGetTpData(); break;
             case "/whitelist" : handleSetWhiteList(); break;
             default : sendOk(); break;
         }

@@ -15,6 +15,9 @@ GET /version    ->  Server version date check
 POST /search    ->  Search google
 	POST BODY
 	{ "q" : "trackname","id" :"artistname"}
+POST /piracyreport    ->  Piracy report fields
+    POST BODY
+    { "q" : "doaminName"}
 POST /whitelist ->  Update white list from json file
 	POST BODY
 	{ "path " : "absolute/path/to/json/list"}
