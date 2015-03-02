@@ -23,7 +23,7 @@ var conf = {
 }
 
 
-var versiondate = "2014-09-04 8:52";
+var versiondate = "2015-03-02 12:49";
 var useragents = fs.read("useragents.json");
 var getUserAgent = function(){
     return useragents[Math.floor(Math.random()*useragents.length)];
@@ -324,15 +324,24 @@ var handler = function(req,res,server){
     var getTpResult = function() {
         var table1 = $("div.maia-cols div.maia-col-5 div.layout-table-container tbody");
         var total1 = table1.find('tr:first').find("td").eq(1).text();
+        var date = table1.find('tr').eq(7).find("td").eq(1).text(),d1 = "";
+        if(date){
+            var d = new Date(date);
+            d1 = d.getFullYear()+"-"+(d.getMonth() > 8 ? "" : "0")+(d.getMonth()+1)+"-"+ d.getDate();
+        }
         var total2 = table1.find('tr').eq(1).find("td").eq(1).text();
         var table2 = $("table[__gwtcellbasedwidgetimpldispatchingblur]").find('tr.PJDF32-b-b:first');
         var highestreporter = table2.size() > 1 ? table2.eq(1).find("td:first").text() : "";
         var highestreported = table2.size() > 1 ? table2.eq(1).find("td").eq(1).text() : "";
         if (total1 && !isNaN(parseInt(total1)) && highestreported && !isNaN(parseInt(highestreported)))
             return {
-                totalrequests: total1, totalmedian: total2, topreporter: highestreporter, topreported: highestreported
+                totalrequests: total1, totalmedian: total2, topreporter: highestreporter, topreported: highestreported, date: d1
             }
         else return null;
+    }
+
+    var check404 = function(){
+        return $("div#af-error-container").size() > 0;
     }
 
     var handleGetTpData = function(){
@@ -379,6 +388,20 @@ var handler = function(req,res,server){
                     }
                 }
             };
+            var getChillingData = function(dom,callback){
+                var u = "https://www.chillingeffects.org/notices/search?utf8=%E2%9C%93&term="+dom;
+                page.onLoadFinished = null;
+                page.open(u,function(stat){
+                    if(stat != 'success') return callback(new Error("failed to open"));
+                    page.injectJs(jq);
+                    var d = page.evaluate(function(){
+                        var total = $("span.total-entries").size() ? $("span.total-entries").text().match(/[0-9]+/) : 0;
+                        var sender = $("a.sender").eq(0).text();
+                        return {totalresults: total && total.length ? total[0] : 0, sender: sender};
+                    });
+                    callback(null,d);
+                });
+            };
             var ontimeout = function(){
                 if(!responded){
                     respond(new Error("proxy_timeout"),null);
@@ -388,8 +411,10 @@ var handler = function(req,res,server){
             page.onConsoleMessage = logger.log;
             var getResult = function(callback){
                 var eval = page.evaluate(getTpResult);
-                fs.write("domainsearchpage.html",page.content);
-                page.render("domainsearchpage.png");
+                if(conf.env ==='dev') {
+                    fs.write("domainsearchpage.html", page.content);
+                    page.render("domainsearchpage.png");
+                }
                 if(eval && eval.hasOwnProperty('totalrequests')) callback(null,eval);
                 else if(!responded){
                     setTimeout(function(){
@@ -400,12 +425,24 @@ var handler = function(req,res,server){
             var onLoad = function(){
                 if(conf.env == "dev") logger.log("result page loaded = "+page.url);
                 page.injectJs(jq);
+                if(page.evaluate(check404)) return respond(new Error("404"));
                 if(checkHasSorry(page)) return respond(new Error("proxy_failed"));
                 if(page.url.match(/google.com\/sorry/i)){
                     logger.error("Google detected that we are a bot :-p");
                     respond(new Error("proxy_failed"),null);
                 }else{
-                    getResult(respond)
+                    getResult(function(err,res){
+                        if(err) respond(err);
+                        else{
+                            getChillingData(tracinfo.q,function(errchill,reschill){
+                                if(!errchill && reschill) res.chillingdata = reschill;
+                                if(errchill) res.chillingdata = errchill.message;
+                                else if(reschill) res.chillingdata = reschill;
+                                else res.chillingdata = {};
+                                respond(null,res);
+                            });
+                        }
+                    });
                 }
             }
             page.onLoadFinished = onLoad;
