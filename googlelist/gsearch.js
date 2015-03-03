@@ -327,13 +327,13 @@ var handler = function(req,res,server){
         var date = table1.find('tr').eq(7).find("td").eq(1).text(),d1 = "";
         if(date){
             var d = new Date(date);
-            d1 = d.getFullYear()+"-"+(d.getMonth() > 8 ? "" : "0")+(d.getMonth()+1)+"-"+ d.getDate();
+            d1 = d.getFullYear()+"-"+(d.getMonth() > 8 ? "" : "0")+(d.getMonth()+1)+"-"+ (d.getDate() > 9 ? "" : "0")+d.getDate();
         }
         var total2 = table1.find('tr').eq(1).find("td").eq(1).text();
         var table2 = $("table[__gwtcellbasedwidgetimpldispatchingblur]").find('tr.PJDF32-b-b:first');
         var highestreporter = table2.size() > 1 ? table2.eq(1).find("td:first").text() : "";
         var highestreported = table2.size() > 1 ? table2.eq(1).find("td").eq(1).text() : "";
-        if (total1 && !isNaN(parseInt(total1)) && highestreported && !isNaN(parseInt(highestreported)))
+        if (total1 && total1.match(/^[0-9,]+$/) && highestreported && highestreported.match(/^[0-9,]+$/))
             return {
                 totalrequests: total1, totalmedian: total2, topreporter: highestreporter, topreported: highestreported, date: d1
             }
@@ -355,7 +355,7 @@ var handler = function(req,res,server){
             var page = pg.create();
             page.settings.userAgent = getUserAgent();
             page.viewportSize = {width: 1366,height: 800};
-            var timeout = server.timeout?server.timeout:30000,pagesloaded = 0,responded = false;
+            var timeout = server.timeout?server.timeout:60000,pagesloaded = 0,responded = false;
             var respond = function(err,result){
                 if(!responded){
                     if(conf.env == "dev"){
@@ -363,9 +363,9 @@ var handler = function(req,res,server){
                         logger.log("responding for err: "+erprint+", results: "+resprint+", emptyresultcount = "+emptyresultcount);
                     }
                     responded = true;
-                    if(!result || !result.hasOwnProperty('totalrequests')){
+                    if(!result || !result.hasOwnProperty('totalrequests') || !result.hasOwnProperty('chillingdata')){
                         emptyresultcount++;
-                        if(emptyresultcount>=1){
+                        if(emptyresultcount>=10){
                             server.nextProxy();
                             emptyresultcount=0;
                         }
@@ -378,12 +378,12 @@ var handler = function(req,res,server){
                         sendError(err.message);
                     }
                     else{
-                        if(!result.hasOwnProperty('totalrequests')){
-                            sendJson({ok: false, q: tracinfo.q, result: result, error: "empty_result"});
-                        }
-                        else{
+                        if(result.hasOwnProperty('totalrequests') || result.hasOwnProperty('chillingdata') ){
                             emptyresultcount = 0;
                             sendJson({ok: true, q: tracinfo.q, result: result});
+                        }
+                        else{
+                            sendJson({ok: false, q: tracinfo.q, result: result, error: "empty_result"});
                         }
                     }
                 }
@@ -419,7 +419,7 @@ var handler = function(req,res,server){
                 else if(!responded){
                     setTimeout(function(){
                         getResult(callback);
-                    },2000);
+                    },1000);
                 }
             };
             var onLoad = function(){
@@ -432,16 +432,14 @@ var handler = function(req,res,server){
                     respond(new Error("proxy_failed"),null);
                 }else{
                     getResult(function(err,res){
-                        if(err) respond(err);
-                        else{
-                            getChillingData(tracinfo.q,function(errchill,reschill){
-                                if(!errchill && reschill) res.chillingdata = reschill;
-                                if(errchill) res.chillingdata = errchill.message;
-                                else if(reschill) res.chillingdata = reschill;
-                                else res.chillingdata = {};
-                                respond(null,res);
-                            });
-                        }
+                        if(!res) res = {};
+                        getChillingData(tracinfo.q,function(errchill,reschill){
+                            if(!errchill && reschill){
+                                res.chillingdata = reschill;
+                                respond(null,res)
+                            }
+                            else respond(err,res);
+                        });
                     });
                 }
             }
