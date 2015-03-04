@@ -410,6 +410,7 @@ var handler = function(req,res,server){
             setTimeout(ontimeout,timeout);
             page.onConsoleMessage = logger.log;
             var getResult = function(callback){
+                if(page.evaluate(check404)) return callback(new Error("404"));
                 var eval = page.evaluate(getTpResult);
                 if(conf.env ==='dev') {
                     fs.write("domainsearchpage.html", page.content);
@@ -425,20 +426,22 @@ var handler = function(req,res,server){
             var onLoad = function(){
                 if(conf.env == "dev") logger.log("result page loaded = "+page.url);
                 page.injectJs(jq);
-                if(page.evaluate(check404)) return respond(new Error("404"));
                 if(checkHasSorry(page)) return respond(new Error("proxy_failed"));
                 if(page.url.match(/google.com\/sorry/i)){
                     logger.error("Google detected that we are a bot :-p");
                     respond(new Error("proxy_failed"),null);
                 }else{
                     getResult(function(err,res){
-                        if(!res) res = {};
                         getChillingData(tracinfo.q,function(errchill,reschill){
-                            if(!errchill && reschill){
-                                res.chillingdata = reschill;
-                                respond(null,res)
+                            if(err && errchill) return respond(err);
+                            else{
+                                if(!res) res = {};
+                                if(err) res.error = err.message;
+                                res.chillingdata = {};
+                                if(errchill) res.chillingdata.error = errchill.message;
+                                else res.chillingdata = reschill;
+                                respond(null,res);
                             }
-                            else respond(err,res);
                         });
                     });
                 }
