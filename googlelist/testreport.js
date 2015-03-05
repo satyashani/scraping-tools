@@ -23,6 +23,16 @@ var testgen = function(){
         "clowdy.com","vip-music.biz","zoomp3.com","mp3xi.com","djshop.de","zipy.org","djlist.org",
         "zippyon.org","4songs.pk"
     ];
+//    var strings = [
+//        "djlist.org","djlist.org","djlist.org","djlist.org","djlist.org","djlist.org","djlist.org",
+//        "djlist.org","djlist.org","djlist.org","djlist.org","djlist.org","djlist.org","djlist.org",
+//        "djlist.org","djlist.org","djlist.org","djlist.org","djlist.org","djlist.org","djlist.org"
+//    ];
+//    var strings = [
+//        "zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com",
+//        "zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com",
+//        "zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com","zoomp3.com"
+//    ];
     var res = [];
     for(var i=0;i<strings.length;i++){
         res[i] = {"q" : strings[i]};

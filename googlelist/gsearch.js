@@ -167,6 +167,7 @@ var handler = function(req,res,server){
             var totalres = [];
             var respond = function(err,result){
                 if(!responded){
+                    page.close();
                     if(conf.env == "dev"){
                         var erprint = (err?err.message:"none"), resprint = (result && result.length?result.length:0);
                         logger.log("responding for err: "+erprint+", results: "+resprint+", emptyresultcount = "+emptyresultcount);
@@ -272,7 +273,7 @@ var handler = function(req,res,server){
                     if(conf.env == "dev") logger.log("Google page being used - "+page.url);
                     page.onLoadFinished = onLoad;
                     page.evaluate(function(query){
-                        window.location.href = "http://www.google.com/search?q="+query;
+                        window.location.href = "http://www.google.com/search?q="+encodeURIComponent(query).replace(/ /g,'+');
                     },q);
                     if(conf.env == "dev") page.render("images/searchpage_"+tracinfo.id+".png");
                 }
@@ -358,6 +359,7 @@ var handler = function(req,res,server){
             var timeout = server.timeout?server.timeout:60000,pagesloaded = 0,responded = false;
             var respond = function(err,result){
                 if(!responded){
+                    page.close();
                     if(conf.env == "dev"){
                         var erprint = (err?err.message:"none"), resprint = (result && result.totalrequests?result.totalrequests:0);
                         logger.log("responding for err: "+erprint+", results: "+resprint+", emptyresultcount = "+emptyresultcount);
