@@ -18,6 +18,9 @@ POST /search    ->  Search google
 POST /piracyreport    ->  Piracy report fields
     POST BODY
     { "q" : "doaminName"}
+POST /gethtml    ->  Get full html for webpage
+    POST BODY
+    { "url" : "http://pageurl"}
 POST /whitelist ->  Update white list from json file
 	POST BODY
 	{ "path " : "absolute/path/to/json/list"}

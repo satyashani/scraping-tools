@@ -23,7 +23,7 @@ var conf = {
 }
 
 
-var versiondate = "2015-03-02 12:49";
+var versiondate = "2015-03-16 17:37";
 var useragents = fs.read("useragents.json");
 var getUserAgent = function(){
     return useragents[Math.floor(Math.random()*useragents.length)];
@@ -475,6 +475,59 @@ var handler = function(req,res,server){
         }
     };
 
+    var handleGetHtml = function(){
+        var tracinfo = {};
+        try{
+            tracinfo = JSON.parse(req.post);
+        }catch(e){
+            return sendError("bad_json_request");
+        }
+        if(!tracinfo.url) return sendError("missing_query_parameter:url");
+        var page = pg.create();
+        page.settings.userAgent = getUserAgent();
+        page.viewportSize = {width: 1366,height: 800};
+        var timeout = server.timeout?server.timeout:120000,totalrequests = 0,responded = false;
+        var resourceWait = 3000,
+            maxRenderWait = 10000,
+            url = tracinfo.url;
+
+        var count = 0,forcedRenderTimeout,renderTimeout=0;
+
+        setTimeout(function(){
+            if(!responded){
+                responded = true;
+                sendError("pageload_timeout");
+            }
+        },timeout);
+
+        function sendContent() {
+            responded = true;
+            send(200,page.content,false);
+            page.onResourceReceived = null;
+            page.onResourceRequested = null;
+            page.close();
+        }
+
+        page.onResourceRequested = function (req) {
+            count += 1;
+            totalrequests++;
+            if(renderTimeout) clearTimeout(renderTimeout);
+        };
+
+        page.onResourceReceived = function (res) {
+            if (!res.stage || res.stage === 'end') {
+                count -= 1;
+                if (totalrequests > 1 && count === 0 && !responded) {
+                    renderTimeout = setTimeout(sendContent, resourceWait);
+                }
+            }
+        };
+
+        page.open(url, function (status) {
+//            forcedRenderTimeout = setTimeout(sendContent, maxRenderWait);
+        });
+    }
+
     var handleCurrentProxy = function(){
         if(!server.proxies.length)
             return sendError("proxy_list_empty");
@@ -546,7 +599,6 @@ var handler = function(req,res,server){
         var json = arguments.length>2?isjson:true;
         res.setHeader('Content-Type', json?"application/json":"text/html");
         var out = json?JSON.stringify(data):data;
-        res.setHeader('Content-Length', out.length);
         res.write(out);
         res.closeGracefully();
     }
@@ -559,6 +611,7 @@ var handler = function(req,res,server){
                 handleSearch();
                 break;
             case "/piracyreport": handleGetTpData(); break;
+            case "/gethtml": handleGetHtml(); break;
             case "/whitelist" : handleSetWhiteList(); break;
             default : sendOk(); break;
         }
@@ -631,7 +684,7 @@ server.prototype.setProxy = function(){
 
 server.prototype.start = function(port){
     var o = this;
-    return ws.create().listen(port,function(req,res){
+    return ws.create().listen(port,{'keepAlive': false},function(req,res){
         handler(req,res,o);
     });
 }
