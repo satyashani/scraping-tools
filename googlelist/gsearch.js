@@ -20,14 +20,14 @@ var conf = {
     proxysource : "kingproxy",
     useproxies: true,
     timeout: 30000
-}
+};
 
 
 var versiondate = "2015-03-16 17:37";
 var useragents = fs.read("useragents.json");
 var getUserAgent = function(){
     return useragents[Math.floor(Math.random()*useragents.length)];
-}
+};
 
 var logger = {
     error:function(){
@@ -42,7 +42,7 @@ var logger = {
         var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
         console.log.apply(console,args);
     }
-}
+};
 
 
 var wl = JSON.parse(fs.read("whitelist.json"));
@@ -59,7 +59,7 @@ var proxyApi = {
         var url="http://kingproxies.com/api/v1/proxies.json?key="+conf.proxyapikey+"&limit=5&protocols=http&supports=google&type=anonymous";
         var proxyhome = "http://kingproxies.com";
         if(conf.env=='dev')  logger.log("Loading proxies from kingproxies.com");
-        page.open(proxyhome,function(status){
+        page.open(proxyhome,function(){
             page.injectJs(jq);
             var p = page.evaluate(function(url){
                 var d = {};
@@ -69,7 +69,7 @@ var proxyApi = {
                     success: function(data){
                         d = data;
                     },
-                    error: function(x,t,r){
+                    error: function(x){
                         d = new Error(JSON.stringify(x));
                     }
                 });
@@ -97,10 +97,10 @@ var proxyApi = {
         if(!fs.isReadable("proxies.json"))
             return callback(new Error("file proxies.json not readable"),null);
         var data = JSON.parse(fs.read("proxies.json"));
-        if(!data.length) callback(new Error("Proxy list empty",null))
+        if(!data.length) callback(new Error("Proxy list empty",null));
         else callback(null,data);
     }
-}
+};
 
 var emptyresultcount = 0, google = "https://www.google.com";
 var handler = function(req,res,server){
@@ -146,7 +146,7 @@ var handler = function(req,res,server){
             if(!$("h1").size() || !$("h1").eq(0).text()) return false;
             return $("h1").eq(0).text().indexOf("sorry");
         });
-    }
+    };
 
     var handleSearch = function(){
         if(conf.useproxies && !server.proxies.length && conf.proxysource=="manual")
@@ -200,7 +200,7 @@ var handler = function(req,res,server){
             };
             var ontimeout = function(){
                 if(totalres.length && timeoutretry < 10){
-                    setTimeout(ontimeout,timeout)
+                    setTimeout(ontimeout,timeout);
                     timeoutretry++;
                 }else{
                     if(!responded){
@@ -248,7 +248,7 @@ var handler = function(req,res,server){
                         respond(null,filtered);
                     }
                 }
-            }
+            };
             var onGoogleLoaded = function(){
                 if(!page.url.match(/google/))
                     return respond(new Error("google_redirected:"+page.url));
@@ -284,7 +284,7 @@ var handler = function(req,res,server){
                 }else {
                     if(conf.env =='dev') logger.log("Url loaded = "+page.url);
                 }
-            }
+            };
             page.onUrlChanged = onUrlChange;
             page.open(google,function(status){
                 if(!status=="success")
@@ -299,7 +299,7 @@ var handler = function(req,res,server){
         }catch(e){
             sendError("bad_json_request");
         }
-    }
+    };
 
     var handleSetWhiteList = function(){
         try{
@@ -320,7 +320,7 @@ var handler = function(req,res,server){
         }catch(e){
             sendError("bad_json_request");
         }
-    }
+    };
 
     var getTpResult = function() {
         var table1 = $("div.maia-cols div.maia-col-5 div.layout-table-container tbody");
@@ -337,13 +337,13 @@ var handler = function(req,res,server){
         if (total1 && total1.match(/^[0-9,]+$/) && highestreported && highestreported.match(/^[0-9,]+$/))
             return {
                 totalrequests: total1, totalmedian: total2, topreporter: highestreporter, topreported: highestreported, date: d1
-            }
+            };
         else return null;
-    }
+    };
 
     var check404 = function(){
         return $("div#af-error-container").size() > 0;
-    }
+    };
 
     var handleGetTpData = function(){
         if(conf.useproxies && !server.proxies.length && conf.proxysource=="manual")
@@ -447,7 +447,7 @@ var handler = function(req,res,server){
                         });
                     });
                 }
-            }
+            };
             page.onLoadFinished = onLoad;
 
 //            page.onResourceError = function(req){
@@ -488,10 +488,9 @@ var handler = function(req,res,server){
         page.viewportSize = {width: 1366,height: 800};
         var timeout = server.timeout?server.timeout:120000,totalrequests = 0,responded = false;
         var resourceWait = 3000,
-            maxRenderWait = 10000,
             url = tracinfo.url;
 
-        var count = 0,forcedRenderTimeout,renderTimeout=0;
+        var count = 0,renderTimeout=0;
 
         setTimeout(function(){
             if(!responded){
@@ -508,7 +507,7 @@ var handler = function(req,res,server){
             page.close();
         }
 
-        page.onResourceRequested = function (req) {
+        page.onResourceRequested = function () {
             count += 1;
             totalrequests++;
             if(renderTimeout) clearTimeout(renderTimeout);
@@ -526,13 +525,13 @@ var handler = function(req,res,server){
         page.open(url, function (status) {
 //            forcedRenderTimeout = setTimeout(sendContent, maxRenderWait);
         });
-    }
+    };
 
     var handleCurrentProxy = function(){
         if(!server.proxies.length)
             return sendError("proxy_list_empty");
         sendJson(server.proxies[server.currentproxy]);
-    }
+    };
 
     var handleSetNextProxy = function(){
         if(!server.proxies.length)
@@ -543,15 +542,15 @@ var handler = function(req,res,server){
         resp.newproxy = server.proxies[server.currentproxy];
         sendJson(resp);
 
-    }
+    };
 
     var handleGetWhiteList = function(){
         send(200,whitelist,true);
-    }
+    };
 
     var handleGetProxies = function(){
         send(200,server.proxies,true);
-    }
+    };
 
     var handleSetProxies = function(){
         try{
@@ -567,11 +566,11 @@ var handler = function(req,res,server){
         }catch(e){
             sendError("bad_json");
         }
-    }
+    };
 
     var handleGetTimeout = function(){
         send(200,server.timeout,true);
-    }
+    };
 
     var handleSetTimeout = function(){
         var t = parseInt(req.post);
@@ -580,19 +579,19 @@ var handler = function(req,res,server){
             server.timeout = t;
             sendOk();
         }
-    }
+    };
 
     var sendJson = function(json){
         send(200,json,true);
-    }
+    };
 
     var sendOk = function(){
         send(200,{ok : true},true);
-    }
+    };
 
     var sendError = function(msg){
         send(200,{ok : false, error: msg},true);
-    }
+    };
 
     var send = function(status,data,isjson){
         res.statusCode = status;
@@ -601,7 +600,7 @@ var handler = function(req,res,server){
         var out = json?JSON.stringify(data):data;
         res.write(out);
         res.closeGracefully();
-    }
+    };
 
     if(req.method == "POST"){
         switch(req.url){
@@ -626,20 +625,20 @@ var handler = function(req,res,server){
             default : sendOk(); break;
         }
     }
-}
+};
 
 var server = function(){
     this.proxies  = [];
     this.currentproxy = 0;
     this.timeout = conf.timeout?conf.timeout:30000;
     this.conf = {};
-}
+};
 
 server.prototype.setProxies = function(p){
     this.proxies = p;
     this.currentproxy = 0;
     return this.setProxy();
-}
+};
 
 server.prototype.removeCurrentProxy = function(){
     if(this.proxies.length && this.currentproxy<this.proxies.length){
@@ -647,11 +646,10 @@ server.prototype.removeCurrentProxy = function(){
         if(this.proxies.length)
             this.currentproxy = this.currentproxy%this.proxies.length;
         else this.currentproxy=0;
-    };
-}
+    }
+};
 
 server.prototype.nextProxy = function(){
-    var o = this;
     if(!conf.useproxies) return true;
     if(!this.proxies.length){
         this.refreshProxies(function(){
@@ -661,7 +659,7 @@ server.prototype.nextProxy = function(){
         this.removeCurrentProxy();
         return this.setProxy();
     }
-}
+};
 
 server.prototype.setProxy = function(){
     if(this.proxies.length){
@@ -680,28 +678,28 @@ server.prototype.setProxy = function(){
         logger.error("Failed to change proxy, proxy list is empty or not enough proxies, check proxy setup.");
         return false;
     }
-}
+};
 
 server.prototype.start = function(port){
     var o = this;
     return ws.create().listen(port,{'keepAlive': false},function(req,res){
         handler(req,res,o);
     });
-}
+};
 
 server.prototype.refreshProxies = function(callback){
     var o = this;
     var onchange = function(err,data){
         if(!err){
             if(conf.env=='dev')  logger.log("Proxies loaded.");
-            o.setProxies(data)
+            o.setProxies(data);
             callback();
         }
         else{
             logger.error(err.message);
             o.exit();
         }
-    }
+    };
     if(conf.proxysource =='file'){
         proxyApi.file(onchange);
     }else if(conf.proxysource=="kingproxy"){
@@ -709,7 +707,7 @@ server.prototype.refreshProxies = function(callback){
     }else{
         callback();
     }
-}
+};
 
 server.prototype.startServer = function(){
     if(!this.start(conf.port)){
@@ -718,7 +716,7 @@ server.prototype.startServer = function(){
     }else{
         logger.log("Web server started at http://localhost:"+conf.port);
     }
-}
+};
 
 server.prototype.init = function(){
     var o = this;
@@ -735,10 +733,10 @@ server.prototype.init = function(){
         });
     else o.startServer();
 
-}
+};
 
 server.prototype.exit = function(){
     phantom.exit();
-}
+};
 
 new server().init();
