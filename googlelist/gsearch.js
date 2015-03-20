@@ -162,6 +162,7 @@ var handler = function(req,res,server){
             var url = "https://www.google.com/search?q="+q;
             var page = pg.create();
             page.settings.userAgent = getUserAgent();
+            page.settings.loadImages = false;
             page.viewportSize = {width: 1366,height: 800};
             var timeout = server.timeout?server.timeout:30000,pagesloaded = 0,responded = false,timeoutretry=0;
             var totalres = [];
@@ -354,7 +355,8 @@ var handler = function(req,res,server){
                 return sendError("missing_query_parameter:q");
             var url = "https://www.google.com/transparencyreport/removals/copyright/domains/"+tracinfo.q;
             var page = pg.create();
-            page.settings.userAgent = getUserAgent();
+            page.settings.loadImages = false;
+            page.settings.userAgent =  "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36";
             page.viewportSize = {width: 1366,height: 800};
             var timeout = server.timeout?server.timeout:60000,pagesloaded = 0,responded = false;
             var respond = function(err,result){
@@ -415,18 +417,16 @@ var handler = function(req,res,server){
                 if(page.evaluate(check404)) return callback(new Error("404"));
                 var eval = page.evaluate(getTpResult);
                 if(conf.env ==='dev') {
-                    fs.write("domainsearchpage.html", page.content);
+//                    fs.write("domainsearchpage.html", page.content);
                     page.render("domainsearchpage.png");
                 }
                 if(eval && eval.hasOwnProperty('totalrequests')) callback(null,eval);
-                else if(!responded){
+                else
                     setTimeout(function(){
-                        getResult(callback);
+                        if(!responded) getResult(callback);
                     },1000);
-                }
             };
             var onLoad = function(){
-                if(conf.env == "dev") logger.log("result page loaded = "+page.url);
                 page.injectJs(jq);
                 if(checkHasSorry(page)) return respond(new Error("proxy_failed"));
                 if(page.url.match(/google.com\/sorry/i)){
@@ -450,20 +450,11 @@ var handler = function(req,res,server){
             };
             page.onLoadFinished = onLoad;
 
-//            page.onResourceError = function(req){
-//                logger.log("ERROR",req.url,req.errorString);
-//            };
-//            page.onResourceReceived = function(req){
-//                logger.log("DONE",req.status,req.url);
-//            };
-            page.onResourceRequested = function(req,nw){
-                if(req.url.match(/undefined.cache.js/)){
-                    logger.log("START",req.method,req.url);
-                    nw.changeUrl("https://www.google.com/transparencyreport/gwt/54E2BC16CC25BACB635B9D0EB47CD66F.cache.js")
-                }
-            };
-//            page.onResourceTimeout = function(req){
-//                logger.log("TIMEOUT",req.method,req.url,req.errorString);
+//            page.onResourceRequested = function(req,nw){
+//                if(req.url.match(/undefined.cache.js/)){
+//                    logger.log("Replacing request : START",req.method,req.url);
+//                    nw.changeUrl("https://www.google.com/transparencyreport/gwt/B578A08772E3D63421EDD1E3B0DCBFF4.cache.js")
+//                }
 //            };
             page.open(url,function(status){
                 if(!status=="success")
@@ -485,6 +476,7 @@ var handler = function(req,res,server){
         if(!tracinfo.url) return sendError("missing_query_parameter:url");
         var page = pg.create();
         page.settings.userAgent = getUserAgent();
+        page.settings.loadImages = false;
         page.viewportSize = {width: 1366,height: 800};
         var timeout = server.timeout?server.timeout:120000,totalrequests = 0,responded = false;
         var resourceWait = 3000,
@@ -492,9 +484,16 @@ var handler = function(req,res,server){
 
         var count = 0,renderTimeout=0;
 
+        var pageClose = function(){
+            page.onResourceReceived = null;
+            page.onResourceRequested = null;
+            page.close();
+        };
+
         setTimeout(function(){
             if(!responded){
                 responded = true;
+                pageClose();
                 sendError("pageload_timeout");
             }
         },timeout);
@@ -502,9 +501,7 @@ var handler = function(req,res,server){
         function sendContent() {
             responded = true;
             send(200,page.content,false);
-            page.onResourceReceived = null;
-            page.onResourceRequested = null;
-            page.close();
+            pageClose();
         }
 
         page.onResourceRequested = function () {
