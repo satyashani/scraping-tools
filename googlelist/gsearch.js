@@ -499,9 +499,11 @@ var handler = function(req,res,server){
         },timeout);
 
         function sendContent() {
-            responded = true;
-            send(200,page.content,false);
-            pageClose();
+            if(!responded) {
+                responded = true;
+                send(200, page.content, false);
+                pageClose();
+            }
         }
 
         page.onResourceRequested = function () {
