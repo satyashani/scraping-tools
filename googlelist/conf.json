@@ -2,7 +2,7 @@
     "env": "dev",
     "port": 9092,
     "proxyapikey": "2100799401279a1067b2a4304c6149",
-    "resultsperquery" : 100,
+    "resultsperquery" : 10,
     "useproxies" : true,
     "proxysource" : "manual",
     "timeout": 60000

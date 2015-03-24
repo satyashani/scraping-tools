@@ -23,26 +23,13 @@ var conf = {
 };
 
 
-var versiondate = "2015-03-16 17:37";
+var versiondate = "2015-03-21 12:37";
 var useragents = fs.read("useragents.json");
 var getUserAgent = function(){
     return useragents[Math.floor(Math.random()*useragents.length)];
 };
 
-var logger = {
-    error:function(){
-        var date = new Date();
-        var d = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-        var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
-        console.error.apply(console,args);
-    },
-    log:function(){
-        var date = new Date();
-        var d = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-        var args = [d," -- "].concat(Array.prototype.slice.call(arguments));
-        console.log.apply(console,args);
-    }
-};
+var logger = require("./logger");
 
 
 var wl = JSON.parse(fs.read("whitelist.json"));
