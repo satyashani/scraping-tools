@@ -8,7 +8,7 @@ actual bin with the one in /bin of the compiled folder , or you may copy the com
 specifically for this script using ./phantomjs gsearch.js
 
 ** TO RUN **
-phantomjs gsearchHandler.js [port] [useproxies=false|true]
+phantomjs reportHandler.js [port] [useproxies=false|true]
 if port is not given, it is taken from conf.json
 if useproxies=false, it won't use proxies, otherwise proxies are used. All other configs are read from conf.json
 
@@ -25,10 +25,7 @@ POST /proxies    ->  List of new proxies
     ...
 ]
 
-** ROUTE ONLY IN gsearchHandler.js **
-POST /search    ->  Search google
-	POST BODY
-	{ "q" : "trackname","id" :"artistname"}
-POST /whitelist ->  Update white list from json file
-	POST BODY
-	{ "path " : "absolute/path/to/json/list"}
+** ROUTE ONLY IN reportHandler.js **
+POST /piracyreport    ->  Piracy report fields
+    POST BODY
+    { "q" : "doaminName"}

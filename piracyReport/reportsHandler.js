@@ -3,6 +3,7 @@
  */
 
 var pg = require("webpage");
+var sys = require("system");
 var jq = "jquery-1.10.1.min.js";
 var fs = require("fs");
 var serverClass = require("./server");
@@ -19,11 +20,11 @@ for(var k in confBase)
     if(!conf.hasOwnProperty(k)) conf[k] = confBase[k];
 
 for(var i=0;i<sys.args.length;i++) {
-    if (sys.args[i].match(/useproxies\s*=\s*false/)) conf.useproxies = false;
+    if (sys.args[i] === 'useproxies=false') conf.useproxies = false;
 }
 logger.log("Starting with config:");
 logger.log(JSON.stringify(conf));
-var versiondate = "2015-03-24 12:37";
+var versiondate = "2015-03-25 8:56";
 
 var emptyresultcount = 0;
 

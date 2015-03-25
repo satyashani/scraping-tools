@@ -23,7 +23,7 @@ var conf = {
 };
 
 
-var versiondate = "2015-03-21 12:37";
+var versiondate = "2015-03-25 8:56";
 var useragents = fs.read("useragents.json");
 var getUserAgent = function(){
     return useragents[Math.floor(Math.random()*useragents.length)];

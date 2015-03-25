@@ -19,7 +19,7 @@ for(var k in confBase)
     if(!conf.hasOwnProperty(k)) conf[k] = confBase[k];
 logger.log("Starting with config:");
 logger.log(JSON.stringify(conf));
-var versiondate = "2015-03-22 12:37";
+var versiondate = "2015-03-25 8:56";
 var useragents = fs.read("useragents.json");
 var getUserAgent = function(){
     return useragents[Math.floor(Math.random()*useragents.length)];
