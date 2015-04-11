@@ -2,7 +2,7 @@
  * Created by Shani (satyashani@gmail.com) on 2/10/14.
  */
 var logger = require("./logger");
-var versiondate = "2014-09-04 8:52";
+var versiondate = "2015-04-11 11:52";
 var conf = require("./conf.json");
 
 var handler = function(req,res,server){
@@ -91,6 +91,17 @@ var handler = function(req,res,server){
         });
     }
 
+    var handleCleanup = function(){
+        var worker = getPostData(["workerid"]);
+        server.getWorker(worker.workerid,function(err,worker){
+            if(err) return sendError("no worker logged in");
+            worker.cleanup(function(){
+                if(err) sendError(err.message);
+                else sendOk();
+            });
+        });
+    }
+
     var sendOk = function(){
         send(200,{ok : true},true);
     }
@@ -121,7 +132,8 @@ var handler = function(req,res,server){
     }else{
         switch(req.url){
             case "/currentworker" : handleGetCurrentWorker(); break;
-            case "/version" : send(200,{"ok":true,"version":conf.version},true); break;
+            case "/cleanup" : handleCleanup(); break;
+            case "/version" : send(200,{"ok":true,"version":versiondate},true); break;
             case "/": sendOk();
             default : sendError("Unknown GET route: "+req.url); break;
         }

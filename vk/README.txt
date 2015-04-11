@@ -65,3 +65,8 @@ POST /ticketstatus          ->  Get status of ticket as "pending" or "answered"
         "ticketid"      :       <integer ticket id>
     }
 GET /currentworker          -> Current logged in worker id(interger) and name
+POST /cleanup               -> Close page instance and cleanup, then relogin, useful to keep memory consumption low.
+    POST BODY
+	{
+        "workerid"		    :		"email"
+    }

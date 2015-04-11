@@ -15,6 +15,7 @@ var worker = function(config){
     this.loggedin = false;
     var page = pg.create(); this.relogin = false;
     page.settings.userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0";
+    page.settings.loadImages = false;
     var that = this;
     page.onConsoleMessage =  function(){
         var args = ["pageMessage:"].concat(Array.prototype.slice.call(arguments));
@@ -66,13 +67,13 @@ var worker = function(config){
             else if(type==='video'){
                 page.onCallback = function(){
                     var res = page.evaluate(function(){
-                        var items = $("div#results div.search_video_row_cont"),res = [];
+                        var items = $("div#results div.video_row"),res = [];
                         console.log("finally items:",items.size());
                         items.each(function(){
                             var o = {
-                                videoUrl: "http://vk.com"+$(this).find('a.search_video_row_relative').attr("href"),
-                                title: $(this).find('div.search_video_raw_info_name').text(),
-                                duration :$(this).find("div.search_video_row_duration").text()
+                                videoUrl: "http://vk.com"+$(this).find('div.video_row_info_name a').attr("href"),
+                                title: $(this).find('div.video_row_info_name').text(),
+                                duration :$(this).find("div.video_row_duration").text()
                             };
                             res.push(o);
                         });
@@ -81,13 +82,13 @@ var worker = function(config){
                     callback(null,res);
                 };
                 page.evaluate(function(){
-                    var items = $("div#results div.search_video_row_cont"),size = 0;
+                    var items = $("div#results div.video_row"),size = 0;
                     console.log("items:",items.size());
                     var scroll = function(){
                         window.scrollTo(0,$("body").height());
                         setTimeout(function(){
                             console.log("after scroll items:",items.size());
-                            items = $("td#results div.search_video_row_cont");
+                            items = $("div#results div.video_row");
                             if(size<items.size()) {
                                 size = items.size();
                                 scroll();
@@ -279,6 +280,11 @@ var worker = function(config){
             callback(null, res);
         })
     };
+
+    this.cleanup = function(callback){
+        page.close();
+        this.login(callback);
+    }
 }
 
 module.exports = worker;
