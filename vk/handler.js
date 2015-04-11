@@ -126,13 +126,13 @@ var handler = function(req,res,server){
             case "/search" : handleSearch(); break;
             case "/ticketstatus" : handleTicketStatus(); break;
             case "/changeworker": handleChangeWorker(); break;
+            case "/cleanup" : handleCleanup(); break;
             case "/": sendOk();
             default : sendError("Unknown POST route:"+req.url); break;
         }
     }else{
         switch(req.url){
             case "/currentworker" : handleGetCurrentWorker(); break;
-            case "/cleanup" : handleCleanup(); break;
             case "/version" : send(200,{"ok":true,"version":versiondate},true); break;
             case "/": sendOk();
             default : sendError("Unknown GET route: "+req.url); break;
