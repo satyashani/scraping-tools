@@ -3,7 +3,7 @@
     "port": 9092,
     "proxyapikey": "2100799401279a1067b2a4304c6149",
     "resultsperquery" : 10,
-    "useproxies" : true,
+    "useproxies" : false,
     "proxysource" : "manual",
     "timeout": 60000
 }
