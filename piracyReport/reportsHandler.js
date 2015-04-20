@@ -24,7 +24,7 @@ for(var i=0;i<sys.args.length;i++) {
 }
 logger.log("Starting with config:");
 logger.log(JSON.stringify(conf));
-var versiondate = "2015-04-19 20:36";
+var versiondate = "2015-04-20 22:36";
 
 var emptyresultcount = 0;
 
@@ -169,14 +169,19 @@ var methods = {
                 var u = "https://www.chillingeffects.org/notices/search?utf8=%E2%9C%93&term="+dom;
                 page.onLoadFinished = null;
                 page.open(u,function(stat){
-                    if(stat != 'success') return callback(new Error("failed to open"));
                     page.injectJs(jq);
-                    var d = page.evaluate(function(){
+                    var eval = function(){
                         var total = $("span.total-entries").size() ? $("span.total-entries").text().match(/[0-9]+/) : 0;
                         var sender = $("a.sender").eq(0).text();
                         return {totalresults: total && total.length ? total[0] : 0, sender: sender};
-                    });
-                    callback(null,d);
+                    };
+                    var tries = 0, i = setInterval(function(){
+                        var d = page.evaluate(eval);
+                        if(d.totalresults || tries > 6){
+                            clearInterval(i);
+                            callback(null,d);
+                        }else tries++;
+                    },500);
                 });
             };
             var ontimeout = function(){
