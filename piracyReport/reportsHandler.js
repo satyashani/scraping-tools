@@ -24,7 +24,7 @@ for(var i=0;i<sys.args.length;i++) {
 }
 logger.log("Starting with config:");
 logger.log(JSON.stringify(conf));
-var versiondate = "2015-04-20 22:36";
+var versiondate = "2015-06-11 13:01";
 
 var emptyresultcount = 0;
 
@@ -68,7 +68,7 @@ var jqEvals = {
             d1 = d.getFullYear()+"-"+(d.getMonth() > 8 ? "" : "0")+(d.getMonth()+1)+"-"+ (d.getDate() > 9 ? "" : "0")+d.getDate();
         }
         var total2 = table1.find('tr').eq(1).find("td").eq(1).text();
-        var table2 = $("table[__gwtcellbasedwidgetimpldispatchingblur]").find('tr.I3KWNOD-b-b:first');
+        var table2 = $("table[__gwtcellbasedwidgetimpldispatchingblur]").find('tr.E3JST2-b-b:first');
         var highestreporter = table2.size() > 1 ? table2.eq(1).find("td:first").text() : "";
         var highestreported = table2.size() > 1 ? table2.eq(1).find("td").eq(1).text() : "";
         if (total1 && total1.match(/^[0-9,]+$/) && highestreported && highestreported.match(/^[0-9,]+$/))
