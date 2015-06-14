@@ -172,6 +172,8 @@ var worker = function(config){
             {id: "tickets_dmca_corp", type: "input", required: false, value: ""},
             {id: "tickets_dmca_repr", type: "input", required: false, value: ""},
             {id: "tickets_dmca_post", type: "input", required: false, value: ""},
+            {id: "tickets_dmca_real_address", type: "input", required: true, value: ""},
+            {id: "tickets_dmca_phone", type: "input", required: true, value: ""},
             {id: "tickets_dmca_country_wrap", type: "select", required: true, value: 1},
             {id: "tickets_dmca_city_wrap", type: "select", required: true, value: 1},
             {id: "support_dmca_agree_owner", type: "checkbox", required: false, value: false},
