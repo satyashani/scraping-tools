@@ -7,19 +7,21 @@ var jq = "jquery-1.10.1.min.js";
 var fs = require("fs");
 var serverClass = require("./server");
 var logger = require("./logger");
+var captchaApi = require("./captcha");
 var conf = require("./conf.json");
 
 var confBase = {
     env : "dev",
     resultsperquery : 100,
     useproxies: true,
-    override: 'test'
+    override: 'test',
+    captchaApi: 'dbc'
 };
 for(var k in confBase)
     if(!conf.hasOwnProperty(k)) conf[k] = confBase[k];
 logger.log("Starting with config:");
 logger.log(JSON.stringify(conf));
-var versiondate = "2015-03-25 8:56";
+var versiondate = "2015-06-20 10:56";
 var useragents = fs.read("useragents.json");
 var getUserAgent = function(){
     return useragents[Math.floor(Math.random()*useragents.length)];
@@ -99,8 +101,53 @@ var jqEvals = {
             if(!$("h1").size() || !$("h1").eq(0).text()) return false;
             return $("h1").eq(0).text().indexOf("sorry");
         });
+    },
+    fillSorryCaptcha: function(page,callback){
+        page.injectJs(jq);
+        var img = page.evaluate(function(){
+            if(!$("img").size()){
+                console.log("captcha found = "+$("img").size());
+                return null;
+            }
+            var img = document.getElementsByTagName('IMG');
+            // Create an empty canvas element
+            var canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            return canvas.toDataURL("image/jpeg").replace(/^data:image\/(png|jpg|jpeg);base64,/, "base64:");
+        });
+        var filename = "./captcha/captcha_"+new Date().getTime()+".txt";
+        fs.write(filename,img,"w");
+        logger.log("retrieved captcha and wrote to file "+filename);
+        var calledback = false, cb = function(err,res){
+            if(!calledback){
+                calledback = true;
+                callback(err,res);
+            }
+        };
+        setTimeout(function(){
+            cb(new Error("Timeout in sending google captcha"));
+        },conf.timeout);
+        page.onLoadFinished = function(url){
+            logger.log("after captcha submit, url = ",url);
+            page.render("Aftercaptchafill.png");
+            cb(null,true);
+        };
+        captchaApi.dbc.solve(imgdata,function(err,decoded){
+            if(err){
+                logger.error(err.message);
+                cb(err);
+            }
+            else
+                page.evaluate(function(decoded){
+                    $("input[name='captcha']").val(decoded);
+                    $("form").submit();
+                },decoded);
+        });
     }
-}
+};
 
 var methods = {
     get: {
@@ -129,15 +176,31 @@ var methods = {
         }
     },
     post: {
+        CaptchaFill: function(){
+            var page = pg.create();
+            page.onLoadFinished = function(url){
+                if(url.match(/sorry/)){
+                    jqEvals.fillSorryCaptcha(page,function(err){
+                        if(err) sender.error(err.message);
+                        else sender.ok();
+                    });
+                }else{
+                    sender.error("Google sorry page not loaded.");
+                }
+            };
+            page.open("http://www.google.com/q=testing",function(stat){
+                
+            });
+        },
         WhiteList : function(post){
             if(!post.path){
-                return sendError("missing_parameter:path")
+                return sender.error("missing_parameter:path")
             }
             if(!fs.isReadable(post.path))
-                return sendError("path_not_readable:"+post.path);
+                return sender.error("path_not_readable:"+post.path);
             var wl = JSON.parse(fs.read(post.path));
             if(!wl.length)
-                return sendError("white_list_empty?");
+                return sender.error("white_list_empty?");
             for(var i=0;i<wl.length;i++){
                 wl[i] = wl[i].replace(/http[s]*:\/\/|\/$|www\./g,"");
             }
@@ -154,7 +217,7 @@ var methods = {
         },
         Proxies : function(proxies){
             if(!proxies.length)
-                return sendError("invalid_proxy_array_format");
+                return sender.error("invalid_proxy_array_format");
             for(var i=0;i<proxies.length;i++){
                 if(!proxies[i].ip || !proxies[i].port)
                     return sender.error("invalid_proxy_format:"+JSON.stringify(proxies[i]));
@@ -165,8 +228,8 @@ var methods = {
         Search : function(tracinfo){
             if(conf.useproxies && !server.proxies.length && conf.proxysource=="manual")
                 return sender.error("proxy_list_empty");
-            if(!tracinfo.q) return sendError("missing_query_parameter:q");
-            if(!tracinfo.id) return sendError("missing_track_parameter:id");
+            if(!tracinfo.q) return sender.error("missing_query_parameter:q");
+            if(!tracinfo.id) return sender.error("missing_track_parameter:id");
             var q = tracinfo.q;
             var num = parseInt(tracinfo.num) || conf.resultsperquery;
             var url = "https://www.google.com/search?q="+q;
@@ -224,7 +287,10 @@ var methods = {
             var onLoad = function(){
                 if(conf.env == "dev") logger.log("result page loaded = "+page.url);
                 page.injectJs(jq);
-                if(jqEvals.checkHasSorry(page)) return respond(new Error("proxy_failed"));
+                if(jqEvals.checkHasSorry(page)){
+                    page.render("images/sorrypage_id_"+tracinfo.id+".png");
+                    return respond(new Error("proxy_failed: google sorry page"));
+                }
                 var eval = page.evaluate(jqEvals.getPageResults);
                 totalres  = totalres.concat(eval.result);
                 if(conf.env=='dev') logger.log("total results = "+totalres.length+", has more result = "+eval.hasmore);
@@ -252,9 +318,10 @@ var methods = {
                         r.domain = dom?dom[1]:false;
                         filtered.push(r);
                     });
-                    if(page.url.match(/google.com\/sorry/i)){
+                    if(jqEvals.checkHasSorry(page)){
                         logger.error("Google detected that we are a bot :-p, check image with id "+tracinfo.id);
-                        respond(new Error("proxy_failed"),null);
+                        page.render("images/sorrypage_id_"+tracinfo.id+".png");
+                        respond(new Error("proxy_failed: sorry page"),null);
                     }else{
                         respond(null,filtered);
                     }
@@ -264,8 +331,10 @@ var methods = {
                 if(!page.url.match(/google/))
                     return respond(new Error("google_redirected:"+page.url));
                 page.injectJs(jq);
-                if(jqEvals.checkHasSorry(page))
+                if(jqEvals.checkHasSorry(page)){
+                    page.render("images/sorrypage_id_"+tracinfo.id+".png");
                     return respond(new Error("proxy_failed"));
+                }
                 if(!page.url.match(/www\.google\.com/)){
                     var hasprefurl = page.evaluate(function(){
                         return $('a[href*="setprefdomain"]').size();
