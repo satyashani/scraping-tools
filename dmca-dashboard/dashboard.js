@@ -502,7 +502,7 @@ var worker = function(conf){
             page.injectJs(jq);
             if(timeout) return;
             var loginerror = page.evaluate(function(){
-                var errorspan = $("span.error-msg");
+                var errorspan = $("span#errormsg_0_Email.error-msg");
                 if(!errorspan.size()) return false;
                 else return errorspan.text().trim();
             });
@@ -534,21 +534,34 @@ var worker = function(conf){
             }
             if(url.match(/ServiceLogin/)){
                 serviceLogin = true;
-                page.evaluate(function(username,password){
+                page.onResourceReceived = function(res){
+                    if(res.url.match(/accountLoginInfoXhr/))
+                        page.render('afterXhr.png');
+                    if(res.url.match(/photo\.jpg/)){
+                        page.render('afterphoto.png');
+                        setTimeout(function(){
+                            page.evaluate(function(password){
+                                $("input#Passwd[type='password']").val(password);
+                                $("input#signIn").click();
+                            },password); 
+                        },100);
+                        page.onResourceReceived = null;
+                    }
+                };
+                page.evaluate(function(username){
                     $("input[type='email']").val(username);
-                    $("input[type='password']").val(password);
-                    $("input#signIn").click();
-                },username,password);
+                    $("input#next[name='signIn']").click();
+                },username);
             }
             changes++;
-        }
+        };
         page.open("https://www.google.com/webmasters/tools/dmca-dashboard",function(stat){
             if(stat !== "success"){
                 logger.log("Worker : "+username+" Failed to login, Login page did not open");
                 callback(new Error("login_page_load_failed"));
             }
         });
-    }
+    };
 
     this.getCurrentLoggedIn = function(callback){
         page.open("https://www.google.com/webmasters/tools/dmca-dashboard?hl=en&pid=0",function(opened){
