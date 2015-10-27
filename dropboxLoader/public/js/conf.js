@@ -7,7 +7,7 @@ var dbApiConf = {
     chunkSize : 1024*1024,
     auth: {
         key: 'lycuobyql232wwf',
-        token: "vwsVrfBEX7AAAAAAAAAAB0G3FyKl8oE_fkc1lXSg93sRV64c_Q8gr9ZjRSdeLAlX"
+        token: "vwsVrfBEX7AAAAAAAAAAnwPxesZM2NcXAtYL_7LFK3b_DA98mG0mnCf_35D0w1qk"
     },
     maxFiles : 5
 };

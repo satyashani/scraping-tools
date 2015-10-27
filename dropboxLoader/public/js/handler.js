@@ -179,17 +179,17 @@ Uploader.prototype.constructor = Uploader;
 
 function addUpload(){
     if(dbclient && dbclient.isAuthenticated()){
-        for(var i=0;i<this.files.length;i++){
-            if(dbApiConf.types.indexOf(this.files[i].type) > -1) {
+            for(var i=0;i<this.files.length;i++){
+                if(dbApiConf.types.indexOf(this.files[i].type) > -1) {
                 if(UploadedAdded >= dbApiConf.maxFiles){
-                    return showError("Maximum "+ dbApiConf.maxFiles+" uploads allowed simultaneously!!");
-                }else {
-                    new Uploader(this.files[i]);
+                        return showError("Maximum "+ dbApiConf.maxFiles+" uploads allowed simultaneously!!");
+                    }else {
+                        new Uploader(this.files[i]);
                     UploadedAdded++;
+                    }
                 }
+                else showError("Mime type "+this.files[i].type+" of file "+this.files[i].name+" not allowed!!");
             }
-            else showError("Mime type "+this.files[i].type+" of file "+this.files[i].name+" not allowed!!");
-        }
     }else {
         console.log("Auth error");
         showError("Unable to connect to upload server.");
