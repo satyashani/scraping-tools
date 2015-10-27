@@ -21,8 +21,7 @@ var uploadHandler = function(url){
 };
 
 uploadHandler.prototype.upload = function(){
-//    var u = this.url;
-    var u = 'https://dl.dropboxusercontent.com/1/view/4xo2ctkjomzljuh/Apps/twaptest/004.jpg';
+    var u = this.url;
     var url = $.url(u);
     var me = this;
     me.filespan.text(url.attr("file"));
