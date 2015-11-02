@@ -9,37 +9,101 @@ var dbclient = new Dropbox.Client({ key: dbApiConf.auth.key });
 Dropbox.AuthDriver.Popup.oauthReceiver();
 var authclient = null;
 
+var States = {failed: 0,added: 1, error: 2,downloading: 3,downloaded: 4, complete: 5};
+var StateClass = [
+    "glyphicon glyphicon-warning-sign",
+    "glyphicon glyphicon-transfer",
+    "glyphicon glyphicon-warning-sign",
+    "glyphicon glyphicon-transfer",
+    "glyphicon glyphicon-transfer",
+    "glyphicon glyphicon-ok"
+
+];
+var StateTitle = [
+    "Upload request failed",
+    "File upload requested",
+    "Error",
+    "File transfer in progress",
+    "File transfer complete",
+    "File uploaded"
+];
+
 var uploadHandler = function(url){
     this.url = url;
-    this.div = $("<div><span class='filename'></span><span class='status'></span></div>");
+    this.filename = $.url(url).attr("file");
     this.job = null;
     this.interval = 0;
-    $("#files").append(this.div);
-    this.status = this.div.find(".status").eq(0);
-    this.filespan = this.div.find(".filename").eq(0);
-    this.upload();
+    this.makeDiv();
 };
 
 uploadHandler.prototype.upload = function(){
     var u = this.url;
-    var url = $.url(u);
     var me = this;
-    me.filespan.text(url.attr("file"));
     $.ajax({
         url: "./uploader/upload",
         method: "POST",
         data: {
             url : u,
-            path: '/username/'+url.attr("file")
+            path: '/username/'+me.filename
         },
         success: function(data){
             var d = typeof data === 'string' ? JSON.parse(data) : data;
-            me.status.text("Upload requested, status : "+d.status);
             me.job = d.job;
-            me.track();
+            me.setState(States[d.status],d.message);
+            if(d.ok && d.status !== 'error')
+                me.track();
         },
         error: function(s,t,r){
-            me.status.text("Failed to start upload");
+            me.setState(States.failed);
+        }
+    });
+};
+
+uploadHandler.prototype.setState = function(state,message){
+    this.state = state;
+//    if(state === States.complete || state === States.error || state === States.canceled) {
+//        this.div.find("div#buttons a").slideUp('fast');
+//    }
+    if(state === States.failed || state === States.error || state === States.complete){
+        this.div.find("a#cancel").show();
+    }
+    this.div.find("div.status span").attr({"title":StateTitle[state]});
+    for(var i=0;i<StateClass.length;i++){
+        this.div.find("div.status span").removeClass(StateClass[i]);
+    }
+    this.div.find("div.message").text(message || StateTitle[state]);
+    this.div.find("div.status span").attr({"title": (message || StateTitle[state])});
+    this.div.find("div.status span").addClass(StateClass[state]);
+};
+
+uploadHandler.prototype.makeDiv = function(){
+    var div = $("div#filediv").clone();
+    div.removeAttr("id");
+    this.status = div.find(".status").eq(0);
+    div.find(".filename").eq(0).text(this.filename);
+    $("div#files").append(div);
+    div.fadeIn();
+    div.find("a#upload").click(this.uploadClick.bind(this));
+//    div.find("a#pause").click(this.pauseClick.bind(this));
+    div.find("a#cancel").click(this.cancelClick.bind(this));
+    this.div = div;
+};
+
+uploadHandler.prototype.uploadClick = function(e){
+    e.preventDefault();
+    this.div.find("a#upload").hide();
+//    this.div.find("a#pause").show();
+//    this.div.find("a#cancel").show();
+    this.upload();
+};
+
+uploadHandler.prototype.cancelClick = function(){
+    var me = this;
+    $.ajax({
+        url: "./uploader/"+this.job+"/cancel",
+        method: "GET",
+        complete: function(data){
+            me.div.slideUp();
         }
     });
 };
@@ -51,28 +115,19 @@ uploadHandler.prototype.track = function(){
             url: './uploader/'+me.job+"/status",
             method: "GET",
             success: function(data){
-                console.log(data);
                 var d = typeof data === 'string' ? JSON.parse(data) : data;
-                console.log(d);
-                me.status.text("Status : "+d.status);
-                if(d.status.match(/error/))
-                    me.status.text("Status : "+d.status+", Error : "+d.error);
-                else if(d.status.match(/complete/))
-                    me.status.text("Status : "+d.status);
-                else setTimeout(update,2000);
+                me.setState(d.status,d.message);
+                if(!d.status.match(/error|complete/))
+                    setTimeout(update,2000);
             },
             error: function(x,t,r){
                 if(x.status === 200 && x.responseText){
                     var d = JSON.parse(x.responseText);
-                    me.status.text("Status : "+d.status);
-                    if(d.status.match(/error/))
-                        me.status.text("Status : "+d.status+", Error : "+d.error);
-                    else if(d.status.match(/complete/))
-                        me.status.text("Status : "+d.status);
-                    else setTimeout(update,2000);
+                    me.setState(d.status,d.message);
+                    if(!d.status.match(/error|complete/))
+                        setTimeout(update,2000);
                 }else{
-                    me.status.text(t+", Error : "+r);
-                    console.log("Tracker error:",x,t,r);
+                    me.setState(States.error,t+":"+r);
                 }
             }
         });

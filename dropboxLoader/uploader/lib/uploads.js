@@ -18,7 +18,7 @@ process.on("beforeExit",function(){
 
 var createDb = function(cb){
     sqlcon.query("CREATE TABLE "+db+".uploads (id int primary key auto_increment,"+
-            " url varchar(255), path varchar(255), status varchar(255))",[],cb);
+            " url varchar(255), path varchar(255), status varchar(255), message TEXT)",[],cb);
 };
 
 exports.init = function(cb){
@@ -51,7 +51,7 @@ exports.add = function(url,path,cb){
     getByUrlPath(url,path,function(err,data){
         if(data && data.id) return cb(null,data.id);
         else{
-            sqlcon.insert("INSERT INTO "+db+".uploads (url,path,status) VALUES(?,?,?)",[url,path,'pending'],cb);
+            sqlcon.insert("INSERT INTO "+db+".uploads (url,path,status,message) VALUES(?,?,?,?)",[url,path,'pending','File added to upload queue'],cb);
         }
     });
 };
@@ -64,6 +64,6 @@ exports.removeByUrlPath = function(url,path,cb){
     sqlcon.delete("DELETE FROM "+db+".uploads WHERE url = ? AND path = ?",[url,path],cb);
 };
 
-exports.updateStatus = function(id,status,cb){
-    sqlcon.query("UPDATE "+db+".uploads SET status = ? WHERE id = ?",[status,id],cb);
+exports.updateStatus = function(id,status,message,cb){
+    sqlcon.query("UPDATE "+db+".uploads SET status = ?, message = ? WHERE id = ?",[status,message,id],cb);
 };

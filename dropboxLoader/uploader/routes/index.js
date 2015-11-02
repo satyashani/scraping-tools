@@ -12,8 +12,8 @@ var upload = function(req,res){
     if(!req.body.url) return res.json(400,{ok : false, error : 'File url not provided'});
     if(!req.body.path) return res.json(400,{ok: false, error: 'File path not provided'});
     dropbox.upload(req.body.url,req.body.path,mime.lookup(req.body.url),function(err,id){
-        if(!err) res.json({ok: true, job: id, status: 'added'});
-        else res.json({ok: false, error: err.message, status: 'error', job : id || null});
+        if(!err) res.json({ok: true, job: id, status: 'pending', message: "File added to upload queue"});
+        else res.json({ok: false, message: err.message, status: 'error', job : id || null});
     });
 };
 
@@ -25,7 +25,7 @@ var cancel = function(req,res){
 
 var status = function(req,res){
     uploads.getById(req.params.id,function(err,row){
-        res.json({ok : !err && !!row.status, status : row.status || (err ? err.message : 'no data')});
+        res.json({ok : !err && !!row.status, status : row.status || (err ? 'error' : 'notfound'), message : row.message });
     });
 };
 

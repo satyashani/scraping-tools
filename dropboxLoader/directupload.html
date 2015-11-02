@@ -22,6 +22,24 @@ and open the template in the editor.
   </head>
   <body>
       <div id="files"></div>
+      <div id="filediv" style="display: none;padding: 10px;" class="row">
+        <div class="filename col-lg-3"></div>
+        <div class="message col-lg-4" style="cursor: pointer;"></div>
+        <div id="buttons" class="col-lg-1">
+            <a href="#" id="upload" class="btn btn-xs btn-primary">
+                <span class="glyphicon glyphicon-upload"></span>
+            </a>
+            <a href="#" id="pause" class="btn btn-xs btn-primary disabled" style="display: none;">
+                <span class="glyphicon glyphicon-pause"></span>
+            </a>
+            <a href="#" id="cancel" class="btn btn-xs btn-primary" style="display: none;">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
+            <div class="status" style="display: inline;">
+                <span class="" style="cursor: pointer;"></span>
+            </div>
+        </div>
+    </div>
       <div id="chooser"></div>
       <div id="logout" class="btn btn-primary btn-xs">Logout Dropbox</div>
   </body>

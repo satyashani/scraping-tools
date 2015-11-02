@@ -27,7 +27,9 @@ dropbox.prototype.login = function(cb){
     }
 };
 
-var noop = function(){};
+var noop = function(err){
+    if(err) console.log(err.message);
+};
 
 dropbox.prototype.upload = function(fileurl,path,mime,cb){
     if(!this.token) return cb(new Error("Not logged in to dropbox"));
@@ -47,24 +49,32 @@ dropbox.prototype.upload = function(fileurl,path,mime,cb){
                 }
             };
             var onError = function(err){
-                uploads.updateStatus(id,"Error:"+err.message,noop);
+                uploads.updateStatus(id,'error',err.message,noop);
             };
             var callback = function(res){
                 var data = "";
                 res.on('data',function(d){
                     data+= d;
                 }).on("end",function(){
-                    uploads.updateStatus(id,'complete:'+data,noop);
+                    try{
+                        var j = JSON.parse(data);
+                        if(j.bytes)
+                            uploads.updateStatus(id,'complete',"File uploaded successfully",noop);
+                        else
+                            uploads.updateStatus(id,'complete',"File uploaded with errors",noop);
+                    }catch(e){
+                        uploads.updateStatus(id,'complete',"File uploaded with errors",noop);
+                    }
                 }).on("error",onError);
             };
             var resCallback = function(res){
                 var req = https.request(opt,callback);
                 req.on("error",onError);
                 res.on("readable",function(){
-                    uploads.updateStatus(id,'downloading');
+                    uploads.updateStatus(id,'downloading','File transfer started',noop);
                 }).on("error",onError);
                 res.on("close",function(){
-                    uploads.updateStatus(id,'downloaded');
+                    uploads.updateStatus(id,'downloaded','File transfer complete',noop);
                 });
                 res.pipe(req);
             };
