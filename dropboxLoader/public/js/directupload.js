@@ -55,11 +55,11 @@ uploadHandler.prototype.track = function(){
                 var d = typeof data === 'string' ? JSON.parse(data) : data;
                 console.log(d);
                 me.status.text("Status : "+d.status);
-                if(d.status === "FAILED")
+                if(d.status.match(/error/))
                     me.status.text("Status : "+d.status+", Error : "+d.error);
-                else if(d.status === 'PENDING' || d.status === 'DOWNLOADING'){
-                    setTimeout(update,2000);
-                }
+                else if(d.status.match(/complete/))
+                    me.status.text("Status : "+d.status);
+                else setTimeout(update,2000);
             },
             error: function(x,t,r){
                 if(x.status === 200 && x.responseText){
