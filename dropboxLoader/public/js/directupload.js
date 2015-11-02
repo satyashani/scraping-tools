@@ -26,13 +26,11 @@ uploadHandler.prototype.upload = function(){
     var me = this;
     me.filespan.text(url.attr("file"));
     $.ajax({
-        url: "https://api.dropbox.com/1/save_url/auto/username/"+url.attr("file"),
+        url: "./uploader/upload",
         method: "POST",
         data: {
-            url : u
-        },
-        headers: {
-            "Authorization" : "Bearer "+dbApiConf.auth.token
+            url : u,
+            path: '/username/'+url.attr("file")
         },
         success: function(data){
             var d = typeof data === 'string' ? JSON.parse(data) : data;
@@ -50,11 +48,8 @@ uploadHandler.prototype.track = function(){
     var me = this;
     var update = function(){
         $.ajax({
-            url: "https://api.dropbox.com/1/save_url_job/"+me.job,
+            url: './uploader/'+me.job+"/status",
             method: "GET",
-            headers: {
-                "Authorization" : "Bearer "+dbApiConf.auth.token
-            },
             success: function(data){
                 console.log(data);
                 var d = typeof data === 'string' ? JSON.parse(data) : data;
@@ -70,11 +65,11 @@ uploadHandler.prototype.track = function(){
                 if(x.status === 200 && x.responseText){
                     var d = JSON.parse(x.responseText);
                     me.status.text("Status : "+d.status);
-                    if(d.status === "FAILED")
+                    if(d.status.match(/error/))
                         me.status.text("Status : "+d.status+", Error : "+d.error);
-                    else if(d.status === 'PENDING' || d.status === 'DOWNLOADING'){
-                        setTimeout(update,2000);
-                    }
+                    else if(d.status.match(/complete/))
+                        me.status.text("Status : "+d.status);
+                    else setTimeout(update,2000);
                 }else{
                     me.status.text(t+", Error : "+r);
                     console.log("Tracker error:",x,t,r);
