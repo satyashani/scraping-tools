@@ -21,6 +21,8 @@ Server Setup for Dropbox Upload
     * ProxyRequests Off
     * ProxyPass /dmcaserver/dropboxLoader/uploader/ http://localhost:3000/
     * ProxyPassReverse /dmcaserver/dropboxLoader/uploader/ http://localhost:3000/
+The value '/dmcaserver/dropboxLoader' in the above two lines should be replaced by the location of project folder relative to apache document root.
+The nodejs application serves at the location '/uploader/*' relative to project root. The port number '3000' should be replaced with the one configured in '/uploader/config.js'.
 
 ## Test Upload
 
