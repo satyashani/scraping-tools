@@ -13,6 +13,7 @@ var sqlcon = {
     connect: function(cb){
         sqlcon.conn = mysql.createConnection({
             host     : config.mysql.host,
+            port     : config.mysql.port,
             user     : config.mysql.user,
             password : config.mysql.password,
             database : config.mysql.database,
