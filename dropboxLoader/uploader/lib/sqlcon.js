@@ -31,7 +31,7 @@ var sqlcon = {
     
     select : function(sql,params,cb){
         sqlcon.conn.query(sql,params,function(err,rows){
-            cb(err,rows[0] || rows);
+            cb(err,rows && rows.length ? rows[0] : rows);
         });
     },
     
@@ -41,13 +41,13 @@ var sqlcon = {
     
     insert : function(sql,params,cb){
         sqlcon.conn.query(sql,params,function(err,data){
-            cb(err, data.insertId || data);
+            cb(err, data ? data.insertId : data);
         });
     },
     
     delete: function(sql,params,cb){
         sqlcon.conn.query(sql,params,function(err,res){
-            cb(err,res.affectedRows);
+            cb(err,res ? res.affectedRows : res);
         });
     },
     
