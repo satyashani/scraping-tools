@@ -11,7 +11,8 @@ var conf = {
         token: "vwsVrfBEX7AAAAAAAAAAnwPxesZM2NcXAtYL_7LFK3b_DA98mG0mnCf_35D0w1qk"
     },
     server: {
-        port: 3000
+        port: 3000,
+        cryptkey: 'anysecretkey'
     },
     mysql: {
         host     : 'localhost',

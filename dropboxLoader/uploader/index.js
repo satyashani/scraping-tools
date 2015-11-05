@@ -14,6 +14,7 @@ var http = require('http');
 var https = require('https');
 var app = express();
 var async = require("async");
+app.use(require('cookie-parser')());
 var config = require("./config");
 
 

@@ -44,7 +44,7 @@ uploadHandler.prototype.upload = function(){
         method: "POST",
         data: {
             url : u,
-            path: '/username/'+me.filename
+            filename: me.filename
         },
         success: function(data){
             var d = typeof data === 'string' ? JSON.parse(data) : data;
@@ -87,6 +87,7 @@ uploadHandler.prototype.makeDiv = function(){
 //    div.find("a#pause").click(this.pauseClick.bind(this));
     div.find("a#cancel").click(this.cancelClick.bind(this));
     this.div = div;
+    div.find("a#upload").click();
 };
 
 uploadHandler.prototype.uploadClick = function(e){
