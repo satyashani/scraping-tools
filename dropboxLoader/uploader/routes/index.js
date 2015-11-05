@@ -8,14 +8,13 @@ var dropbox = require("../lib/dropbox");
 var uploads = require("../lib/uploads");
 var conf = require("../config");
 var mime = require("mime");
-var CryptoJS = require("../lib/crypto");
+var decrypt = require("../lib/crypto");
 
 var upload = function(req,res){
-    if(!req.body.url) return res.json(400,{ok : false, error : 'File url not provided'});
-    if(!req.body.filename) return res.json(400,{ok: false, error: 'File name not provided'});
-    if(!req.cookies['uid']) return res.json(401, {ok : false, error: "You are not logged in"});
-    var uenc = CryptoJS.AES.decrypt(req.cookies['uid'], conf.server.cryptkey);
-    var username = uenc.toString(CryptoJS.enc.Utf8);
+    if(!req.body.url) return res.json({ok : false, status: 'error', message : 'File url not provided'});
+    if(!req.body.filename) return res.json({ok: false, status: 'error', message: 'File name not provided'});
+    if(!req.cookies['uid']) return res.json({ok : false, status: 'error', message: "You are not logged in"});
+    var username = decrypt(req.cookies['uid'], conf.server.cryptkey);
     var path = "/"+username+"/"+req.body.filename;
     dropbox.upload(req.body.url,path,mime.lookup(req.body.url),function(err,id){
         if(!err) res.json({ok: true, job: id, status: 'pending', message: "File added to upload queue"});

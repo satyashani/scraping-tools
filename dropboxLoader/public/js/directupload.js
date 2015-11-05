@@ -48,10 +48,11 @@ uploadHandler.prototype.upload = function(){
         },
         success: function(data){
             var d = typeof data === 'string' ? JSON.parse(data) : data;
-            me.job = d.job;
             me.setState(States[d.status],d.message);
-            if(d.ok && d.status !== 'error')
+            if(d.ok && d.job && d.status !== 'error'){
+                me.job = d.job;
                 me.track();
+            }
         },
         error: function(s,t,r){
             me.setState(States.failed);
@@ -64,7 +65,7 @@ uploadHandler.prototype.setState = function(state,message){
 //    if(state === States.complete || state === States.error || state === States.canceled) {
 //        this.div.find("div#buttons a").slideUp('fast');
 //    }
-    if(state === States.failed || state === States.error || state === States.complete){
+    if(state === States.failed || state === States.error|| state === States.complete){
         this.div.find("a#cancel").show();
     }
     this.div.find("div.status span").attr({"title":StateTitle[state]});
@@ -100,13 +101,17 @@ uploadHandler.prototype.uploadClick = function(e){
 
 uploadHandler.prototype.cancelClick = function(){
     var me = this;
-    $.ajax({
-        url: "./uploader/"+this.job+"/cancel",
-        method: "GET",
-        complete: function(data){
-            me.div.slideUp();
-        }
-    });
+    if(me.job){
+        $.ajax({
+            url: "./uploader/"+this.job+"/cancel",
+            method: "GET",
+            complete: function(data){
+                me.div.slideUp();
+            }
+        });
+    }else{
+        me.div.slideUp();
+    }
 };
 
 uploadHandler.prototype.track = function(){
