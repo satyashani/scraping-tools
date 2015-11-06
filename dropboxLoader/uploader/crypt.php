@@ -4,7 +4,7 @@ Aes encryption
 
 <?php
 
-$text = "username";
+$text = "shani";
 $key = "anysecretkey";
 
 function cryptoJsAesEncrypt($passphrase, $value){

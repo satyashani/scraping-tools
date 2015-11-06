@@ -49,8 +49,8 @@ uploadHandler.prototype.upload = function(){
         success: function(data){
             var d = typeof data === 'string' ? JSON.parse(data) : data;
             me.setState(States[d.status],d.message);
+            if(d.job) me.job = d.job;
             if(d.ok && d.job && d.status !== 'error'){
-                me.job = d.job;
                 me.track();
             }
         },
@@ -122,14 +122,14 @@ uploadHandler.prototype.track = function(){
             method: "GET",
             success: function(data){
                 var d = typeof data === 'string' ? JSON.parse(data) : data;
-                me.setState(d.status,d.message);
+                me.setState(States[d.status],d.message);
                 if(!d.status.match(/error|complete/))
                     setTimeout(update,2000);
             },
             error: function(x,t,r){
                 if(x.status === 200 && x.responseText){
                     var d = JSON.parse(x.responseText);
-                    me.setState(d.status,d.message);
+                    me.setState(States[d.status],d.message);
                     if(!d.status.match(/error|complete/))
                         setTimeout(update,2000);
                 }else{

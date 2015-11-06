@@ -17,7 +17,7 @@ var upload = function(req,res){
     var username = decrypt(req.cookies['uid'], conf.server.cryptkey);
     var path = "/"+username+"/"+req.body.filename;
     dropbox.upload(req.body.url,path,mime.lookup(req.body.url),function(err,id){
-        if(!err) res.json({ok: true, job: id, status: 'pending', message: "File added to upload queue"});
+        if(!err) res.json({ok: true, job: id, status: 'added', message: "File added to upload queue"});
         else res.json({ok: false, message: err.message, status: 'error', job : id || null});
     });
 };

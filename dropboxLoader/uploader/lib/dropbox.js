@@ -8,6 +8,7 @@ var http = require("http");
 var https = require("https");
 var config = require("../config");
 var uploads = require("./uploads");
+var progress = require('request-progress');
 
 var dropbox = function(){
     this.token = config.dropbox.token || "";
@@ -68,11 +69,17 @@ dropbox.prototype.upload = function(fileurl,path,mime,cb){
                 }).on("error",onError);
             };
             var resCallback = function(res){
+                var total = Number(res.headers['content-length']), recv = 0, prev = 0;
                 var req = https.request(opt,callback);
                 req.on("error",onError);
-                res.on("readable",function(){
-                    uploads.updateStatus(id,'downloading','File transfer started',noop);
-                }).on("error",onError);
+                res.on("data",function(data){
+                    recv += data.length;
+                    if(Math.floor(recv/total*20) > prev){
+                        prev = Math.floor(recv/total*20);
+                        uploads.updateStatus(id,'downloading','File transfer '+Math.round(recv*100/total)+"%",noop);
+                    }
+                });
+                res.on("error",onError);
                 res.on("close",function(){
                     uploads.updateStatus(id,'downloaded','File transfer complete',noop);
                 });
