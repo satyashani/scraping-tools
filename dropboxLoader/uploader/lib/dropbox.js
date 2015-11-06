@@ -66,12 +66,16 @@ dropbox.prototype.upload = function(fileurl,path,mime,cb){
                     }catch(e){
                         uploads.updateStatus(id,'complete',"File uploaded with errors",noop);
                     }
-                }).on("error",onError);
+                }).on("error",function(err){
+                    onError(new Error("Dropbox API response error:"+err.message));
+                });
             };
             var resCallback = function(res){
                 var total = Number(res.headers['content-length']), recv = 0, prev = 0;
                 var req = https.request(opt,callback);
-                req.on("error",onError);
+                req.on("error",function(err){
+                    onError(new Error("Dropbox API request error:"+err.message));
+                });
                 res.on("data",function(data){
                     recv += data.length;
                     if(Math.floor(recv/total*20) > prev){
@@ -79,13 +83,18 @@ dropbox.prototype.upload = function(fileurl,path,mime,cb){
                         uploads.updateStatus(id,'downloading','File transfer '+Math.round(recv*100/total)+"%",noop);
                     }
                 });
-                res.on("error",onError);
+                res.on("error",function(err){
+                    onError(new Error("File response error:"+err.message));
+                });
                 res.on("close",function(){
                     uploads.updateStatus(id,'downloaded','File transfer complete',noop);
                 });
                 res.pipe(req);
             };
-            ishttps ? https.get(fileurl,resCallback) : http.get(fileurl,resCallback);
+            var filereq = ishttps ? https.get(fileurl,resCallback) : http.get(fileurl,resCallback);
+            filereq.on("error",function(err){
+                onError(new Error("File request error:"+err.message));
+            });
         });
     });
 };

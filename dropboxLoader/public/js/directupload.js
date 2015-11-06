@@ -138,7 +138,7 @@ uploadHandler.prototype.track = function(){
             }
         });
     };
-    setTimeout(update,2000);
+    setTimeout(update,5000);
 };
 
 $(document).ready(function(){
