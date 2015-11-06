@@ -159,7 +159,7 @@ $(document).ready(function(){
     });
     
     dbclient.authDriver(new Dropbox.AuthDriver.Popup({
-        receiverUrl: "http://localhost/dmcaserver/dropboxLoader/loggedin.html"
+        receiverUrl: dbApiConf.redirecturl
     }));
 
     if(!dbclient.isAuthenticated()){
