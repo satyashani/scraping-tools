@@ -8,7 +8,6 @@ var http = require("http");
 var https = require("https");
 var config = require("../config");
 var uploads = require("./uploads");
-var progress = require('request-progress');
 
 var dropbox = function(){
     this.token = config.dropbox.token || "";
