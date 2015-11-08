@@ -177,10 +177,10 @@ dropbox.prototype.chunkedUpload = function(fileurl,path,mime,size,cb){
 
 
             var resCallback = function(res){
-                console.log("Starting upload");
+//                console.log("Starting upload");
                 var recv = 0, prev = 0, breakon = 140, reqtotal = 1, currentreq = null;
                 var reqCb = function(err,data){
-                    console.log("Inside end cb",err,data,recv);
+//                    console.log("Inside end cb",err,data,recv);
                     if(err){
                         res.destroy();
                         onError(err);
@@ -190,9 +190,9 @@ dropbox.prototype.chunkedUpload = function(fileurl,path,mime,size,cb){
                             commit();
                         else{
                             reqtotal++;
-                            console.log("Creating requext",reqtotal);
+//                            console.log("Creating requext",reqtotal);
                             currentreq = createReq(reqCb);
-                            console.log("Resuming input");
+//                            console.log("Resuming input");
                             res.resume();
                         }
                     }
@@ -202,11 +202,11 @@ dropbox.prototype.chunkedUpload = function(fileurl,path,mime,size,cb){
                     recv += data.length;
                     if(Math.floor(recv/size*20) > prev){
                         prev = Math.floor(recv/size*20);
-                        uploads.updateStatus(uploadid,'downloading','File transfer '+Math.round(recv*100/size)+"%",noop);
+                        uploads.updateStatus(id,'downloading','File transfer '+Math.round(recv*100/size)+"%",noop);
                     }
                     currentreq.write(data);
                     if(recv >= breakon * reqtotal * 1024 * 1024){
-                        console.log("Pausing input");
+//                        console.log("Pausing input");
                         res.pause();
                         currentreq.end();
                     }
