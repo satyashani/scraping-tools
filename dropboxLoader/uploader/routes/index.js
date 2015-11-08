@@ -13,13 +13,22 @@ var decrypt = require("../lib/crypto");
 var upload = function(req,res){
     if(!req.body.url) return res.json({ok : false, status: 'error', message : 'File url not provided'});
     if(!req.body.filename) return res.json({ok: false, status: 'error', message: 'File name not provided'});
+    if(!req.body.bytes) return res.json({ok: false, status: 'error', message: 'File size unknown, cannot uplaod'});
     if(!req.cookies['uid']) return res.json({ok : false, status: 'error', message: "You are not logged in"});
     var username = decrypt(req.cookies['uid'], conf.server.cryptkey);
     var path = "/"+username+"/"+req.body.filename;
-    dropbox.upload(req.body.url,path,mime.lookup(req.body.url),function(err,id){
-        if(!err) res.json({ok: true, job: id, status: 'added', message: "File added to upload queue"});
-        else res.json({ok: false, message: err.message, status: 'error', job : id || null});
-    });
+    var chunkedMBlimit = 400;
+    if((req.body.bytes/1048576).toFixed(2) < chunkedMBlimit){
+        dropbox.upload(req.body.url,path,mime.lookup(req.body.url),req.body.bytes,function(err,id){
+            if(!err) res.json({ok: true, job: id, status: 'added', message: "File added to upload queue"});
+            else res.json({ok: false, message: err.message, status: 'error', job : id || null});
+        });
+    }else{
+        dropbox.chunkedUpload(req.body.url,path,mime.lookup(req.body.url),req.body.bytes,function(err,id){
+            if(!err) res.json({ok: true, job: id, status: 'added', message: "File added to upload queue"});
+            else res.json({ok: false, message: err.message, status: 'error', job : id || null});
+        });
+    }
 };
 
 var cancel = function(req,res){

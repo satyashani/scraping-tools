@@ -28,9 +28,10 @@ var StateTitle = [
     "File uploaded"
 ];
 
-var uploadHandler = function(url){
-    this.url = url;
-    this.filename = $.url(url).attr("file");
+var uploadHandler = function(info){
+    this.url = info.link;
+    this.filename = info.name;
+    this.bytes = info.bytes;
     this.job = null;
     this.interval = 0;
     this.makeDiv();
@@ -44,7 +45,8 @@ uploadHandler.prototype.upload = function(){
         method: "POST",
         data: {
             url : u,
-            filename: me.filename
+            filename: me.filename,
+            bytes: me.bytes
         },
         success: function(data){
             var d = typeof data === 'string' ? JSON.parse(data) : data;
@@ -82,6 +84,7 @@ uploadHandler.prototype.makeDiv = function(){
     div.removeAttr("id");
     this.status = div.find(".status").eq(0);
     div.find(".filename").eq(0).text(this.filename);
+    div.find(".size").eq(0).text((this.bytes/1048576).toFixed(2)+"MB");
     $("div#files").append(div);
     div.fadeIn();
     div.find("a#upload").click(this.uploadClick.bind(this));
@@ -147,7 +150,7 @@ $(document).ready(function(){
             if(!dbclient.isAuthenticated() || !authclient)
                 return console.log("App is not authenticated");
             files.forEach(function(f){
-                new uploadHandler(f.link);
+                new uploadHandler(f);
             });
         },
         multiselect: true,
