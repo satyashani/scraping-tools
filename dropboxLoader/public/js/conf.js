@@ -4,6 +4,7 @@
 
 var dbApiConf = {
     types : ['image/jpeg','application/pdf','audio/mpeg','video/mpeg'],
+    chooserExt: ['.mp3', '.flac', '.aiff', '.wav', '.aif'],
     chunkSize : 1024*1024,
     auth: {
         key: 'lycuobyql232wwf'

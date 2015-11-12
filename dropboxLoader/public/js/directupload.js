@@ -145,32 +145,37 @@ uploadHandler.prototype.track = function(){
 };
 
 $(document).ready(function(){
-    var button = Dropbox.createChooseButton({
-        success: function(files){
-            if(!dbclient.isAuthenticated() || !authclient)
-                return console.log("App is not authenticated");
-            files.forEach(function(f){
-                new uploadHandler(f);
-            });
-        },
-        multiselect: true,
-        linkType: "direct"
-    });
-    $("#chooser").append(button);
-    $("#logout").click(function(){
-        dbclient.signOut();
-    });
-    
-    dbclient.authDriver(new Dropbox.AuthDriver.Popup({
-        receiverUrl: dbApiConf.redirecturl
-    }));
-
-    if(!dbclient.isAuthenticated()){
-        dbclient.authenticate(function(error, client) {
-            if (!error) authclient = client;
-            else console.log(error);
+    // Commented code was meant to be used for dierct upload to dropbox, 
+    // which can be used later if dropbox api starts working.
+    $("#chooser").click(function(e){
+        e.preventDefault();
+        Dropbox.choose({
+            success: function(files){
+//                if(!dbclient.isAuthenticated() || !authclient)
+//                    return console.log("App is not authenticated");
+                files.forEach(function(f){
+                    new uploadHandler(f);
+                });
+            },
+            multiselect: true,
+            linkType: "direct",
+            extensions: dbApiConf.chooserExt && dbApiConf.chooserExt.length ? dbApiConf.chooserExt : ['.mp3', '.flac', '.aiff', '.wav', '.aif']
         });
-    }else{
-        console.log("user logged in");
-    }
+    });
+//    $("#logout").click(function(){
+//        dbclient.signOut();
+//    });
+//    
+//    dbclient.authDriver(new Dropbox.AuthDriver.Popup({
+//        receiverUrl: dbApiConf.redirecturl
+//    }));
+//
+//    if(!dbclient.isAuthenticated()){
+//        dbclient.authenticate(function(error, client) {
+//            if (!error) authclient = client;
+//            else console.log(error);
+//        });
+//    }else{
+//        console.log("user logged in");
+//    }
 });
