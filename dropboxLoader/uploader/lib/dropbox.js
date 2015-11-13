@@ -141,7 +141,7 @@ dropbox.prototype.chunkedUpload = function(fileurl,path,mime,size,cb){
 
                 var req = https.request(opt,callback);
                 req.on("error",function(err){
-                    endcb(new Error("Dropbox API request error:"+err.message));
+                    endcb(new Error("Dropbox API upload request error:"+err.message));
                 });
                 return req;
             };
@@ -166,7 +166,7 @@ dropbox.prototype.chunkedUpload = function(fileurl,path,mime,size,cb){
                             uploads.updateStatus(id,'complete',"File uploaded with errors, bad json response from dropbox "+data,noop);
                         }
                     }).on("error",function(err){
-                        onError(new Error("Dropbox API response error:"+err.message));
+                        onError(new Error("Dropbox API download response error:"+err.message));
                     });
                 };
 
