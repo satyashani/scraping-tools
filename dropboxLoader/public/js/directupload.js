@@ -9,31 +9,36 @@ var dbclient = new Dropbox.Client({ key: dbApiConf.auth.key });
 Dropbox.AuthDriver.Popup.oauthReceiver();
 var authclient = null;
 
-var States = {failed: 0,added: 1, error: 2,downloading: 3,downloaded: 4, complete: 5};
-var StateClass = [
-    "glyphicon glyphicon-warning-sign",
-    "glyphicon glyphicon-transfer",
-    "glyphicon glyphicon-warning-sign",
-    "glyphicon glyphicon-transfer",
-    "glyphicon glyphicon-transfer",
-    "glyphicon glyphicon-ok"
+var States = {
+    failed: 0,added: 1, error: 2,downloading: 3,downloaded: 4, complete: 5,
+    Code: ['failed','added','error','downloading','downloaded','complete'],
+    Class : [
+        "glyphicon glyphicon-warning-sign",
+        "glyphicon glyphicon-transfer",
+        "glyphicon glyphicon-warning-sign",
+        "glyphicon glyphicon-transfer",
+        "glyphicon glyphicon-transfer",
+        "glyphicon glyphicon-ok"
 
-];
-var StateTitle = [
-    "Upload request failed",
-    "File upload requested",
-    "Error",
-    "File transfer in progress",
-    "File transfer complete",
-    "File uploaded"
-];
+    ],
+    Title: [
+        "Upload request failed",
+        "File upload requested",
+        "Error",
+        "File transfer in progress",
+        "File transfer complete",
+        "File uploaded"
+    ]
+};
 
-var uploadHandler = function(info){
+var uploadHandler = function(info,opts){
     this.url = info.link;
     this.filename = info.name;
     this.bytes = info.bytes;
     this.job = null;
     this.interval = 0;
+    this.autoStart = opts.hasOwnProperty('autostart') ? !!opts.autostart : true;
+    this.onStateChange = opts.onStateChange && typeof opts.onStateChange === 'function' ? opts.onStateChange : null;
     this.makeDiv();
 };
 
@@ -64,19 +69,20 @@ uploadHandler.prototype.upload = function(){
 
 uploadHandler.prototype.setState = function(state,message){
     this.state = state;
+    if(this.onStateChange) this.onStateChange({state : States.Code[state], message : message || States.Title[state] })
 //    if(state === States.complete || state === States.error || state === States.canceled) {
 //        this.div.find("div#buttons a").slideUp('fast');
 //    }
     if(state === States.failed || state === States.error|| state === States.complete){
         this.div.find("a#cancel").show();
     }
-    this.div.find("div.status span").attr({"title":StateTitle[state]});
-    for(var i=0;i<StateClass.length;i++){
-        this.div.find("div.status span").removeClass(StateClass[i]);
+    this.div.find("div.status span").attr({"title":States.Title[state]});
+    for(var i=0;i<States.Class.length;i++){
+        this.div.find("div.status span").removeClass(States.Class[i]);
     }
-    this.div.find("div.message").text(message || StateTitle[state]);
-    this.div.find("div.status span").attr({"title": (message || StateTitle[state])});
-    this.div.find("div.status span").addClass(StateClass[state]);
+    this.div.find("div.message").text(message || States.Title[state]);
+    this.div.find("div.status span").attr({"title": (message || States.Title[state])});
+    this.div.find("div.status span").addClass(States.Class[state]);
 };
 
 uploadHandler.prototype.makeDiv = function(){
@@ -91,7 +97,7 @@ uploadHandler.prototype.makeDiv = function(){
 //    div.find("a#pause").click(this.pauseClick.bind(this));
     div.find("a#cancel").click(this.cancelClick.bind(this));
     this.div = div;
-    div.find("a#upload").click();
+    if(this.autoStart) div.find("a#upload").click();
 };
 
 uploadHandler.prototype.uploadClick = function(e){
