@@ -37,8 +37,8 @@ var uploadHandler = function(info,opts){
     this.bytes = info.bytes;
     this.job = null;
     this.interval = 0;
-    this.autoStart = opts.hasOwnProperty('autostart') ? !!opts.autostart : true;
-    this.onStateChange = opts.onStateChange && typeof opts.onStateChange === 'function' ? opts.onStateChange : null;
+    this.autoStart = opts && opts.hasOwnProperty('autostart') ? !!opts.autostart : true;
+    this.onStateChange = opts && opts.onStateChange && typeof opts.onStateChange === 'function' ? opts.onStateChange : null;
     this.makeDiv();
 };
 
