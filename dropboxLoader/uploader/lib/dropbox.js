@@ -125,14 +125,14 @@ dropbox.prototype.chunkedUpload = function(fileurl,path,mime,size,cb){
                         try{
                             var j = JSON.parse(data);
                             if(!j.upload_id){
-                                endcb(new Error("Upload failed, bad response from dropbox"),j);
+                                endcb(new Error("Upload failed, bad response from dropbox, response : "+data),j);
                             }else{
                                 uploadid = j.upload_id;
                                 bytes = j.offset;
                                 endcb(null,j);
                             }
                         }catch(e){
-                            endcb(new Error("Invalid dropbox response, not a json"),data);
+                            endcb(new Error("Invalid dropbox response, not a json : "+data),data);
                         }
                     }).on("error",function(err){
                         endcb(new Error("Dropbox API response error:"+err.message));
