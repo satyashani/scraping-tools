@@ -10,10 +10,11 @@ Dropbox.AuthDriver.Popup.oauthReceiver();
 var authclient = null;
 
 var States = {
-    failed: 0,added: 1, error: 2,downloading: 3,downloaded: 4, complete: 5,
-    Code: ['failed','added','error','downloading','downloaded','complete'],
+    failed: 0,pending: 1,added: 2, error: 3,downloading: 4,downloaded: 5, complete: 6,
+    Code: ['failed','pending','added','error','downloading','downloaded','complete'],
     Class : [
         "glyphicon glyphicon-warning-sign",
+        "glyphicon glyphicon-transfer",
         "glyphicon glyphicon-transfer",
         "glyphicon glyphicon-warning-sign",
         "glyphicon glyphicon-transfer",
@@ -23,6 +24,7 @@ var States = {
     ],
     Title: [
         "Upload request failed",
+        "Waiting to start transfer",
         "File upload requested",
         "Error",
         "File transfer in progress",
@@ -55,8 +57,8 @@ uploadHandler.prototype.upload = function(){
         },
         success: function(data){
             var d = typeof data === 'string' ? JSON.parse(data) : data;
-            me.setState(States[d.status],d.message);
             if(d.job) me.job = d.job;
+            me.setState(States[d.status],d.message);
             if(d.ok && d.job && d.status !== 'error'){
                 me.track();
             }
@@ -160,7 +162,12 @@ $(document).ready(function(){
 //                if(!dbclient.isAuthenticated() || !authclient)
 //                    return console.log("App is not authenticated");
                 files.forEach(function(f){
-                    new uploadHandler(f);
+                    var uj = new uploadHandler(f,{
+                        onStateChange : function(state){
+                            console.log(state,uj.job);
+                        }
+                    });
+                    
                 });
             },
             multiselect: true,
