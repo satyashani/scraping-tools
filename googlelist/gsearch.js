@@ -97,7 +97,7 @@ var handler = function(req,res,server){
 
     var getPageResults = function(){
         var res = [];
-        $("div#ires li.g").each(function(){
+        $("div#ires div.g").each(function(){
             var u = $(this).find("h3.r a").attr("href"),kw = $(this).find('span.st em,span.st b');
             if(u){
                 var match = u.match(/url[\?q]*=(http[s]*[^&]*)/);
