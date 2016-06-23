@@ -16,7 +16,7 @@ var upload = function(req,res){
     if(!req.body.bytes) return res.json({ok: false, status: 'error', message: 'File size unknown, cannot uplaod'});
     if(!req.cookies['uid']) return res.json({ok : false, status: 'error', message: "You are not logged in"});
     var username = decrypt(req.cookies['uid'], conf.server.cryptkey);
-    var path = "/"+username+"/"+req.body.filename;
+    var path = "/"+username+"/"+encodeURIComponent(req.body.filename);
     var chunkedMBlimit = 400;
     if((req.body.bytes/1048576).toFixed(2) < chunkedMBlimit){
         dropbox.upload(req.body.url,path,mime.lookup(req.body.url),req.body.bytes,function(err,id){
