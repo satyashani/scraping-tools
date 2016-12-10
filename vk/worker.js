@@ -33,14 +33,14 @@ var worker = function(config){
             if(type==='audio'){
                 page.onCallback = function(){
                     var res = page.evaluate(function(){
-                        var items = $("td#results div.audio"),res = [];
+                        var items = $("div#results div.audio_info,div.search_results div.audio_info"),res = [];
                         items.each(function(){
                             var o = {
-                                audioUrl: $(this).find('input').eq(0).val(),
-                                searchLink: $(this).find('b a').attr("href"),
-                                searchTitle: $(this).find("b").text(),
-                                title: $(this).find('span.title').text(),
-                                userLink: $(this).find('span.user a').attr("href")
+                                audioUrl: $(this).find('a.audio_performer').attr("href"),
+                                searchLink: $(this).find('a.audio_performer').attr("href"),
+                                searchTitle: $(this).find("a.audio_performer").text(),
+                                title: $(this).find('span.audio_title span.audio_title_inner').text(),
+                                userLink: $(this).find('span.audio_author a').attr("href")
                             };
                             res.push(o);
                         });
@@ -49,11 +49,11 @@ var worker = function(config){
                     callback(null,res);
                 };
                 page.evaluate(function(){
-                    var items = $("td#results div.audio"),size = 0;
+                    var items = $("div#results div.audio_info,div.search_results div.audio_info"),size = 0;
                     var scroll = function(){
                         window.scrollTo(0,$("body").height());
                         setTimeout(function(){
-                            items = $("td#results div.audio");
+                            items = $("div#results div.audio_info,div.search_results div.audio_info");
                             if(size<items.size()) {
                                 size = items.size();
                                 scroll();
@@ -67,13 +67,14 @@ var worker = function(config){
             else if(type==='video'){
                 page.onCallback = function(){
                     var res = page.evaluate(function(){
-                        var items = $("div#results div.video_row"),res = [];
+                        var items = $("div#results div.video_item"),res = [];
                         console.log("finally items:",items.size());
                         items.each(function(){
                             var o = {
-                                videoUrl: "http://vk.com"+$(this).find('div.video_row_info_name a').attr("href"),
-                                title: $(this).find('div.video_row_info_name').text(),
-                                duration :$(this).find("div.video_row_duration").text()
+                                videoUrl: "http://vk.com"+$(this).find('div.video_item_info a.video_item_title').attr("href"),
+                                title: $(this).find('div.video_item_info a.video_item_title').text(),
+                                views :$(this).find("div.video_item_add_info span.video_item_views").text(),
+                                duration :$(this).find("div.video_item_thumb div.video_thumb_duration").text()
                             };
                             res.push(o);
                         });
@@ -82,13 +83,13 @@ var worker = function(config){
                     callback(null,res);
                 };
                 page.evaluate(function(){
-                    var items = $("div#results div.video_row"),size = 0;
+                    var items = $("div#results div.video_item"),size = 0;
                     console.log("items:",items.size());
                     var scroll = function(){
                         window.scrollTo(0,$("body").height());
                         setTimeout(function(){
                             console.log("after scroll items:",items.size());
-                            items = $("div#results div.video_row");
+                            items = $("div#results div.video_item");
                             if(size<items.size()) {
                                 size = items.size();
                                 scroll();
