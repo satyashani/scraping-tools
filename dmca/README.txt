@@ -19,29 +19,29 @@ ROUTES:
 GET /                       ->  Server check
 GET /version                ->  Server version date check
 POST /submitdmca            ->  Get list of confirmation ids and their links from dashboard.
-	POST BODY
-	{
-		"workerid"		    :		"amit.020585",
-	    "firstname"		    :		"amit",
-	    "lastname"		    :		"rai",
-	    "companyname"		:		"sony music",
-	    "newcopyrightholder":		"sony music",
-	    "email"		        :		"amit.020585@gmail.com",
-	    "countrycode"		:		"India",
-	    "crworkdesc0"		:		"Sony music copyright",
-	    "crworkurls0"		:		"http://www.sonymusic.com/videos/t-i-no-medicore/",
-	    "infringingurls0"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links",
+POST BODY
+{
+    "workerid"		    :		"amit.020585",
+    "firstname"		    :		"amit",
+    "lastname"		    :		"rai",
+    "companyname"		:	"sony music",
+    "newcopyrightholder":		"sony music",
+    "email"		        :	"amit.020585@gmail.com",
+    "countrycode"		:	"India",
+    "crworkdesc0"		:	"Sony music copyright",
+    "crworkurls0"		:	"http://www.sonymusic.com/videos/t-i-no-medicore/",
+    "infringingurls0"           :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links",
 
-	    "crworkdesc1"		:		"Sony music copyright",
-	    "crworkurls1"		:		"http://www.sonymusic.com/videos/t-i-no-medicore/",
-	    "infringingurls1"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links",
-	    ...
-	    ...  // same three fields with 0 to 9 at the end
-	    ...
-	    "crworkdesc9"		:		"Sony music copyright",
-	    "crworkurls9"		:		"http://www.sonymusic.com/videos/t-i-no-medicore/",
-	    "infringingurls9"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links"
-    }
+    "crworkdesc1"		:	"Sony music copyright",
+    "crworkurls1"		:	"http://www.sonymusic.com/videos/t-i-no-medicore/",
+    "infringingurls1"           :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links",
+    ...
+    ...  // same three fields with 0 to 9 at the end
+    ...
+    "crworkdesc9"		:		"Sony music copyright",
+    "crworkurls9"		:		"http://www.sonymusic.com/videos/t-i-no-medicore/",
+    "infringingurls9"   :       "http://www.mirrorcreator.com/files/0CQ6SJQB/iTI-No_Mediocre.zip_links"
+}
 POST /changeworker          ->  Get List of approved, rejected and pending urls
 	POST BODY
 	{

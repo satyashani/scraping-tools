@@ -741,6 +741,34 @@ var worker = function(config){
                 page.render("images/captcha_error."+time+".png");
                 return callback(new Error("dmca_captcha_not_loaded"),null);
             }
+            if(imgdata.length < 20){
+                return setTimeout(function(){
+                    page.switchToFrame(imgdata);
+                    page.injectJs(jq);
+                    page.onError = function(msg){
+                        console.log('iframe page error',msg);
+                    };
+                    page.onConsoleMessage = function(msg){
+                        console.log('iframe page message',msg);
+                    };
+                    var hasspan = page.evaluate(function(){
+                        var span = $('span#recaptcha-anchor');
+                        console.log("number of recaptcha span = ",span.size());
+                        if(span.size())
+                            span.trigger("click");
+                        return span.size();
+                    });
+                    if(hasspan){
+                        setTimeout(function(){
+                            page.render("afterclickonspan.png");
+                            callback(new Error("this error shuold be removed"));
+                        },5000);
+                    }else{
+                        page.render("images/captcha_no_clickspan."+time+".png");
+                        callback(new Error("no captcha span for click"));
+                    }
+                },5000  );
+            }
             var filename = "./captcha/captcha_"+new Date().getTime()+".txt";
             fs.write(filename,imgdata,"w");
             logger.log("retrieved captcha and wrote to file "+filename);
@@ -825,6 +853,10 @@ var worker = function(config){
                     setTimeout(function(){
                         if(!$("img#recaptcha_challenge_image").size()){
                             console.log("captcha found = "+$("img#recaptcha_challenge_image").size());
+                            if($('iframe[title="recaptcha widget"]').size()){
+                                console.log("Found and iframe of name "+$('iframe[title="recaptcha widget"]').attr('name'))
+                                return window.callPhantom($('iframe[title="recaptcha widget"]').attr('name'));
+                            }
                             return window.callPhantom(null);
                         }
                         $("<img/>").load(function(){

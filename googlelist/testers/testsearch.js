@@ -44,16 +44,16 @@ var requester = function(item,callback){
         res.on("data",function(chunk){
             data += chunk;
         }).on("end",function(){
-                var d = JSON.parse(data);
-                processed++;
-                console.log("Processed "+processed+", result = "+(d.result && d.result.length?d.result.length:JSON.stringify(d)));
-                if(!d.ok && d.error == "proxy_list_empty") return callback(new Error(d.error));
-                if(!d.ok && d.error.indexOf("proxy")) return callback(null, d.error);
-                if(d.ok && d.result && d.result.length)
-                    callback(null,d.result.length);
-                else
-                    callback(null,d);
-            });
+            var d = JSON.parse(data);
+            processed++;
+            console.log("Processed "+processed+", result = "+(d.result && d.result.length?d.result.length:JSON.stringify(d)));
+            if(!d.ok && d.error === "proxy_list_empty") return callback(new Error(d.error));
+            if(!d.ok && d.error.indexOf("proxy")) return callback(null, d.error);
+            if(d.ok && d.result && d.result.length)
+                callback(null,d.result.length);
+            else
+                callback(null,d);
+        });
     });
     req.on('error', function(e) {
         console.log('problem with request: ' + e.message);

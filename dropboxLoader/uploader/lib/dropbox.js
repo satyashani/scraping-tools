@@ -41,11 +41,17 @@ dropbox.prototype.upload = function(fileurl,path,mime,size,cb){
             var ishttps = fileurl.match(/^https/);
             var opt = {
                 hostname: 'content.dropboxapi.com',
-                path: '/1/files_put/auto/'+path,
-                method: 'PUT',
+                path: '/2/files/upload',
+                method: 'POST',
                 headers: {
-                  'Content-Type': mime,
-                  'Authorization' : "Bearer "+t
+                    'Content-Type': mime,
+                    'Authorization' : "Bearer "+t,
+                    'Dropbox-API-Arg' : JSON.stringify({
+                        "path": path,
+                        "mode": "add",
+                        "autorename": true,
+                        "mute": false
+                    })
                 }
             };
             var onError = function(err){
@@ -58,7 +64,7 @@ dropbox.prototype.upload = function(fileurl,path,mime,size,cb){
                 }).on("end",function(){
                     try{
                         var j = JSON.parse(data);
-                        if(j.bytes)
+                        if(j.size)
                             uploads.updateStatus(id,'complete',"File uploaded successfully",noop);
                         else
                             uploads.updateStatus(id,'complete',"File uploaded with errors",noop);
@@ -112,22 +118,30 @@ dropbox.prototype.chunkedUpload = function(fileurl,path,mime,size,cb){
             };
 
             var createReq = function(endcb){
-                var p = '/1/chunked_upload';
-                if(uploadid && bytes) p += "?upload_id="+uploadid+"&offset="+bytes;
                 var opt = {
                     hostname: 'content.dropboxapi.com',
-                    path: p, method: 'PUT',
+                    path: '/2/files/upload_session/start', method: 'POST',
                     headers: { 'Content-Type': mime, 'Authorization' : "Bearer "+t }
                 };
+                if(uploadid && bytes){
+                    opt.path = '/2/files/upload_session/append_v2';
+                    opt.headers['Dropbox-API-Arg'] = JSON.stringify({
+                        "cursor": {
+                            "session_id": uploadid,
+                            "offset": bytes
+                        },
+                        "close": false
+                    });
+                }
                 var callback = function(res){
                     var data = "";
                     res.on('data',function(d){ data+= d; }).on("end",function(){
                         try{
                             var j = JSON.parse(data);
-                            if(!j.upload_id){
+                            if(!j.session_id){
                                 endcb(new Error("Upload failed, bad response from dropbox, response : "+data),j);
                             }else{
-                                uploadid = j.upload_id;
+                                uploadid = j.session_id;
                                 bytes = j.offset;
                                 endcb(null,j);
                             }
@@ -148,9 +162,21 @@ dropbox.prototype.chunkedUpload = function(fileurl,path,mime,size,cb){
 
             var commit = function(){
                 var opt = {
-                    hostname: 'content.dropboxapi.com', path: '/1/commit_chunked_upload/auto/'+path,
+                    hostname: 'content.dropboxapi.com', path: '/2/files/upload_session/finish',
                     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization' : "Bearer "+t }
                 };
+                opt.headers['Dropbox-API-Arg'] = JSON.stringify({
+                    "cursor": {
+                        "session_id": uploadid,
+                        "offset": bytes
+                    },
+                    "commit": {
+                        "path": path,
+                        "mode": "add",
+                        "autorename": true,
+                        "mute": false
+                    }
+                });
                 var callback = function(res){
                     var data = "";
                     res.on('data',function(d){
@@ -171,7 +197,6 @@ dropbox.prototype.chunkedUpload = function(fileurl,path,mime,size,cb){
                 };
 
                 var req = https.request(opt,callback);
-                req.write("overwrite=true&upload_id="+uploadid);
                 req.end();
             };
 

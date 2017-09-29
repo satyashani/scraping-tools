@@ -1,9 +1,9 @@
 {
     "env": "dev",
     "port": 9092,
-    "proxyapikey": "2100799401279a1067b2a4304c6149",
-    "resultsperquery" : 10,
+    "proxyapikey": "729fb2b0ef57fc06cdac1b5525c9b0",
+    "resultsperquery" : 100,
     "useproxies" : true,
-    "proxysource" : "manual",
+    "proxysource" : "file",
     "timeout": 60000
 }

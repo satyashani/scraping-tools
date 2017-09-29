@@ -1,31 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="Separated piracy report and getHtml handlers">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/getHtml/README.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/piracyReport/README.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/getHtml/conf.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/piracyReport/conf.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/getHtml/jquery-1.10.1.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/piracyReport/jquery-1.10.1.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/getHtml/logger.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/piracyReport/logger.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/getHtml/testers/package.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/piracyReport/testers/package.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/getHtml/proxies.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/piracyReport/proxies.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/getHtml/server.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/piracyReport/server.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/getHtml/useragents.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/googlelist/getHtmlHandler.js" afterPath="$PROJECT_DIR$/getHtml/getHtmlHandler.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/googlelist/gsearch" afterPath="$PROJECT_DIR$/googlelist/searchService.conf" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/googlelist/reportsHandler.js" afterPath="$PROJECT_DIR$/piracyReport/reportsHandler.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/googlelist/testers/testgethtml.js" afterPath="$PROJECT_DIR$/getHtml/testers/testgethtml.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/googlelist/testers/testreport.js" afterPath="$PROJECT_DIR$/piracyReport/testers/testreport.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/googlelist/testers/testurls.json" afterPath="$PROJECT_DIR$/getHtml/testers/testurls.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/googlelist/README.txt" afterPath="$PROJECT_DIR$/googlelist/README.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/googlelist/gsearch.js" afterPath="$PROJECT_DIR$/googlelist/gsearch.js" />
+    <list default="true" id="e4135d34-8636-4a3f-bac7-fbaafd9337a3" name="Default" comment="New route to clean up">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca/README.txt" afterPath="$PROJECT_DIR$/dmca/README.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/googlelist/conf.json" afterPath="$PROJECT_DIR$/googlelist/conf.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dmca/dmca.js" afterPath="$PROJECT_DIR$/dmca/dmca.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/googlelist/gsearchHandler.js" afterPath="$PROJECT_DIR$/googlelist/gsearchHandler.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/googlelist/proxies.json" afterPath="$PROJECT_DIR$/googlelist/proxies.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/googlelist/testers/testsearch.js" afterPath="$PROJECT_DIR$/googlelist/testers/testsearch.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="google-dmca.iws" />
@@ -49,71 +31,81 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="worker.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vk/worker.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="120" max-vertical-offset="4455">
+              <caret line="8" column="40" selection-start-line="8" selection-start-column="40" selection-end-line="8" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="conf.json" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/googlelist/conf.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="210">
+              <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gsearch.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.46721312" vertical-offset="9993" max-vertical-offset="10860">
+              <caret line="698" column="31" selection-start-line="698" selection-start-column="31" selection-end-line="698" selection-end-column="31" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/googlelist/server.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1845" max-vertical-offset="2880">
+              <caret line="123" column="16" selection-start-line="123" selection-start-column="16" selection-end-line="123" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="gsearchHandler.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/googlelist/gsearchHandler.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5295">
-              <caret line="21" column="32" selection-start-line="21" selection-start-column="32" selection-end-line="21" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="6330">
+              <caret line="9" column="6" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="gsearch.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
+      <file leaf-file-name="proxies.json" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/googlelist/proxies.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10860">
-              <caret line="25" column="32" selection-start-line="25" selection-start-column="32" selection-end-line="25" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="135">
+              <caret line="2" column="80" selection-start-line="2" selection-start-column="80" selection-end-line="2" selection-end-column="80" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.txt" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/googlelist/README.txt">
+      <file leaf-file-name="captcha.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/googlelist/captcha.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8238748" vertical-offset="74" max-vertical-offset="585">
-              <caret line="33" column="45" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="2520">
+              <caret line="12" column="12" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="12" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="reportsHandler.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/piracyReport/reportsHandler.js">
+      <file leaf-file-name="dmca.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dmca/dmca.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="4185">
-              <caret line="22" column="42" selection-start-line="22" selection-start-column="42" selection-end-line="22" selection-end-column="42" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.txt" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/getHtml/README.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="44" max-vertical-offset="555">
-              <caret line="12" column="14" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.txt" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/piracyReport/README.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="29" max-vertical-offset="540">
-              <caret line="12" column="14" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="getHtmlHandler.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/getHtml/getHtmlHandler.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2805">
-              <caret line="21" column="7" selection-start-line="21" selection-start-column="7" selection-end-line="21" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="13125" max-vertical-offset="16635">
+              <caret line="875" column="19" selection-start-line="858" selection-start-column="29" selection-end-line="875" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -132,19 +124,12 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/vk/logger.js" />
-        <option value="$PROJECT_DIR$/vk/gserver.js" />
-        <option value="$PROJECT_DIR$/vk/server.js" />
         <option value="$PROJECT_DIR$/vk/contries.json" />
         <option value="$PROJECT_DIR$/vk/getCities.js" />
         <option value="$PROJECT_DIR$/vk/cities.json" />
         <option value="$PROJECT_DIR$/vk/vk.js" />
-        <option value="$PROJECT_DIR$/vk/handler.js" />
         <option value="$PROJECT_DIR$/vk/afterClickAtt.html" />
         <option value="$PROJECT_DIR$/vk/afterClickAtt.json" />
-        <option value="$PROJECT_DIR$/vk/README.txt" />
-        <option value="$PROJECT_DIR$/vk/worker.js" />
-        <option value="$PROJECT_DIR$/vk/conf.json" />
         <option value="$PROJECT_DIR$/dropboxLoader/oauth.html" />
         <option value="$PROJECT_DIR$/dropboxLoader/purl.js" />
         <option value="$PROJECT_DIR$/dropboxLoader/style.css" />
@@ -157,7 +142,6 @@
         <option value="$PROJECT_DIR$/dropboxLoader/public/js/conf.js" />
         <option value="$PROJECT_DIR$/dropboxLoader/index.html" />
         <option value="$PROJECT_DIR$/dropboxLoader/public/js/handler.js" />
-        <option value="$PROJECT_DIR$/dmca/README.txt" />
         <option value="$PROJECT_DIR$/dmca/gserver.js" />
         <option value="$PROJECT_DIR$/dmca/conf.json" />
         <option value="$PROJECT_DIR$/dmca-dashboard/dashboard.js" />
@@ -165,24 +149,32 @@
         <option value="$PROJECT_DIR$/googlelist/domainsearchpage.html" />
         <option value="$PROJECT_DIR$/googlelist/testreport.js" />
         <option value="$PROJECT_DIR$/googlelist/package.json" />
-        <option value="$PROJECT_DIR$/googlelist/proxies.json" />
         <option value="$PROJECT_DIR$/googlelist/urls.json" />
         <option value="$PROJECT_DIR$/googlelist/testgethtml.js" />
         <option value="$PROJECT_DIR$/googlelist/logger.js" />
         <option value="$PROJECT_DIR$/googlelist/GetHtmlHandler.js" />
-        <option value="$PROJECT_DIR$/googlelist/conf.json" />
         <option value="$PROJECT_DIR$/googlelist/server.js" />
         <option value="$PROJECT_DIR$/googlelist/getHtmlHandler.js" />
         <option value="$PROJECT_DIR$/googlelist/reportsHandler.js" />
         <option value="$PROJECT_DIR$/piracyReport/testers/package.json" />
         <option value="$PROJECT_DIR$/getHtml/testers/package.json" />
         <option value="$PROJECT_DIR$/googlelist/gsearchHandler.js" />
-        <option value="$PROJECT_DIR$/googlelist/gsearch.js" />
         <option value="$PROJECT_DIR$/getHtml/getHtmlHandler.js" />
-        <option value="$PROJECT_DIR$/piracyReport/reportsHandler.js" />
         <option value="$PROJECT_DIR$/getHtml/README.txt" />
         <option value="$PROJECT_DIR$/piracyReport/README.txt" />
         <option value="$PROJECT_DIR$/googlelist/README.txt" />
+        <option value="$PROJECT_DIR$/vk/conf.json" />
+        <option value="$PROJECT_DIR$/vk/README.txt" />
+        <option value="$PROJECT_DIR$/vk/handler.js" />
+        <option value="$PROJECT_DIR$/piracyReport/conf.json" />
+        <option value="$PROJECT_DIR$/dmca/README.txt" />
+        <option value="$PROJECT_DIR$/piracyReport/reportsHandler.js" />
+        <option value="$PROJECT_DIR$/vk/worker.js" />
+        <option value="$PROJECT_DIR$/googlelist/proxy.js" />
+        <option value="$PROJECT_DIR$/googlelist/conf.json" />
+        <option value="$PROJECT_DIR$/googlelist/proxies.json" />
+        <option value="$PROJECT_DIR$/googlelist/serverOld.js" />
+        <option value="$PROJECT_DIR$/googlelist/gsearch.js" />
       </list>
     </option>
   </component>
@@ -216,6 +208,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -234,9 +227,36 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="google-dmca" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dmcaserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="googlelist" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="google-dmca" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dmcaserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dmca" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -284,6 +304,14 @@
     </key>
   </component>
   <component name="RunManager">
+    <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
+      <option name="VMOptions" />
+      <option name="arguments" />
+      <option name="filePath" />
+      <option name="scope" value="ALL" />
+      <option name="testName" />
+      <method />
+    </configuration>
     <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
       <option name="VMOptions" />
       <option name="arguments" />
@@ -294,16 +322,10 @@
       <option name="showConsoleOnStdOut" value="false" />
       <method />
     </configuration>
-    <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
-      <option name="VMOptions" />
-      <option name="arguments" />
+    <configuration default="true" type="CucumberJavaScriptRunConfigurationType" factoryName="Cucumber.js">
+      <option name="cucumberJsArguments" />
+      <option name="executablePath" />
       <option name="filePath" />
-      <option name="scope" value="ALL" />
-      <option name="testName" />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" config-file="">
-      <envs />
       <method />
     </configuration>
     <configuration default="true" type="JSTestDriver:ConfigurationType" factoryName="JsTestDriver">
@@ -313,10 +335,8 @@
       <setting name="preferredDebugBrowser" value="Chrome" />
       <method />
     </configuration>
-    <configuration default="true" type="CucumberJavaScriptRunConfigurationType" factoryName="Cucumber.js">
-      <option name="cucumberJsArguments" />
-      <option name="executablePath" />
-      <option name="filePath" />
+    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" config-file="">
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
@@ -669,7 +689,35 @@
       <created>1427218920365</created>
       <updated>1427218920365</updated>
     </task>
-    <option name="localTasksCounter" value="84" />
+    <task id="LOCAL-00084" summary="Separated piracy report and getHtml handlers to different folders">
+      <created>1427254594807</created>
+      <updated>1427254594807</updated>
+    </task>
+    <task id="LOCAL-00085" summary="Updates to video result search">
+      <created>1428733296132</created>
+      <updated>1428733296132</updated>
+    </task>
+    <task id="LOCAL-00086" summary="New route to clean up">
+      <created>1428733404201</created>
+      <updated>1428733404201</updated>
+    </task>
+    <task id="LOCAL-00087" summary="Update in html structure of google piracy report">
+      <created>1429456341279</created>
+      <updated>1429456341279</updated>
+    </task>
+    <task id="LOCAL-00088" summary="Improved chilling-effects data collection">
+      <created>1429551242438</created>
+      <updated>1429551242438</updated>
+    </task>
+    <task id="LOCAL-00089" summary="Google changed their html code">
+      <created>1434008252763</created>
+      <updated>1434008252763</updated>
+    </task>
+    <task id="LOCAL-00090" summary="Update as mentioned in email">
+      <created>1434266419349</created>
+      <updated>1434266419349</updated>
+    </task>
+    <option name="localTasksCounter" value="91" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -697,7 +745,7 @@
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3254282" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29303548" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28515112" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32806325" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24968314" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22891566" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -708,12 +756,12 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32279316" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298292" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32806325" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32938075" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24935733" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -731,13 +779,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Successfully uploading in chunks with progress tracked" />
-    <MESSAGE value="Multiple upload capability and better CSS" />
-    <MESSAGE value="added pause/cancel/resume, tested multiple concurrent upload" />
-    <MESSAGE value="Should upload faster now, increasing chunkSize should improve further but also increase chances of failure." />
-    <MESSAGE value="CSS updates and config separated from main script." />
-    <MESSAGE value="Max parallel upload property added" />
-    <MESSAGE value="Expected time shown" />
     <MESSAGE value="DBC incorrect captcha reporting capability" />
     <MESSAGE value="Added api /refreshworker" />
     <MESSAGE value="Added ability to submit multiple groups in single request" />
@@ -756,7 +797,14 @@
     <MESSAGE value="Bug cleanup" />
     <MESSAGE value="Update after testing" />
     <MESSAGE value="Separated piracy report and getHtml handlers" />
-    <option name="LAST_COMMIT_MESSAGE" value="Separated piracy report and getHtml handlers" />
+    <MESSAGE value="Separated piracy report and getHtml handlers to different folders" />
+    <MESSAGE value="Updates to video result search" />
+    <MESSAGE value="New route to clean up" />
+    <MESSAGE value="Update in html structure of google piracy report" />
+    <MESSAGE value="Improved chilling-effects data collection" />
+    <MESSAGE value="Google changed their html code" />
+    <MESSAGE value="Update as mentioned in email" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update as mentioned in email" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -764,17 +812,11 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/dmca/gserver_withproxy.js">
+    <entry file="file://$PROJECT_DIR$/dmca/dmca.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="14.893163" vertical-offset="0" max-vertical-offset="11085">
-          <caret line="706" column="17" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca-dashboard/jquery-1.10.1.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="150">
-          <caret line="6" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="13125" max-vertical-offset="16635">
+          <caret line="875" column="19" selection-start-line="858" selection-start-column="29" selection-end-line="875" selection-end-column="19" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -820,13 +862,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vk/cities.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="27.542374" vertical-offset="0" max-vertical-offset="19590">
-          <caret line="1300" column="1" selection-start-line="1300" selection-start-column="1" selection-end-line="1300" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dmca/dmacformvalues.json">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.31578946" vertical-offset="0" max-vertical-offset="475">
@@ -838,20 +873,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="150">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vk/README.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7310757" vertical-offset="578" max-vertical-offset="1080">
-          <caret line="63" column="25" selection-start-line="63" selection-start-column="25" selection-end-line="63" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vk/conf.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.14830509" vertical-offset="0" max-vertical-offset="708">
-          <caret line="7" column="20" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
         </state>
       </provider>
     </entry>
@@ -904,20 +925,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vk/handler.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8606557" vertical-offset="0" max-vertical-offset="2055">
-          <caret line="42" column="11" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vk/worker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.71311474" vertical-offset="3573" max-vertical-offset="4335">
-          <caret line="273" column="59" selection-start-line="273" selection-start-column="59" selection-end-line="273" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dmca/jquery-1.10.1.min.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.02086231" vertical-offset="0" max-vertical-offset="719">
@@ -939,20 +946,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5494071" vertical-offset="217" max-vertical-offset="990">
-          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dmca/dmca.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="9960" max-vertical-offset="16155">
-          <caret line="664" column="21" selection-start-line="664" selection-start-column="8" selection-end-line="664" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/useragents.json">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.062111802" vertical-offset="0" max-vertical-offset="483">
@@ -964,14 +957,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.16348773" vertical-offset="0" max-vertical-offset="734">
           <caret line="8" column="76" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vk/vk.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1665">
-          <caret line="12" column="6" selection-start-line="12" selection-start-column="6" selection-end-line="12" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -996,34 +981,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/proxies.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21649484" vertical-offset="0" max-vertical-offset="485">
-          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/testers/testsearch.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.20588236" vertical-offset="135" max-vertical-offset="1185">
           <caret line="2" column="3" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/conf.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1056338" vertical-offset="0" max-vertical-offset="710">
-          <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2880">
-          <caret line="22" column="39" selection-start-line="22" selection-start-column="39" selection-end-line="22" selection-end-column="39" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1031,7 +992,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.02112676" vertical-offset="0" max-vertical-offset="710">
           <caret line="1" column="25" selection-start-line="1" selection-start-column="25" selection-end-line="1" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1039,15 +999,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.02112676" vertical-offset="0" max-vertical-offset="710">
           <caret line="1" column="20" selection-start-line="1" selection-start-column="20" selection-end-line="1" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/searchService.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8773842" vertical-offset="1" max-vertical-offset="735">
-          <caret line="43" column="6" selection-start-line="43" selection-start-column="6" selection-end-line="43" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1055,7 +1006,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2880">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1063,15 +1013,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="511">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10860">
-          <caret line="25" column="32" selection-start-line="25" selection-start-column="32" selection-end-line="25" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1079,15 +1020,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2805">
           <caret line="21" column="7" selection-start-line="21" selection-start-column="7" selection-end-line="21" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/piracyReport/reportsHandler.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="4185">
-          <caret line="22" column="42" selection-start-line="22" selection-start-column="42" selection-end-line="22" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1095,30 +1027,153 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="44" max-vertical-offset="555">
           <caret line="12" column="14" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vk/cities.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.98770493" vertical-offset="19018" max-vertical-offset="19590">
+          <caret line="1300" column="1" selection-start-line="1300" selection-start-column="1" selection-end-line="1300" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vk/conf.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.12295082" vertical-offset="0" max-vertical-offset="488">
+          <caret line="4" column="39" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vk/vk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5532787" vertical-offset="0" max-vertical-offset="1665">
+          <caret line="36" column="2" selection-start-line="36" selection-start-column="2" selection-end-line="36" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vk/handler.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.7894737" vertical-offset="1110" max-vertical-offset="2235">
+          <caret line="47" column="25" selection-start-line="47" selection-start-column="25" selection-end-line="47" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vk/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.3138402" vertical-offset="376" max-vertical-offset="1155">
+          <caret line="70" column="43" selection-start-line="70" selection-start-column="43" selection-end-line="70" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.32879376" vertical-offset="251" max-vertical-offset="990">
+          <caret line="28" column="19" selection-start-line="28" selection-start-column="19" selection-end-line="28" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/piracyReport/conf.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.125" vertical-offset="0" max-vertical-offset="210">
+          <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/piracyReport/README.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="29" max-vertical-offset="540">
-          <caret line="12" column="14" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="540">
+          <caret line="30" column="25" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/piracyReport/testers/testreport.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1245">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/piracyReport/reportsHandler.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="390" max-vertical-offset="4260">
+          <caret line="26" column="35" selection-start-line="26" selection-start-column="35" selection-end-line="26" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/searchService.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8797814" vertical-offset="1" max-vertical-offset="735">
+          <caret line="43" column="6" selection-start-line="43" selection-start-column="6" selection-end-line="43" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.78488374" vertical-offset="0" max-vertical-offset="585">
+          <caret line="27" column="30" selection-start-line="27" selection-start-column="30" selection-end-line="27" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dmca/dmca.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="13125" max-vertical-offset="16635">
+          <caret line="875" column="19" selection-start-line="858" selection-start-column="29" selection-end-line="875" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/captcha.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1125" max-vertical-offset="2490">
+          <caret line="12" column="12" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/conf.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="210">
+          <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/proxies.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="135">
+          <caret line="2" column="80" selection-start-line="2" selection-start-column="80" selection-end-line="2" selection-end-column="80" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vk/worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4455">
+          <caret line="8" column="40" selection-start-line="8" selection-start-column="40" selection-end-line="8" selection-end-column="40" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/googlelist/gsearchHandler.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5295">
-          <caret line="21" column="32" selection-start-line="21" selection-start-column="32" selection-end-line="21" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="6330">
+          <caret line="9" column="6" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/googlelist/README.txt">
+    <entry file="file://$PROJECT_DIR$/googlelist/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8238748" vertical-offset="74" max-vertical-offset="585">
-          <caret line="33" column="45" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1620" max-vertical-offset="2880">
+          <caret line="123" column="16" selection-start-line="123" selection-start-column="16" selection-end-line="123" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googlelist/gsearch.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.46721312" vertical-offset="9993" max-vertical-offset="10860">
+          <caret line="698" column="31" selection-start-line="698" selection-start-column="31" selection-end-line="698" selection-end-column="31" />
           <folding />
         </state>
       </provider>

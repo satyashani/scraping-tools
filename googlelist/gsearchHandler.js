@@ -67,7 +67,7 @@ var sender = {
 var jqEvals = {
     getPageResults : function(){
         var res = [];
-        $("div#ires li.g").each(function(){
+        $("div#ires div.g").each(function(){
             var u = $(this).find("h3.r a").attr("href"),kw = $(this).find('span.st em,span.st b');
             if(u){
                 var match = u.match(/url[\?q]*=(http[s]*[^&]*)/);
@@ -85,7 +85,7 @@ var jqEvals = {
             if(!$(this).find("a.fl").size() && !$(this).hasClass("b") && tds.eq(i+1).hasClass('b'))
                 hasMore = false;
         });
-        return { result: res, hasmore : hasMore};
+        return { result: res, hasmore : hasMore,"irescount":$("div#ires div.g")};
     },
     clickNext : function(){
         var tds = $("div#foot td:not(.b)");
