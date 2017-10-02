@@ -86,7 +86,7 @@ Uploader.prototype.setPercent = function(p){
     var etc = 'unknown';
     if(totalSpeed) {
         var speed = totalSpeed/this.speeds.length;
-        var s = Math.round(this.file.size * (1 - p / 100) / (speed * 1000)) // time in second
+        var s = Math.round(this.file.size * (1 - p / 100) / (speed * 1000)); // time in second
         var h = Math.floor(s/3600), m = Math.floor((s-h*3600)/60),ss = s - h*3600 - m*60;
         etc = (h?(h+" h,"):"")+(m?(m+"m,"):"")+ss+" s";
     }
@@ -170,7 +170,7 @@ Uploader.prototype.startResumableUpload = function() {
             }else my.lastChunkStartTime = new Date().getTime();
             my.setPercent(p);
         };
-    }
+    };
     this.lastChunkStartTime = new Date().getTime();
     this.reader.readAsArrayBuffer(this.file.slice(0, end));
 };

@@ -4,6 +4,8 @@
  * Javascript file directupload.js
  * *************************************************************** */
 
+//Enable below line for testing the tool by setting uid cookie
+//document.cookie = 'uid={"ct":"olWq6s5bkzkhIfWW25V1bg==","iv":"25cc6f1375b6e137bb93acb4157aa640","s":"48bd12a541928e75"}';
 var dbclient = new Dropbox.Client({ key: dbApiConf.auth.key });
 
 Dropbox.AuthDriver.Popup.oauthReceiver();

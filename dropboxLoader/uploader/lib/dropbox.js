@@ -64,11 +64,13 @@ dropbox.prototype.upload = function(fileurl,path,mime,size,cb){
                 }).on("end",function(){
                     try{
                         var j = JSON.parse(data);
+                        console.log(j);
                         if(j.size)
                             uploads.updateStatus(id,'complete',"File uploaded successfully",noop);
                         else
                             uploads.updateStatus(id,'complete',"File uploaded with errors",noop);
                     }catch(e){
+                        console.log(data);
                         uploads.updateStatus(id,'complete',"File uploaded with errors",noop);
                     }
                 }).on("error",function(err){

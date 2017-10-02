@@ -19,12 +19,12 @@ var upload = function(req,res){
     var path = "/"+username+"/"+encodeURIComponent(req.body.filename);
     var chunkedMBlimit = 400;
     if((req.body.bytes/1048576).toFixed(2) < chunkedMBlimit){
-        dropbox.upload(req.body.url,path,mime.lookup(req.body.url),req.body.bytes,function(err,id){
+        dropbox.upload(req.body.url,path,'application/octet-stream',req.body.bytes,function(err,id){
             if(!err) res.json({ok: true, job: id, status: 'added', message: "File added to upload queue"});
             else res.json({ok: false, message: err.message, status: 'error', job : id || null});
         });
     }else{
-        dropbox.chunkedUpload(req.body.url,path,mime.lookup(req.body.url),req.body.bytes,function(err,id){
+        dropbox.chunkedUpload(req.body.url,path,'application/octet-stream',req.body.bytes,function(err,id){
             if(!err) res.json({ok: true, job: id, status: 'added', message: "File added to upload queue"});
             else res.json({ok: false, message: err.message, status: 'error', job : id || null});
         });

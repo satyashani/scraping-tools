@@ -6,9 +6,9 @@
 
 var conf = {
     dropbox: {
-        key: 'lycuobyql232wwf',
-        secret: 'zh2gsv6rm2v03vx',
-        token: "vwsVrfBEX7AAAAAAAAAAnwPxesZM2NcXAtYL_7LFK3b_DA98mG0mnCf_35D0w1qk"
+        key: '7sqti86d7frovln',
+        secret: '8qp1elwjack1r6a',
+        token: "tGAjyYPaYBAAAAAAAAAAWy0dEjpT-DOvMsLyNcAKiAtf22OSpUxWnPOQZBTbg9zN"
     },
     server: {
         port: 3000,
